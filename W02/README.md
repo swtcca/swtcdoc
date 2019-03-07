@@ -149,29 +149,6 @@ remote.connect( (error, server_info) => {
 
 -  src/index.js
 ```javascript
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<title>浏览器运行时</title>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-		<link rel="stylesheet" href="styles.css"> <!-- 装扮一下页面 -->
-		<script src="swtc-lib.js"></script> <!-- 导入库 -->
-	</head>
-	<body>
-		<main>
-			<h1>浏览器</h1>
-			<h3>钱包</h3> <hr>
-			<section class="js-wallet">
-			</section>
-			<h3>帐本</h3> <hr>
-			<section class="js-ledger">
-			</section>
-			<h3>价格</h3> <hr>
-			<section class="js-price">
-			</section>
-		</main>
-		<script>
 const Wallet = swtc_lib.Wallet
 const Remote = swtc_lib.Remote
 const dom_wallet = document.querySelector('.js-wallet')
