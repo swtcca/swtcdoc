@@ -9,7 +9,6 @@ $ cd playground
 2. 全局安装vue-cli
 ```bash
 $ npm install -g @vue/cli
-$ npm install -g yarn
 ```
 3. 创建vue工程, 选择用 npm 作为包管理
 ```bash
