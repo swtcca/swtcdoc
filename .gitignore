@@ -59,3 +59,12 @@ typings/
 
 # next.js build output
 .next
+
+## additional ##
+*~
+**/*.swp
+.DS_Store
+*.pyc
+**/node_modules
+**/dist
+**/package-lock.json
