@@ -75,7 +75,9 @@ const query_price = (remote) =>	remote.requestOrderBook(swt_vs_cny).submit( (err
 				}
 			})
 
-// 每十秒钟生成一个钱包并且打印出来
+// 生成一个钱包并且每十秒钟更新
+let wallet = Wallet.generate()
+dom_wallet.innerHTML = `<pre>${JSON.stringify(wallet, '', 2)}</pre>`
 setInterval( () => {
 		let wallet = Wallet.generate()
 		console.log("\n...新钱包...")
@@ -103,7 +105,8 @@ remote.connect( (error, server_info) => {
 					}
 				}
 			)
-			// 每10秒钟查询价格
+			// 查询价格并且每十秒钟更新
+			query_price(remote)
 			setInterval( () => query_price(remote), 10000)
 		}
 	})
@@ -147,7 +150,7 @@ remote.connect( (error, server_info) => {
 </html>
 ```
 
--  src/index.js
+-  dist/main.js
 ```javascript
 const Wallet = swtc_lib.Wallet
 const Remote = swtc_lib.Remote
@@ -179,7 +182,9 @@ const query_price = (remote) =>	remote.requestOrderBook(swt_vs_cny).submit( (err
 				}
 			})
 
-// 每十秒钟生成一个钱包并且打印出来
+// 生成一个钱包并且每十秒钟更新
+let wallet = Wallet.generate()
+dom_wallet.innerHTML = `<pre>${JSON.stringify(wallet, '', 2)}</pre>`
 setInterval( () => {
 		let wallet = Wallet.generate()
 		console.log("\n...新钱包...")
@@ -207,7 +212,8 @@ remote.connect( (error, server_info) => {
 					}
 				}
 			)
-			// 每10秒钟查询价格
+			// 查询价格并且每十秒钟更新
+			query_price(remote)
 			setInterval( () => query_price(remote), 10000)
 		}
 	})

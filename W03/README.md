@@ -95,7 +95,9 @@ const query_price = (remote) =>	remote.requestOrderBook(swt_vs_cny).submit( (err
 				}
 			})
 
-// 每十秒钟生成一个钱包并且打印出来
+// 生成一个钱包并且之后每十秒更新
+let wallet = Wallet.generate()
+dom_wallet.innerHTML = `<pre>${JSON.stringify(wallet, '', 2)}</pre>`
 setInterval( () => {
 		let wallet = Wallet.generate()
 		console.log("\n...新钱包...")
@@ -123,7 +125,8 @@ remote.connect( (error, server_info) => {
 					}
 				}
 			)
-			// 每10秒钟查询价格
+			// 查询价格每10秒钟更新
+			query_price(remote)
 			setInterval( () => query_price(remote), 10000)
 		}
 	})
@@ -135,8 +138,8 @@ Hash: 1dfa8084e0e6338bcad1
 Version: webpack 4.29.6
 Time: 990ms
 Built at: 03/06/2019 5:52:14 PM
-  Asset      Size  Chunks             Chunk Names
-main.js  4.15 MiB    main  [emitted]  main
+  Asset	  Size  Chunks			 Chunk Names
+main.js  4.15 MiB	main  [emitted]  main
 Entrypoint main = main.js
 [0] crypto (ignored) 15 bytes {main} [optional] [built]
 [1] buffer (ignored) 15 bytes {main} [optional] [built]
@@ -146,7 +149,7 @@ Entrypoint main = main.js
 [./node_modules/webpack/buildin/global.js] (webpack)/buildin/global.js 472 bytes {main} [built]
 [./node_modules/webpack/buildin/module.js] (webpack)/buildin/module.js 497 bytes {main} [built]
 [./src/index.js] 1.91 KiB {main} [built]
-    + 191 hidden modules
+	+ 191 hidden modules
 $ ls -lh dist
 total 8504
 -rw-r--r--  1 xcliu  staff   4.1M  6 Mar 17:52 main.js
