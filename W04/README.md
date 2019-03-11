@@ -53,7 +53,7 @@ class App extends Component {
   }
 }
 ```
-7. 修改为如下示例内容
+8. 修改为如下示例内容
 ```javascript
 import React, { Component } from 'react';
 import logo from './logo.svg';
@@ -133,4 +133,12 @@ class App extends Component {
 }
 
 export default App;
+```
+9. 添加一小段css美化页面 src/App.css
+```css
+pre {
+  width: 50%;
+  margin: auto;
+  text-align: left;
+}
 ```
