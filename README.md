@@ -1,13 +1,20 @@
+---
+home: true
+heroText: 社区版井通nodejs库
+features:
+- title: 完全兼容
+  details: 井通接口 井畅接口
+- title: 独享便利
+  details: 零配置webpack支持
+- title: 多方支持
+  details: node.js web mobile   angular vue.js react
+- title: 模块化
+  details: 理顺依赖关系 反馈正式版本
+- title: 扩展性
+  details: 可以增加api或者代理版remote
+---
 
 # DAPP Examples Using Javascript and SWTC-LIB
-
-## swtc-lib 的优点
-
-> - #### [x] 兼容性 完全保持jingtum-lib和jcc_jingtum_lib的接口
-> - #### [-] 模块化 打散准平级结构，理顺依赖关系 
-> - #### [-] 扩展性 对于Remote和Server可以扩展支持
-> - #### [x] 方便性 零配置webpack支持
-> - #### [x] 多支持 console/web/desktop/mobile支持
 
 ## 相关知识
 
