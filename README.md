@@ -1,6 +1,7 @@
 ---
 home: true
 heroText: 社区版井通nodejs库
+tagline: 应用开发者专用
 features:
 - title: 完全兼容
   details: 井通接口 井畅接口
@@ -37,9 +38,11 @@ features:
 - 正常情况下，所有实例使用的node.js为最新的LTS版本
 - 正常情况下，所有显式安装的包使用缺省的最新版本
 - 正常情况下，我们使用[脚本方式运行](C00)
+- 示例中皆使用测试网服务器，可以用公网服务器替代
 - 用npm安装
 ```bash
 $ npm install swtc-lib # jingtum-lib接口, 版本为1.6.x
+$ npm install swtc-lib@next # jingtum-lib v2接口, 版本为2.0.x
 $ npm install swtc-lib@jcc # jcc_jingtum_lib接口， 版本为1.5.x
 $ npm install swtc-lib@nativescript # 为nativescript定制， 版本为1.7.x
 ```
