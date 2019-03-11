@@ -75,7 +75,7 @@ const Remote = require('swtc-lib').Remote
 - [W02 常规WEB示例](W02)
 - [W03 打包WEB示例](W03)
 - Angular Web示例
-- React Web示例
+- [W04 React Web示例](W04)
 - [W05 Vue Web示例](W05)
 
 ## DESKTOP 应用
