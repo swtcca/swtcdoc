@@ -1,4 +1,3 @@
-
 ---
 home: true
 heroText: 社区版井通nodejs库
@@ -19,22 +18,6 @@ features:
 
 
 # DAPP Examples Using Javascript and SWTC-LIB
-
-## 相关知识
-
-> #### 终端 包括Windows的命令行窗口和Unix的命令行终端
-> #### 浏览器 和浏览器的javascript console
-> #### 移动设备 安卓和苹果的手机以及应用
-> #### HTML和CSS
-> #### Node.js 以及npm 包管理程序
-> #### Javascript的运行环境 包括node.js和浏览器
-> #### 打包(bundle)工具 webpack
-> #### Javascript标准和流行的方便的新特性
-> #### 转换(transpile)工具 babel
-> #### 桌面应用 electron
-> #### 前端框架 angular, react, vue.js
-> #### 移动应用 nativescript, react, flutter
-#### 强烈推荐 [廖雪峰的零基础Javascript全栈教程](https://www.liaoxuefeng.com/wiki/001434446689867b27157e896e74d51a89c25cc8b43bdb3000)
 
 ## 使用swtc-lib
 
@@ -87,9 +70,9 @@ const Remote = require('swtc-lib').Remote
 - [W01 浏览器终端示例](W01)
 - [W02 常规WEB示例](W02)
 - [W03 打包WEB示例](W03)
-- Angular Web示例
 - [W04 React Web示例](W04)
 - [W05 Vue Web示例](W05)
+- [W06 Angular Web示例](W06)
 
 ## DESKTOP 应用
 
@@ -120,3 +103,19 @@ const Remote = require('swtc-lib').Remote
 > - [A02 承诺 promisify](A02)
 > - [A03 同步 async/await](A03)
 > - 终端图形界面
+
+## 相关知识
+
+> #### 终端 包括Windows的命令行窗口和Unix的命令行终端
+> #### 浏览器 和浏览器的javascript console
+> #### 移动设备 安卓和苹果的手机以及应用
+> #### HTML和CSS
+> #### Node.js 以及npm 包管理程序
+> #### Javascript的运行环境 包括node.js和浏览器
+> #### 打包(bundle)工具 webpack
+> #### Javascript标准和流行的方便的新特性
+> #### 转换(transpile)工具 babel
+> #### 桌面应用 electron
+> #### 前端框架 angular, react, vue.js
+> #### 移动应用 nativescript, react, flutter
+#### 强烈推荐 [廖雪峰的零基础Javascript全栈教程](https://www.liaoxuefeng.com/wiki/001434446689867b27157e896e74d51a89c25cc8b43bdb3000)
