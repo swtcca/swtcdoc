@@ -14,7 +14,7 @@ const BLUEBIRD = require('bluebird')
 BLUEBIRD.promisifyAll(SWTCLIB)
 
 const Remote = SWTCLIB.Remote
-const remote = new Remote({server: 'ws://ts5.jingtum.com:5020'})
+const remote = new Remote({server: 'ws://swtclib.daszichan.com:5020'})
 // 我们现在对于每个有回调的函数就拥有相应的Async函数, 最常见
 remote.connectAsync()
 	.then( server_info => {

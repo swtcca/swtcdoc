@@ -6,9 +6,9 @@ features:
 - title: 完全兼容
   details: 井通接口 井畅接口
 - title: 独享便利
-  details: 零配置webpack支持
-- title: 多方支持
-  details: node.js web mobile   angular vue.js react
+  details: 零配置webpack支持 零配置browserify支持
+- title: 多框架支持
+  details: node web mobile   angular vue react
 - title: 模块化
   details: 理顺依赖关系 反馈正式版本
 - title: 扩展性
@@ -24,7 +24,6 @@ features:
 - 正常情况下，所有实例使用的node.js为最新的LTS版本
 - 正常情况下，所有显式安装的包使用缺省的最新版本
 - 正常情况下，我们使用[脚本方式运行](C00)
-- 示例中皆使用测试网服务器，可以用公网服务器替代
 - 用npm安装
 ```bash
 $ npm install swtc-lib # jingtum-lib接口, 版本为1.6.x
@@ -73,6 +72,8 @@ const Remote = require('swtc-lib').Remote
 - [W04 React Web示例](W04)
 - [W05 Vue Web示例](W05)
 - [W06 Angular Web示例](W06)
+- W07 weex Web示例
+- W08 nuxt 示例
 
 ## DESKTOP 应用
 
@@ -89,6 +90,7 @@ const Remote = require('swtc-lib').Remote
 > - react native | Facebook
 > - flutter | Google
 > - nativescript | Telerik
+> - weex | Apache
 
 - [M00 相关说明](M00)
 - Nativescript示例
@@ -96,6 +98,7 @@ const Remote = require('swtc-lib').Remote
 - Nativescript Angular示例
 - React Native示例
 - Flutter示例
+- Weex示例
 
 ## 时髦使用方式
 > - [A00 相关说明](A00)
