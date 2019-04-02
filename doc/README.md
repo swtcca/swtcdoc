@@ -1,7 +1,10 @@
 # 井通科技
 
 ## jingtum-lib接口说明
-V2.0.2
+V2.0.3
+除了合约外的测试全都通过
+
+## [应用实例](../)
 
 ## 版本历史
 |版本|简介|作者|日期|
@@ -10,28 +13,67 @@ V2.0.2
 |2.0.0|整体接口说明|吴丹|2018/3/2|
 |2.0.1|Remote类增加返回结果说明|吴丹|2018/3/15|
 |2.0.2|Remote类增加合约方法|吴丹|2018/5/31|
+|2.0.3|swtc-lib|2019/4/2|
 
 ## 目录
-1. [安装](#installation)
-2. [项目文件结构](#structure)
-3. [创建钱包](#wallet)
-4. [REMOTE类](#remote)
-> #### 4.1 [创建Remote对象](#remoteCreate)
-> #### 4.2 [创建连接](#remoteConnect)
-> #### 4.3 [断开连接](#remoteDisconnect)
-> #### 4.4 [请求底层服务器信息](#requestServerInfo)
-> #### 4.5 [获取最新账本信息](#requestLedgerClosed)
-> #### 4.6 [获取某一账本具体信息](#requestLedger)
-> #### 4.7 [查询某一交易具体信息](#requestTx)
-> #### 4.8 [请求账号信息](#requestAccountInfo)
-> #### 4.9 [获得账号可接收和发送的货币](#requestAccountTums)
-> #### 4.10 [获得账号关系](#requestAccountRelations)
-> #### 4.14 [支付](#paymentTx)
-> #### 4.15 [设置关系](#relationTx)
-> #### 4.21 [监听事件](#listen)
-5. [REQUEST类](#request)
-6. [TRANSACTION类](#transaction)
-7. [底层常见错误附录](#errors)
+1. ### [安装](#installation)
+2. ### [项目文件结构](#structure)
+3. ### [创建钱包](#wallet)
+4. ### [REMOTE类](#remote)
+> ### 4.1 [创建Remote对象](#remoteCreate)
+> ### 4.2 [创建连接](#remoteConnect)
+> ### 4.3 [断开连接](#remoteDisconnect)
+> ### 4.4 [请求底层服务器信息](#requestServerInfo)
+> ### 4.5 [获取最新账本信息](#requestLedgerClosed)
+> ### 4.6 [获取某一账本具体信息](#requestLedger)
+> ### 4.7 [查询某一交易具体信息](#requestTx)
+> ### 4.8 [请求账号信息](#requestAccountInfo)
+> ### 4.9 [获得账号可接收和发送的货币](#requestAccountTums)
+> ### 4.10 [获得账号关系](#requestAccountRelations)
+> ### 4.11 [获得账号挂单](#requestAccountOffers)
+> ### 4.12 [获得账号交易列表](#requestAccountTx)
+> ### 4.13 [获得市场挂单列表](#requestOrderBook)
+> ### 4.14 [支付](#paymentTx)
+> - 4.14.1 创建支付对象
+> - 4.14.2 传入密钥
+> - 4.14.3 设置备注
+> - 4.14.4 提交支付
+> ### 4.15 [设置关系](#relationTx)
+> - 4.15.1 创建关系对象
+> - 4.15.2 传入密钥
+> - 4.15.3 关系设置
+> ### 4.16 [设置账号属性 --- 待完善](#accountSetTx)
+> - 4.16.1 创建属性对象
+> - 4.16.2 传入密钥
+> - 4.16.3 属性设置
+> ### 4.17 [挂单](#offerCreate)
+> - 4.17.1 创建挂单对象
+> - 4.17.2 传入密钥
+> - 4.17.3 提交挂单
+> ### 4.18 [取消挂单](#offerCancel)
+> - 4.18.1 创建取消挂单对象
+> - 4.18.2 传入密钥
+> - 4.18.3 取消挂单
+> ### 4.19 [部署合约](#contractDeploy)
+> - 4.19.1 创建部署合约对象
+> - 4.19.2 传入密钥
+> - 4.19.3 部署合约
+> ### 4.20 [调用合约](#contractCall)
+> - 4.20.1 创建执行合约对象
+> - 4.20.2 传入密钥
+> - 4.20.3 执行合约
+> ### 4.21 [监听事件](#listen)
+
+5. ### [REQUEST类](#request)
+> ### 5.1 [指定账本](#requestLedger)
+> ### 5.1 [提交请求](#requestSubmit)
+6. ### [TRANSACTION类](#transaction)
+> ### 6.1 [获得交易账号](#transactionAccount)
+> ### 6.2 [获得交易类型](#transactionType)
+> ### 6.3 [传入私钥](#transactionSecret)
+> ### 6.4 [添加备注](#transactionMemo)
+> ### 6.5 [提交请求](#transactionSubmit)
+7. ### [底层常见错误附录](#errors)
 
 ## <a name="installation"></a>1 安装
 1. 安装官方库
@@ -41,12 +83,12 @@ npm install --save swtc-lib
 ```
 
 ## <a name="structure"></a>2 项目文件结构
-### jingtum-lib库基于ws协议跟底层交互，其中ws封装到Server类中，Server类是一个内部类，不对 外开放;Server类封装在Remote类中，Remote类提供对外访问接口并可创建两类对象:Get方 式请求的Request对象和Post方式请求的Transaction对象，这两类对象都通过submit()方法提交 数据到底层。
+### swtc-lib库基于ws协议跟底层交互，其中ws封装到Server类中，Server类是一个内部类，不对 外开放;Server类封装在Remote类中，Remote类提供对外访问接口并可创建两类对象:Get方 式请求的Request对象和Post方式请求的Transaction对象，这两类对象都通过submit()方法提交 数据到底层。
 文件结构图如下
 ![structure](./structure.png)
 
 ## <a name="wallet"></a>3 创建钱包
-> ### 首先引入jingtum-lib库的Wallet对象，然后使用以下两种方法创建钱包
+> ### 首先引入swtc-lib库的Wallet对象，然后使用以下两种方法创建钱包
 > ### 方法1: Wallet.generate()
 > ### 方法2: Wallet.fromSecret(secret);
 ### 参数:
@@ -499,7 +541,7 @@ remote.connect(function(err, result) {
     if (err) {
         return console.log('err:',err);
     }
-    var options = {account: 'jLvo6LSKNEYJ4KDwDuM8LU5fuSsQkE4HVW'};
+    var options = {account: 'jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG'};
     var req = remote.requestAccountTums(options);
     req.submit(function(err, result) {
         if(err) {console.log('err:',err);}
@@ -512,16 +554,20 @@ remote.connect(function(err, result) {
 #### 返回结果
 ```javascript
 > res: { ledger_hash:
-   'A495692453361B3025852C5DD6463AF48637DABACDF71BF8D0D3C023D82DA4CA',
-  ledger_index: 12432702,
+   '972AEB187D7B0E0A90BF4B2352B9BCB8868C7169591D5EAD0FEDA463DC97C6D9',
+  ledger_index: 12436860,
   receive_currencies:
    [ 'CNY',
      'HJT',
      'SPC',
      'VCC',
+     'JEKT',
+     'JJCC',
+     'JCALL',
      'JSLASH',
      '800000000000000000000000416FE9044CDAA1A2' ],
-  send_currencies: [ 'CNY', 'HJT', 'SPC', 'VCC', 'JSLASH' ],
+  send_currencies:
+   [ 'HJT', 'JSLASH', '800000000000000000000000416FE9044CDAA1A2' ],
   validated: true }
 ```
 #### 返回结果说明
@@ -541,6 +587,355 @@ remote.connect(function(err, result) {
 |----|----|---:|
 |account|String|井通钱包地址|
 |type|String|关系类型，固定的三个值:trust、authorize、freeze|
+#### 返回: Request对象
+#### 例子
+```javascript
+var jlib = require('swtc-lib');
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'ws://swtclib.daszichan.com:5020', local_sign: true});
+remote.connect(function(err, result) {
+    if (err) {
+        return console.log('err:',err);
+    }
+    var options = {account: 'jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG',type:'trust'};
+    var req = remote.requestAccountRelations(options);
+    req.submit(function(err, result) {
+        if(err) {console.log('err:',err);}
+        else if(result){
+            console.log('res:', result);
+        }
+    });
+});
+```
+#### 返回结果
+```javascript
+> res: { account: 'jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG',
+  ledger_hash:
+   '42A3FCE4EA421EF7AD829454B65F39F3A63DED503160BE67BC2297C08CC04D4E',
+  ledger_index: 12436892,
+  lines:
+   [ { account: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
+       balance: '0',
+       currency: 'CNY',
+       limit: '100000',
+       limit_peer: '0',
+       no_skywell: true,
+       quality_in: 0,
+       quality_out: 0 },
+     { account: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
+       balance: '300',
+       currency: 'HJT',
+       limit: '10000000000',
+       limit_peer: '0',
+       no_skywell: true,
+       quality_in: 0,
+       quality_out: 0 },
+     { account: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
+       balance: '1088',
+       currency: 'JSLASH',
+       limit: '10000000000',
+       limit_peer: '0',
+       no_skywell: true,
+       quality_in: 0,
+       quality_out: 0 } ],
+  validated: true }
+```
+#### 返回结果说明
+|参数|类型|说明|
+|----|----|---:|
+|account|String|钱包地址|
+|ledger_hash|String|账本hash|
+|ledger_index|Integer|账本高度|
+|lines|Array|该账户的信任线|
+|account|String|信任的银关|
+|balance|String|余额|
+|currency|String|货币种类|
+|limit|String|信任额度|
+|limit_peer|String|对方设置的信任额度，默认0|
+|quality_in|Integer|兑换比例，默认0，暂时未用|
+|quality_out|Integer|兑换比例，默认0，暂时未用|
+|validated|Boolean|交易是否通过验证|
+### <a name="requestAccountOffers"></a> 4.11 获得账号挂单
+#### 首先通过本方法返回一个Request对象，然后通过submit方法获得某一账号的挂单信息
+#### 方法:remote.requestAccountOffers({account:’xxx’});
+#### 参数:
+|参数|类型|说明|
+|----|----|---:|
+|account|String|井通钱包地址|
+#### 例子
+```javascript
+var jlib = require('swtc-lib');
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'ws://swtclib.daszichan.com:5020', local_sign: true});
+remote.connect(function(err, result) {
+    if (err) {
+        return console.log('err:',err);
+    }
+    var options = {account: 'jEH8YPZZBc1rbdg7x9jD9nthDLmD7c398m'};
+    var req = remote.requestAccountOffers(options);
+    req.submit(function(err, result) {
+        if(err) {console.log('err:',err);}
+        else if(result){
+            console.log('res:', result);
+        }
+    });
+});
+```
+#### 返回结果
+```javascript
+> res: { account: 'jEH8YPZZBc1rbdg7x9jD9nthDLmD7c398m',
+  ledger_hash:
+   '234D6AE1C6A7B6CE4ED6C78F9526328ED85B92C785C6DD248FBA490B4C458FC2',
+  ledger_index: 12437049,
+  offers:
+   [ { flags: 0,
+       seq: 14,
+       taker_gets: [Object],
+       taker_pays: '20064000000' },
+     { flags: 0,
+       seq: 16,
+       taker_gets: [Object],
+       taker_pays: '176359000000' } ],
+  validated: true }
+```
+#### 返回结果说明
+|参数|类型|说明|
+|----|----|---:|
+|account|String|钱包地址|
+|ledger_hash|String|账本hash|
+|ledger_index|Integer|账本高度|
+|offers|Array|该账户的挂单列表|
+|&nbsp;&nbsp;flags|Integer|买卖类型(131072表示卖，否则是买)|
+|&nbsp;&nbsp;seq|String|余额|
+|&nbsp;&nbsp;taker_gets|String|货币种类|
+|&nbsp;&nbsp;&nbsp;&nbsp;value|String|金额|
+|&nbsp;&nbsp;&nbsp;&nbsp;currency|String|货币种类|
+|&nbsp;&nbsp;&nbsp;&nbsp;issuer|String|货币|
+|&nbsp;&nbsp;taket_pays|String|信任额度|
+|&nbsp;&nbsp;&nbsp;&nbsp;value|String|金额|
+|&nbsp;&nbsp;&nbsp;&nbsp;currency|String|货币种类|
+|&nbsp;&nbsp;&nbsp;&nbsp;issuer|String|货币|
+|validated|Boolean|交易是否通过验证|
+### <a name="requestAccountTx"></a> 4.12 获得账号交易列表
+#### 首先通过本方法返回一个Request对象，然后通过submit方法获得某一账号的交易列表信息。
+#### 方法:remote.requestAccountTx({account:’xxx’});
+#### 参数:
+|参数|类型|说明|
+|----|----|---:|
+|account|String|井通钱包地址|
+|limit|Integer|限定返回多少条记录，默认200|
+#### 返回:Request对象
+#### 例子:
+```javascript
+var jlib = require('swtc-lib');
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
+remote.connect(function(err, result) {
+    if (err) {
+        return console.log('err:',err);
+    }
+    var options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz'};
+    var req = remote.requestAccountTx(options);
+    req.submit(function(err, result) {
+        if(err) {console.log('err:',err);}
+        else if(result){
+            console.log('res:', result);
+        }
+    });
+});
+```
+#### 返回结果
+```javascript
+> res: { account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+  ledger_index_max: 2844681,
+  ledger_index_min: 101,
+  transactions:
+   [ { date: 1554174490,
+       hash:
+        'EB94F5155E8977B888E553C10C8EAC9567426BD3AF186E321CB614F4DCD1A4F2',
+       type: 'sent',
+       fee: '0.01',
+       result: 'tesSUCCESS',
+       memos: [Array],
+       counterparty: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
+       amount: [Object],
+       effects: [] },
+     { date: 1554172790,
+       hash:
+        '2C3F60ABEC539BEE768FAE1820B9C284C7EC2D45EF1D7F9E28F4357056E822F7',
+       type: 'received',
+       fee: '0.01',
+       result: 'tesSUCCESS',
+       memos: [Array],
+       counterparty: 'jpLpucnjfX7ksggzc9Qw6hMSm1ATKJe3AF',
+       amount: [Object],
+       effects: [] } ] }
+```
+#### 返回结果说明
+|参数|类型|说明|
+|----|----|---:|
+|account|String|钱包地址|
+|ledger_index_max|Integer|当前节点缓存的账本区间最大值|
+|ledger_index_min|Integer|当前节点缓存的账本区间最小值|
+|marker|Object|查到的当前记录标记|
+|transactions|Array|交易记录列表|
+|&nbsp;&nbsp;date|Integer|时间戳|
+|&nbsp;&nbsp;hash|String|交易hash|
+|&nbsp;&nbsp;type|String|交易类型|
+|&nbsp;&nbsp;fee|String|手续费|
+|&nbsp;&nbsp;result|String|交易结果|
+|&nbsp;&nbsp;memos|Array|备注|
+|&nbsp;&nbsp;counterparty|String|交易对家|
+|&nbsp;&nbsp;amount|Object|交易金额对象|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;value|String|金额|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;currency|String|货币种类|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;issuer|String|货币|
+|effects|Array|交易效果|
+### <a name="requestOrderBook"></a> 4.13 获得市场挂单
+#### 首先通过本方法返回一个Request对象，然后通过submit方法获得市场挂单列表信息。
+#### 方法:remote.requestOrderBook({});
+#### 参数:
+|参数|类型|说明|
+|----|----|---:|
+|gets|Object|对家想要获得的货币信息|
+|pays|Object|对家想要支付的货币信息|
+#### 例子
+```javascript
+var jlib = require('swtc-lib');
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'ws://swtclib.daszichan.com:5020', local_sign: true});
+remote.connect(function(err, result) {
+    if (err) {
+        return console.log('err:',err);
+    }
+    var options = {
+        limit: 5,
+        gets: { currency: 'SWT', issuer: '' },
+        pays: { currency: 'CNY', issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or' }
+    };
+    var req = remote.requestOrderBook(options);
+    req.submit(function(err, result) {
+        if(err) {console.log('err:',err);}
+        else if(result){
+            console.log('res:', result);
+        }
+    });
+});
+```
+#### 返回结果
+```javascript
+> res: { ledger_current_index: 12436990,
+  offers:
+   [ { Account: 'jUmsyjx1gbxh3ZLZgWWUvBxwsG7XUT8zEt',
+       BookDirectory:
+        '51603377F758E3C8FA007C77312DDA06A737A1395CD5FC435D063E68B2026CE1',
+       BookNode: '0000000000000000',
+       Flags: 0,
+       LedgerEntryType: 'Offer',
+       OwnerNode: '0000000000000002',
+       PreviousTxnID:
+        '54EB3F3CA637E15D07E63B59DBE25EF715A016CD5FFA72764DA69D79532D3101',
+       PreviousTxnLgrSeq: 12436982,
+       Sequence: 14049,
+       TakerGets: [Object],
+       TakerPays: '519656598000',
+       index:
+        'D2F7B3746F088D85A9CDAF94D6C8FB6F8965549222588646AE646E7E0F39EC5D',
+       owner_funds: '2956.847399410501',
+       quality: '175746924.4288225' },
+     { Account: 'jykjXsYLPzhrr7fvzbcj7WQsJ8EjUcS3y',
+       BookDirectory:
+        '51603377F758E3C8FA007C77312DDA06A737A1395CD5FC435D063E68B2026CE1',
+       BookNode: '0000000000000000',
+       Flags: 0,
+       LedgerEntryType: 'Offer',
+       OwnerNode: '0000000000000000',
+       PreviousTxnID:
+        '76C67C2E559E2EB085161493EA2AB22FECF702AAE862DC1C64933DF3919A6FC4',
+       PreviousTxnLgrSeq: 12436845,
+       Sequence: 4470,
+       TakerGets: [Object],
+       TakerPays: '50440000000',
+       index:
+        'E92893B72C0EC95222F4EB5E9A812C307C6E572E0777EBFB86FE40643A91560C',
+       owner_funds: '1034.107276378333',
+       quality: '175746924.4288225' },
+     { Account: 'j9irCqYkPgsQhNSeBpuyjsQTsqSdkVn1Az',
+       BookDirectory:
+        '51603377F758E3C8FA007C77312DDA06A737A1395CD5FC435D0640F0F32E7488',
+       BookNode: '0000000000000000',
+       Flags: 0,
+       LedgerEntryType: 'Offer',
+       OwnerNode: '0000000000000000',
+       PreviousTxnID:
+        'A8DAEA5A9C31145C07A8190A89437D912F87827F7B2F72BAB0ACAE3B1E8DBBE1',
+       PreviousTxnLgrSeq: 12436651,
+       Sequence: 31716,
+       TakerGets: [Object],
+       TakerPays: '1000000000000',
+       index:
+        '130C0E6490B6CD75013DB62CCD60ED0B664095F781B93550AFE7D756D930D486',
+       owner_funds: '83329.64129504086',
+       quality: '176025347.6500616' },
+     { Account: 'jEH8YPZZBc1rbdg7x9jD9nthDLmD7c398m',
+       BookDirectory:
+        '51603377F758E3C8FA007C77312DDA06A737A1395CD5FC435D0641391AE2E15A',
+       BookNode: '0000000000000000',
+       Flags: 0,
+       LedgerEntryType: 'Offer',
+       OwnerNode: '0000000000000000',
+       PreviousTxnID:
+        'C4C5307FF99B1562F20A5EA29859B8F7672F1EC75F9DF41D547C79A8BBF3CD32',
+       PreviousTxnLgrSeq: 12436588,
+       Sequence: 16,
+       TakerGets: [Object],
+       TakerPays: '176359000000',
+       index:
+        'EC8814CBBB4C9D91110CC08762739D31A58DE4764743190AFF82F10B96EEFE2F',
+       owner_funds: '1102.04444',
+       quality: '176056338.028169' },
+     { Account: 'j34t3QRwuTjjW2hBQ2TUviM4RtWeaMTF6c',
+       BookDirectory:
+        '51603377F758E3C8FA007C77312DDA06A737A1395CD5FC435D0641391AE2E15A',
+       BookNode: '0000000000000000',
+       Flags: 0,
+       LedgerEntryType: 'Offer',
+       OwnerNode: '0000000000000000',
+       PreviousTxnID:
+        'EFAF0D2C657B31C3AFB6CA0F7E865914D58BA581B359687A6A3D072B17C4790F',
+       PreviousTxnLgrSeq: 12436670,
+       Sequence: 9024,
+       TakerGets: [Object],
+       TakerPays: '2868649000000',
+       index:
+        '8478EB2BE4ED83586476841FD5EC84DFFB83EBAC06758FEDD3DB1840E2E9F001',
+       owner_funds: '16293.92685819301',
+       quality: '176056338.028169' } ],
+  validated: false }
+```
+#### 返回结果说明
+|参数|类型|说明|
+|----|----|---:|
+|ledger_current_index|String|当前账本号|
+|offers|Array|市场挂单列表|
+|&nbsp;&nbsp;Account|Integer|账号地址|
+|&nbsp;&nbsp;BookDirectory|String|--|
+|&nbsp;&nbsp;BookNode|String|--|
+|&nbsp;&nbsp;Flags|Integer|挂单买卖标记|
+|&nbsp;&nbsp;LedgerEntryType|String|账本数据结构类型|
+|&nbsp;&nbsp;OwnerNode|Array|--|
+|&nbsp;&nbsp;PreviousTxnID|String|上一笔交易hash|
+|&nbsp;&nbsp;PreviousTxnLgrSeq|Integer|上一笔交易所在账本号|
+|&nbsp;&nbsp;Sequence|Integer|单子序列号|
+|&nbsp;&nbsp;TakerGets|Object|对方得到的。(买卖双方，当货币是swt时，数据类型 为对象;否则为string)|
+|&nbsp;&nbsp;&nbsp;&nbsp;value|String|金额|
+|&nbsp;&nbsp;&nbsp;&nbsp;currency|String|货币种类|
+|&nbsp;&nbsp;&nbsp;&nbsp;issuer|String|货币|
+|TakerPays|String|对方支付的|
+|index|String|该数据所在索引hash|
+|owner_funds|String|用户swt资产|
+|quality|String|价格或价格的倒数|
+|validated|Boolean|交易是否通过验证|
 ### <a name="paymentTx"></a> 4.14 支付
 #### 首先通过buildPaymentTx方法返回一个Transaction对象，然后通过setSecret传入密钥，addMemo添加备注为可选项，最后通过submit方法提交支付信息。
 #### <a name="paymentBuildTx"></a> 4.14.1 创建支付对象
@@ -665,29 +1060,29 @@ remote.connect(function(err, result) {
 #### <a name="relationSubmit"></a> 4.15.3 关系设置
 ##### 方法: tx.submit(callback);
 #####  参数:无
-#### 设置关系完整例子 not working...
+#### 设置关系完整例子
 ```javascript
 // var jlib = require('jcc_jingtum_lib');
 // var jlib = require('jingtum-lib');
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
+var remote = new Remote({server: 'ws://swtclib.daszichan.com:5020', local_sign: true});
 remote.connect(function(err, result) {
     if (err) {
         return console.log('err:',err);
     }
     var options = {
-        account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
-        target: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
+        account: 'jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG',
+        target: 'jLvo6LSKNEYJ4KDwDuM8LU5fuSsQkE4HVW',
         limit:{
-            currency: 'SWT',
+            currency: 'SPC',
             value: "31",
-            issuer: ''
+            issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or'
         },
         type:'authorize'
     };
     var tx = remote.buildRelationTx(options);
-    tx.setSecret('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C');
+    tx.setSecret('s..................');
     tx.submit(function(err, result) {
         if(err) {console.log('err:',err);}
         else if(result){
@@ -698,6 +1093,30 @@ remote.connect(function(err, result) {
 ```
 #### 返回结果
 ```javascript
+> res: { engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message:
+   'The transaction was applied. Only final in a validated ledger.',
+  tx_blob:
+   '1200152200000000240000022520230000000163D4838D7EA4C680000000000000000000000000005350430000000000A582E432BFC48EEDEF852C814EC57F3CD2D41596684000000000002710732102197F1426BCA2F59B6B910F0391E55888B4FE80AF962478493104A33274B1B03A74473045022100A3864A2071294B75B78D57AC52CFA4E738A978C3A1E672BEAB084DEC9D17E33E02206D7630E3027841B8CABEB45DA9C01DD3B35302CE3ADFA51952E08F058CEF19A58114AF09183A11AA70DA06E115E03B0E5478232740B58714DA976A4DE4827163F062B09050832D8D78025D5A',
+  tx_json:
+   { Account: 'jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG',
+     Fee: '10000',
+     Flags: 0,
+     LimitAmount:
+      { currency: 'SPC',
+        issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
+        value: '1' },
+     RelationType: 1,
+     Sequence: 549,
+     SigningPubKey:
+      '02197F1426BCA2F59B6B910F0391E55888B4FE80AF962478493104A33274B1B03A',
+     Target: 'jLvo6LSKNEYJ4KDwDuM8LU5fuSsQkE4HVW',
+     TransactionType: 'RelationSet',
+     TxnSignature:
+      '3045022100A3864A2071294B75B78D57AC52CFA4E738A978C3A1E672BEAB084DEC9D17E33E02206D7630E3027841B8CABEB45DA9C01DD3B35302CE3ADFA51952E08F058CEF19A5',
+     hash:
+      '7BAE63A74F87E2490F696407972600D6A9D19A5261598BC56B7EFDA251D952B3' } }
 ```
 #### 返回结果说明
 |参数|类型|说明|
@@ -722,6 +1141,388 @@ remote.connect(function(err, result) {
 |&nbsp;&nbsp;TransactionType|String|交易类型:TrustSet信任;RelationDel解冻;RelationSet 授权/冻结|
 |&nbsp;&nbsp;TxnSignature|String|交易签名|
 |&nbsp;&nbsp;hash|String|交易hash|
+### <a name="accountSetTx"></a> 4.16 设置账号属性 ------待完善
+#### 首先通过buildAccountSetTx方法返回一个Transaction对象，然后通过setSecret传入密钥， 最后通过submit方法设置账号属性。目前支持的三类:`property`、`delegate` 、`signer`。property 用于设置账号一般属性;delegate用于某账号设置委托帐户;signer用于设置签名。
+#### <a name="accountSetBuild"></a>4.16.1 创建属性对象
+##### 方法:remote.buildAccountSetTx({});
+##### 参数:
+|参数|类型|说明|
+|----|----|---:|
+|type|String|属性种类|
+|account|String|设置属性的源账号|
+|set_flag|String|属性编号|
+##### 返回:Transaction对象
+#### <a name="accountSetSecret"></a>4.16.2 传入密钥
+##### 方法:tx.setSecret(secret);
+##### 参数:
+|参数|类型|说明|
+|----|----|---:|
+|secret|String|井通钱包私钥|
+#### <a name="accountSetSubmit"></a>4.16.3 属性设置
+##### 方法:tx.submit(callback);
+##### 参数:无
+#### 设置属性完整例子
+```javascript
+var jlib = require('swtc-lib')
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020'});
+remote.connect(function(err, result) {
+    if (err) {
+        return console.log('err:',err);
+    }
+    var options = {
+        account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+        type:'property'
+    };
+    var tx = remote.buildAccountSetTx(options);
+    tx.setSecret('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C');
+    tx.submit(function(err, result) {
+        if(err) {console.log('err:',err);}
+        else if(result){
+            console.log('res:', result);
+        }
+    });
+});
+```
+#### 返回结果
+```javascript
+> res: { engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message:
+   'The transaction was applied. Only final in a validated ledger.',
+  tx_blob:
+   '120003220000000024000000022F2436322C6840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E157446304402201FED6F42DE3F437321D59706846DD9A1DF4D90568A57E2F601AAE138F427800A0220108F4E08476283CC549A9DB21E36DFBBCDF2012C3A690AFBD9AE789C2C9C6C6581141359AA928F4D98FDB3D93E8B690C80D37DED11C3',
+  tx_json:
+   { Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+     Fee: '10000',
+     Flags: 0,
+     Sequence: 2,
+     SigningPubKey:
+      '029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15',
+     Timestamp: 607531564,
+     TransactionType: 'AccountSet',
+     TxnSignature:
+      '304402201FED6F42DE3F437321D59706846DD9A1DF4D90568A57E2F601AAE138F427800A0220108F4E08476283CC549A9DB21E36DFBBCDF2012C3A690AFBD9AE789C2C9C6C65',
+     hash:
+      '56969504AF776BB5EBC8830D87822E201973C4EBCD24CEA64A90D10EF740BD90' } }
+```
+### <a name="offerCreate"></a> 4.17 挂单
+#### 首先通过buildOfferCreateTx方法返回一个Transaction对象，然后通过setSecret传入密钥，最后通过submit方法提交挂单。
+#### <a name="offerCreateBuild"></a> 4.17.1 创建挂单对象
+##### 方法:remote.buildOfferCreateTx({});
+##### 参数:
+|参数|类型|说明|
+|----|----|---:|
+|type|String|挂单类型，固定的两个值:Buy、Sell|
+|account|String|挂单方账号|
+|taker_gets|Object|对方得到的，即挂单方支付的|
+|&nbsp;&nbsp;&nbsp;value|String|数量|
+|&nbsp;&nbsp;&nbsp;currency|String|货币种类|
+|&nbsp;&nbsp;&nbsp;issuer|String|货币发行方|
+|taker_pays|Object|对方支付的，即挂单方获得的|
+|&nbsp;&nbsp;&nbsp;value|String|数量|
+|&nbsp;&nbsp;&nbsp;currency|String|货币种类|
+|&nbsp;&nbsp;&nbsp;issuer|String|货币发行方|
+##### 返回:Transaction对象
+#### <a name="offerCreateSetSecret"></a> 4.17.2 传入密钥
+##### 方法:tx.setSecret(secret);
+##### 参数:
+|参数|类型|说明|
+|----|----|---:|
+|secret|String|井通钱包私钥|
+#### <a name="offerCreateSubmit"></a> 4.17.3 提交挂单
+##### 方法:tx.submit(callback);
+##### 参数:无
+#### 挂单完整例子
+```javascript
+var jlib = require('swtc-lib');
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'ws://swtclib.daszichan.com:5020', local_sign: true});
+remote.connect(function (err, result) {
+    if (err) {
+        return console.log('err:', err);
+    }
+    var options = {
+        type: 'Sell',
+        account: 'jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG',
+        taker_pays: {
+            value: '0.01',
+            currency: 'CNY',
+            issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or'
+        },
+        taker_gets: {
+            value: '1',
+            currency: 'SWT',
+            issuer: ''
+        }
+    };
+    var tx = remote.buildOfferCreateTx(options);
+    tx.setSecret('s......................');
+    tx.submit(function (err, result) {
+        if (err) {
+            console.log('err:', err);
+        }
+        else if (result) {
+            console.log('res:', result);
+        }
+    });
+});
+```
+##### 返回结果:
+```javascript
+res: { engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message:
+   'The transaction was applied. Only final in a validated ledger.',
+  tx_blob:
+   '1200072200080000240000022664D4038D7EA4C68000000000000000000000000000434E590000000000A582E432BFC48EEDEF852C814EC57F3CD2D415966540000000000F424068400000000000000C732102197F1426BCA2F59B6B910F0391E55888B4FE80AF962478493104A33274B1B03A74473045022100A2990C4E1880A7FAD3FE0C34C10219C3A07359ED53588D535AD1EB7CF3684FF102204AD1A8FBC1C9C93A671E6FF3B31D9E3F45E2A1D56E93864A964D3375D0D545C88114AF09183A11AA70DA06E115E03B0E5478232740B5',
+  tx_json:
+   { Account: 'jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG',
+     Fee: '12',
+     Flags: 524288,
+     Sequence: 550,
+     SigningPubKey:
+      '02197F1426BCA2F59B6B910F0391E55888B4FE80AF962478493104A33274B1B03A',
+     TakerGets: '1000000',
+     TakerPays:
+      { currency: 'CNY',
+        issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
+        value: '0.01' },
+     TransactionType: 'OfferCreate',
+     TxnSignature:
+      '3045022100A2990C4E1880A7FAD3FE0C34C10219C3A07359ED53588D535AD1EB7CF3684FF102204AD1A8FBC1C9C93A671E6FF3B31D9E3F45E2A1D56E93864A964D3375D0D545C8',
+     hash:
+      'DE4F1023A86F04519E30283C816FBC52AA05B32490B1F679D595440772DDF445' } }
+```
+##### 返回结果说明:
+|参数|类型|说明|
+|----|----|---:|
+|engine_result|String|请求结果|
+|engine_result_code|Array|请求结果编码|
+|engine_result_message|String|请求结果message信息|
+|tx_blob|String|16进制签名后的交易|
+|tx_json|Object|交易内容|
+|&nbsp;&nbsp;&nbsp;Account|String|账号地址|
+|&nbsp;&nbsp;&nbsp;Fee|String|交易费|
+|&nbsp;&nbsp;&nbsp;Flags|Integer|交易标记|
+|&nbsp;&nbsp;&nbsp;Sequence|Integer|单子序列号|
+|&nbsp;&nbsp;&nbsp;SigningPubKey|String|签名公钥|
+|&nbsp;&nbsp;&nbsp;TakerGets|Object|对家得到的|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;currency|String|货币|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;issuer|String|货币发行方|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;value|String|额度|
+|&nbsp;&nbsp;&nbsp;TakerPays|String|对家支付的;|
+|&nbsp;&nbsp;&nbsp;Timestamp|Integer|时间戳|
+|&nbsp;&nbsp;&nbsp;TransactionType|String|交易类型:TrustSet信任;RelationDel解冻;RelationSet 授权/冻结|
+|&nbsp;&nbsp;&nbsp;TxnSignature|String|交易签名|
+|&nbsp;&nbsp;&nbsp;hash|String|交易hash|
+### <a name="offerCancel"></a> 4.18 取消挂单
+#### 首先通过buildOfferCancelTx方法返回一个Transaction对象，然后通过setSecret传入密钥，最后通过submit方法取消挂单。
+#### 4.18.1 <a name="offerCancelBuild"></a> 创建取消挂单对象
+#### 方法:remote.buildOfferCancelTx({});
+#### 参数:
+|参数|类型|说明|
+|----|----|---:|
+|account|String||挂单方账号|
+|sequence|Integer|取消的单子号|
+#### 返回:Transaction对象
+#### <a name="offerCancelSetSecret"></a> 4.18.2 传入密钥
+##### 方法:tx.setSecret(secret);
+##### 参数:
+|参数|类型|说明|
+|----|----|---:|
+|secret|String|井通钱包私钥|
+#### <a name="offerCancelSubmit"></a> 4.18.3 取消挂单
+##### 方法:tx.submit(callback);
+##### 参数:无
+#### 挂单完整例子
+```javascript
+var jlib = require('swtc-lib');
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'ws://swtclib.daszichan.com:5020', local_sign: true});
+remote.connect(function (err, result) {
+    if (err) {
+        return console.log('err:', err);
+    }
+    var options = {account: 'jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG', sequence: 550};
+    var tx = remote.buildOfferCancelTx(options);
+    tx.setSecret('s............................');
+    tx.submit(function (err, result) {
+        if (err) {
+            console.log('err:', err);
+        }
+        else if (result) {
+            console.log('res:', result);
+        }
+    });
+});
+```
+#### 返回结果
+```javascript
+{ engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message:
+   'The transaction was applied. Only final in a validated ledger.',
+  tx_blob:
+   '1200082200000000240000022720190000022668400000000000000C732102197F1426BCA2F59B6B910F0391E55888B4FE80AF962478493104A33274B1B03A74473045022100A5605A210AAC29EBD85CA072BC05DBFE7F30C1AFBEA441AC50AAB445E4B2421902205A20CE1F2B90A37EED9029361DD5C5609C6029C897A78F5238C281BCCFDBC9638114AF09183A11AA70DA06E115E03B0E5478232740B5',
+  tx_json:
+   { Account: 'jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG',
+     Fee: '12',
+     Flags: 0,
+     OfferSequence: 550,
+     Sequence: 551,
+     SigningPubKey:
+      '02197F1426BCA2F59B6B910F0391E55888B4FE80AF962478493104A33274B1B03A',
+     TransactionType: 'OfferCancel',
+     TxnSignature:
+      '3045022100A5605A210AAC29EBD85CA072BC05DBFE7F30C1AFBEA441AC50AAB445E4B2421902205A20CE1F2B90A37EED9029361DD5C5609C6029C897A78F5238C281BCCFDBC963',
+     hash:
+      '00B31E97D36C5579FFA19D337EB64282505FD51BA38D15C9C0A1A3BABC2A7783' } }
+```
+#### 返回结果说明
+|参数|类型|说明|
+|----|----|---:|
+|engine_result|String|请求结果|
+|engine_result_code|Array|请求结果编码|
+|engine_result_message|String|请求结果message信息|
+|tx_blob|String|16进制签名后的交易|
+|tx_json|Object|交易内容|
+|&nbsp;&nbsp;&nbsp;Account|String|账号地址|
+|&nbsp;&nbsp;&nbsp;Fee|String|交易费|
+|&nbsp;&nbsp;&nbsp;Flags|Integer|交易标记|
+|&nbsp;&nbsp;&nbsp;OfferSequence|Integer|取消的单子号|
+|&nbsp;&nbsp;&nbsp;Sequence|Integer|单子序列号|
+|&nbsp;&nbsp;&nbsp;SigningPubKey|String|签名公钥|
+|&nbsp;&nbsp;&nbsp;Timestamp|Integer|时间戳|
+|&nbsp;&nbsp;&nbsp;TransactionType|String|交易类型:OfferCancel取消订单|
+|&nbsp;&nbsp;&nbsp;TxnSignature|String|交易签名|
+|&nbsp;&nbsp;&nbsp;hash|String|交易hash|
+### <a name="contractDeploy"></a>4.19 部署合约
+#### 首先通过deployContractTx方法返回一个Transaction对象，然后通过setSecret传入密钥，最后通过submit方法取消挂单。
+#### <a name="contractDeployBuild"></a>4.19.1 创建部署合约对象
+##### 方法:remote.deployContractTx({});
+##### 参数:
+|参数|类型|说明|
+|----|----|---:|
+|account|String|合约交易源账号|
+|amount|String/Number|支付金额(最多支持六位小数)|
+|payload|String|智能合约代码(16进制字符串)|
+##### 可选参数:
+|参数|类型|说明|
+|----|----|---:|
+|params|String|合约参数|
+#### 返回:Transaction对象
+#### <a name="contractDeploySetSecret"></a> 4.19.2 传入密钥
+##### 方法:tx.setSecret(secret);
+##### 参数:
+|参数|类型|说明|
+|----|----|---:|
+|secret|String|井通钱包私钥|
+#### <a name="contractDeploySubmit"></a> 4.19.3 部署合约
+##### 方法:tx.submit(callback);
+##### 参数:无
+#### 部署合约完整例子
+```javascript
+var jlib = require('swtc-lib');
+var Remote = jlib.Remote;
+var utils = jlib.utils;
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
+remote.connect(function (err, result) {
+    if (err) {
+        return console.log('err:', err);
+    }
+    var options = {
+        account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+        amount: 10,
+        //payload: utils.stringToHex('result={}; function Init(t) result=scGetAccountBalance(t) return result end; function foo(t) result=scGetAccountBalance(t) return result end;'),
+        payload: utils.stringToHex('result={}; function Init(t) result=scGetAccountInfo(t) return result end; function foo(t) a={} result=scGetAccountInfo(t) return result end'),
+        params: ['jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz']
+    };
+    var tx = remote.deployContractTx(options);
+    tx.setSecret('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C');
+    tx.submit(function (err, result) {
+        if (err) {
+            console.log('err:', err);
+        }
+        else if (result) {
+            console.log('res:', result);
+        }
+    });
+});
+```
+#### 返回结果
+```javascript
+```
+#### 返回结果说明
+|参数|类型|说明|
+|----|----|---:|
+|ContractState|String|生成的合约地址|
+|engine_result|String|请求结果|
+|engine_result_code|Array|请求结果编码|
+|engine_result_message|String|请求结果message信息|
+|tx_blob|String|16进制签名后的交易|
+|tx_json|Object|交易内容|
+|&nbsp;&nbsp;&nbsp;Account|String|账号地址|
+|&nbsp;&nbsp;&nbsp;Fee|String|交易费|
+|&nbsp;&nbsp;&nbsp;Flags|Integer|交易标记|
+|&nbsp;&nbsp;&nbsp;Method|Integer|合约交易方法:0表示部署;1表示调用|
+|&nbsp;&nbsp;&nbsp;Payload|Integer|16进制合约代码|
+|&nbsp;&nbsp;&nbsp;Sequence|Integer|单子序列号|
+|&nbsp;&nbsp;&nbsp;SigningPubKey|String|签名公钥|
+|&nbsp;&nbsp;&nbsp;TransactionType|String|交易类型:ConfigContract部署合约|
+|&nbsp;&nbsp;&nbsp;TxnSignature|String|交易签名|
+|&nbsp;&nbsp;&nbsp;hash|String|交易hash|
+### <a name="contractCall"></a> 4.20 执行合约
+#### 首先通过callContractTx方法返回一个Transaction对象，然后通过setSecret传入密钥，最后通过submit方法取消挂单
+#### <a name="contractCallBuild"></a> 4.20.1 创建执行合约对象
+##### 方法:remote.callContractTx({});
+##### 参数:
+|参数|类型|说明|
+|----|----|---:|
+|account|String|合约交易源账号|
+|destination|String|合约地址|
+|foo|String|合约函数名|
+##### 可选参数:
+|参数|类型|说明|
+|----|----|---:|
+|params|String|合约参数|
+#### 返回:Transaction对象
+#### <a name="contractCallSetSecret"></a> 4.20.2 传入密钥
+##### 方法:tx.setSecret(secret);
+##### 参数:
+|参数|类型|说明|
+|----|----|---:|
+|secret|String|井通钱包私钥|
+#### <a name="contractCallSubmit"></a> 4.20.3 执行合约
+##### 方法:tx.submit(callback);
+##### 参数:无
+#### 执行合约完整例子
+```javascript
+```
+#### 返回结果
+```javascript
+```
+#### 返回结果说明
+|参数|类型|说明|
+|----|----|---:|
+|ContractState|String|调用的合约结果|
+|engine_result|String|请求结果|
+|engine_result_code|Array|请求结果编码|
+|engine_result_message|String|请求结果message信息|
+|tx_blob|String|16进制签名后的交易|
+|tx_json|Object|交易内容|
+|&nbsp;&nbsp;&nbsp;Account|String|账号地址|
+|&nbsp;&nbsp;&nbsp;Args|Array|合约传入的参数|
+|&nbsp;&nbsp;&nbsp;ContractMethod|String|合约函数名|
+|&nbsp;&nbsp;&nbsp;Destination|String|调用的合约地址|
+|&nbsp;&nbsp;&nbsp;Fee|String|交易费|
+|&nbsp;&nbsp;&nbsp;Flags|Integer|交易标记|
+|&nbsp;&nbsp;&nbsp;Method|Integer|合约交易方法:0表示部署;1表示调用|
+|&nbsp;&nbsp;&nbsp;Sequence|Integer|单子序列号|
+|&nbsp;&nbsp;&nbsp;SigningPubKey|String|签名公钥|
+|&nbsp;&nbsp;&nbsp;TransactionType|String|交易类型:ConfigContract合约类|
+|&nbsp;&nbsp;&nbsp;TxnSignature|String|交易签名|
+|&nbsp;&nbsp;&nbsp;hash|String|交易hash|
 ### <a name="listen"></a> 4.21 监听事件
 #### Remote有两个监听事件:监听所有交易(transactions)和监听所有账本(ledger_closed)，监听结果放到回调函数中，回调中只有一个参数，为监听到的消息。
 #### 方法:remote.on('transactions',callback);
@@ -747,6 +1548,246 @@ remote.connect(function (err, result) {
 #### Request类主管GET请求，包括获得服务器、账号、挂单、路径等信息。请求时不需要提供密 钥，且对所有用户公开。所有的请求是异步的，会提供一个回调函数。每个回调函数有两个参 数，一个是错误，另一个是结果。提供以下方法:
 * selectLedger(ledger)
 * submit(callback)
+### <a name="requestWithLedger"></a> 5.1 指定账本
+#### 方法:selectLedger(ledger);
+#### 参数:
+|参数|类型|说明|
+|----|----|---:|
+|ledger|String|账本高度或者账号hash|
+#### 例子
+```javascript
+var jlib = require('swtc-lib');
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
+remote.connect(function (err, result) {
+    if (err) {
+        return console.log('err:', err);
+    }
+    var req = remote.requestAccountInfo({account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz'});
+    req.selectLedger("2846000");
+    req.submit(function(err, result) {
+        if(err) {console.log('err:',err);}
+        else if(result){
+            console.log('res:', result);
+        }
+    });
+});
+```
+### <a name="requestSubmit"></a> 5.2 提交请求
+#### 方法:submit(callback);
+#### 参数:回调函数，包含两个参数:错误信息和结果信息
+#### 例子
+```javascript
+var jlib = require('swtc-lib');
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
+remote.connect(function (err, result) {
+    if (err) {
+        return console.log('err:', err);
+    }
+    var req = remote.requestAccountInfo({account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz'});
+     req.submit(function(err, result) {
+        if(err) {console.log('err:',err);}
+        else if(result){
+            console.log('res:', result);
+        }
+    });
+});
+```
 ## <a name="transaction"></a>6 TRANSACTION类
+### Transaction类主管POST请求，包括组装交易和交易参数。请求时需要提供密钥，且交易可以 进行本地签名和服务器签名。目前支持服务器签名，本地签名支持主要的交易，还有部分参数 不支持。所有的请求是异步的，会提供一个回调函数。每个回调函数有两个参数，一个是错误， 另一个是结果。提供以下方法:
+* getAccount()
+* getTransactionType()
+* setSecret(secret)
+* addMemo(memo)
+* setPath(key)
+* setSendMax(amount)
+* setTransferRate(rate)
+* setFlags(flags)
+* submit(callback)
+### <a name="transactionAccount"></a> 6.1 获得交易账号
+#### 方法:getAccount();
+#### 参数:无
+#### 返回:账号
+#### 例子:
+```javascript
+var jlib = require('swtc-lib');
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'ws://swtclib.daszichan.com:5020'});
+var options = {account: 'jaQ9StmjynXyd2xmPATqLJ2rCe4fqy4etp', sequence: 9};
+var tx = remote.buildOfferCancelTx(options);
+var account = tx.getAccount();
+console.log(account);
+```
+### <a name="transactionType"></a> 6.2 获得交易类型
+#### 方法:getTransactionType();
+#### 参数:无
+#### 返回:交易类型
+#### 例子:
+```javascript
+var jlib = require('swtc-lib');
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'ws://swtclib.daszichan.com:5020'});
+var options = {account: 'jaQ9StmjynXyd2xmPATqLJ2rCe4fqy4etp', sequence: 9};
+var tx = remote.buildOfferCancelTx(options);
+var type = tx.getTransactionType();
+console.log(type);
+```
+### <a name="transactionSecret"></a> 6.3 传入私钥
+#### 交易提交之前需要传入私钥。
+#### 方法:setSecret(secret);
+#### 参数:
+|参数|类型|说明|
+|----|----|---:|
+|secret|String|井通钱包私钥|
+#### 返回:Transaction对象
+#### 例子:
+```javascript
+var jlib = require('swtc-lib');
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020'});
+var options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', sequence: 8};
+var tx = remote.buildOfferCancelTx(options);
+tx.setSecret('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C');;
+```
+### <a name="transactionMemo"></a> 6.4 添加备注 方法:addMemo(memo);
+#### 参数:
+|参数|类型|说明|
+|----|----|---:|
+|memo|String|备注信息，不超过2k。|
+#### 返回:Transaction对象
+#### 例子:
+```javascript
+var jlib = require('jingtum-lib');
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020'});
+var tx = remote.buildPaymentTx({
+    account: 'jB7rxgh43ncbTX4WeMoeadiGMfmfqY2xLZ',
+    to: 'jDUjqoDZLhzx4DCf6pvSivjkjgtRESY62c',
+    amount: {
+        "value": 0.5,
+        "currency": "SWT",
+        "issuer": ""
+    }
+}); tx.addMemo('给jDUjqoDZLhzx4DCf6pvSivjkjgtRESY62c支付0.5swt.');
+```
+### <a name="transactionSubmit"></a> 6.5 提交请求
+#### 方法:submit(callback);
+#### 参数:回调函数，包含两个参数:错误信息和结果信息
+#### 例子:
+```javascript
+var jlib = require('jingtum-lib');
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
+remote.connect(function (err, result) {
+if (err) {
+        return console.log('err:', err);
+}
+    var req = remote.requestAccountInfo({account: 'jB7rxgh43ncbTX4WeMoeadiGMfmfqY2xLZ'});
+     req.submit(function(err, result) {
+        if(err) {console.log('err:',err);}
+        else if(result){
+            console.log('res:', result);
+        }
+    });
+});
+```
 ## <a name="errors"></a>7 底层常见错误附录
-
+|错误名称|说明|
+|----|---:|
+|tecCLAIM|Fee claimed. Sequence used. No action.|
+|tecDIR_FULL|Can not add entry to full directory.|
+|tecFAILED_PROCESSING|Failed to correctly process transaction.|
+|tecINSUF_RESERVE_LINE|Insufficient reserve to add trust line.|
+|tecINSUF_RESERVE_OFFER|Insufficient reserve to create offer.|
+|tecNO_DST|Destination does not exist. Send SWT to create it.|
+|tecNO_DST_INSUF_SWT|Destination does not exist. Too little SWT sent to create it.|
+|tecNO_LINE_INSUF_RESERVE|No such line. Too little reserve to create it.|
+|tecNO_LINE_REDUNDANT|Can't set non-existent line to default.|
+|tecPATH_DRY|Path could not send partial amount.|
+|tecPATH_PARTIAL|Path could not send full amount.|
+|tecMASTER_DISABLED|Master key is disabled.|
+|tecNO_REGULAR_KEY|Regular key is not set.|
+|tecUNFUNDED|One of _ADD, _OFFER, or _SEND. Deprecated.|
+|tecUNFUNDED_ADD|Insufficient SWT balance for WalletAdd.|
+|tecUNFUNDED_OFFER|Insufficient balance to fund created offer.|
+|tecUNFUNDED_PAYMENT|Insufficient SWT balance to send.|
+|tecOWNERS|Non-zero owner count.|
+|tecNO_ISSUER|Issuer account does not exist.|
+|tecNO_AUTH|Not authorized to hold asset.|
+|tecNO_LINE|No such line.|
+|tecINSUFF_FEE|Insufficient balance to pay fee.|
+|tecFROZEN|Asset is frozen.|
+|tecNO_TARGET|Target account does not exist.|
+|tecNO_PERMISSION|No permission to perform requested operation.|
+|tecNO_ENTRY|No matching entry found.|
+|tecINSUFFICIENT_RESERVE|Insufficient reserve to complete requested operation.|
+|tecNEED_MASTER_KEY|The operation requires the use of the Master Key.|
+|tecDST_TAG_NEEDED|A destination tag is required.|
+|tecINTERNAL|An internal error has occurred during processing.|
+|tefALREADY|The exact transaction was already in this ledger.|
+|tefBAD_ADD_AUTH|Not authorized to add account.|
+|tefBAD_AUTH|Transaction's public key is not authorized.|
+|tefBAD_LEDGER|Ledger in unexpected state.|
+|tefCREATED|Can't add an already created account.|
+|tefEXCEPTION|Unexpected program state.|
+|tefFAILURE|Failed to apply.|
+|tefINTERNAL|Internal error.|
+|tefMASTER_DISABLED|Master key is disabled.|
+|tefMAX_LEDGER|Ledger sequence too high.|
+|tefNO_AUTH_REQUIRED|Auth is not required.|
+|tefPAST_SEQ|This sequence number has already past.|
+|tefWRONG_PRIOR|This previous transaction does not match.|
+|telLOCAL_ERROR|Local failure.|
+|telBAD_DOMAIN|Domain too long.|
+|telBAD_PATH_COUNT|Malformed: Too many paths.|
+|telBAD_PUBLIC_KEY|Public key too long.|
+|telFAILED_PROCESSING|Failed to correctly process transaction.|
+|telINSUF_FEE_P|Fee insufficient.|
+|telNO_DST_PARTIAL|Partial payment to create account not allowed.|
+|telBLKLIST|Tx disable for blacklist.|
+|telINSUF_FUND|Fund insufficient.|
+|temMALFORMED|Malformed transaction.|
+|temBAD_AMOUNT|Can only send positive amounts.|
+|temBAD_AUTH_MASTER|Auth for unclaimed account needs correct master key.|
+|temBAD_CURRENCY|Malformed: Bad currency.|
+|temBAD_EXPIRATION|Malformed: Bad expiration.|
+|temBAD_FEE|Invalid fee, negative or not SWT.|
+|temBAD_ISSUER|Malformed: Bad issuer.|
+|temBAD_LIMIT|Limits must be non-negative.|
+|temBAD_QUORUM|Quorums must be non-negative.|
+|temBAD_WEIGHT|Weights must be non-negative.|
+|temBAD_OFFER|Malformed: Bad offer.|
+|temBAD_PATH|Malformed: Bad path.|
+|temBAD_PATH_LOOP|Malformed: Loop in path.|
+|temBAD_SEND_SWT_LIMIT|Malformed: Limit quality is not allowed for SWT to SWT.|
+|temBAD_SEND_SWT_MAX|Malformed: Send max is not allowed for SWT to SWT.|
+|temBAD_SEND_SWT_NO_DIR ECT|Malformed: No Skywell direct is not allowed for SWT to SWT.|
+|temBAD_SEND_SWT_PARTIAL|Malformed: Partial payment is not allowed for SWT to SWT.|
+|temBAD_SEND_SWT_PATHS|Malformed: Paths are not allowed for SWT to SWT.|
+|temBAD_SEQUENCE|Malformed: Sequence is not in the past.|
+|temBAD_SIGNATURE|Malformed: Bad signature.|
+|temBAD_SRC_ACCOUNT|Malformed: Bad source account.|
+|temBAD_TRANSFER_RATE|Malformed: Transfer rate must be >= 1.0|
+|temDST_IS_SRC|Destination may not be source.|
+|temDST_NEEDED|Destination not specified.|
+|temINVALID|The transaction is ill-formed.|
+|temINVALID_FLAG|The transaction has an invalid flag.|
+|temREDUNDANT|Sends same currency to self.|
+|temREDUNDANTSIGN|Add self as additional sign.|
+|temSKYWELL_EMPTY|PathSet with no paths.|
+|temUNCERTAIN|In process of determining result. Never returned.|
+|temUNKNOWN|The transaction requires logic that is not implemented yet.|
+|temDISABLED|The transaction requires logic that is currently disabled.|
+|temMULTIINIT|contract code has multi init function|
+|terRETRY|Retry transaction.|
+|terFUNDS_SPENT|Can't set password, password set funds already spent.|
+|terINSUF_FEE_B|Account balance can't pay fee.|
+|terLAST|Process last.|
+|terNO_SKYWELL|Path does not permit rippling.|
+|terNO_ACCOUNT|The source account does not exist.|
+|terNO_AUTH|Not authorized to hold IOUs.|
+|terNO_LINE|No such line.|
+|terPRE_SEQ|Missing/inapplicable prior transaction.|
+|terOWNERS|Non-zero owner count.|
+|tesSUCCESS|The transaction was applied. Only final in a validated ledger.|

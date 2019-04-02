@@ -19,6 +19,8 @@ features:
 
 # DAPP Examples Using Javascript and SWTC-LIB
 
+## [文档](doc)
+
 ## 使用swtc-lib
 
 - 正常情况下，所有实例使用的node.js为最新的LTS版本
