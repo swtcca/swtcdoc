@@ -26,6 +26,9 @@ V2.0.2
 > #### 4.8 [请求账号信息](#requestAccountInfo)
 > #### 4.9 [获得账号可接收和发送的货币](#requestAccountTums)
 > #### 4.10 [获得账号关系](#requestAccountRelations)
+> #### 4.14 [支付](#paymentTx)
+> #### 4.15 [设置关系](#relationTx)
+> #### 4.21 [监听事件](#listen)
 5. [REQUEST类](#request)
 6. [TRANSACTION类](#transaction)
 7. [底层常见错误附录](#errors)
@@ -349,12 +352,12 @@ remote.connect(function(err, result) {
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://swtclib.daszichan.com:5020', local_sign: true});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
 remote.connect(function(err, result) {
     if (err) {
         return console.log('err:',err);
     }
-    var req = remote.requestTx({hash: '1855C82DC1094A011C372A8AC2C83D09CFF5A9C3C22561529F7899A72A395FDF'});
+    var req = remote.requestTx({hash: '2C3F60ABEC539BEE768FAE1820B9C284C7EC2D45EF1D7F9E28F4357056E822F7'});
     req.submit(function(err, result) {
         if(err) {console.log('err:',err);}
         else if(result){
@@ -366,29 +369,30 @@ remote.connect(function(err, result) {
 ```
 #### 返回结果
 ```javascript
-> res: { Account: 'jBqK2a3EkxaRWYzGKYFWCtBHTxNjFAKgT9',
-  Amount: '60000000',
-  Destination: 'jEKFPERfXtvxqN1363ZKAxLB1PyZydtMFV',
+> res: { Account: 'jpLpucnjfX7ksggzc9Qw6hMSm1ATKJe3AF',
+  Amount: '100000000000',
+  Destination: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
   Fee: '10000',
   Flags: 0,
-  Sequence: 391777,
+  Memos: [ { Memo: [Object] }, { Memo: [Object] } ],
+  Sequence: 3,
   SigningPubKey:
-   '020C81373E372BA8C033EE09FA9EA956ABBB3A8B6158131881C253FD2703F3A0B8',
-  Timestamp: 607459763,
+   '0294535FEE309F280DC4CF9F4134ECC909F8521CF51FEB7D72454E77F929DCB8C9',
   TransactionType: 'Payment',
   TxnSignature:
-   '304402207265F33D4F2EBFD79D074522EEEB55F189FEEC81E498DB84E8B9A439A9EBB25B022077BAC04BFD382F9BE1F0F1D2E438CEE845A06A8CE89A996FBB0FF708598F1FC3',
-  date: 607459770,
+   '30440220725FF0939129E01A1BBFD6F557D82184B08F20406C4B637F6DFCCDC047F4783F022064EEFE5F42A58903E95C16D14CE228584CDE37EB599D496CAA3EDFF2E5913838',
+  date: 607487990,
   hash:
-   '1855C82DC1094A011C372A8AC2C83D09CFF5A9C3C22561529F7899A72A395FDF',
-  inLedger: 12429999,
-  ledger_index: 12429999,
+   '2C3F60ABEC539BEE768FAE1820B9C284C7EC2D45EF1D7F9E28F4357056E822F7',
+  inLedger: 2840396,
+  ledger_index: 2840396,
   meta:
    { AffectedNodes: [ [Object], [Object], [Object] ],
-     TransactionIndex: 14,
-     TransactionResult: 'tesSUCCESS' },
+     TransactionIndex: 0,
+     TransactionResult: 'tesSUCCESS',
+     delivered_amount: 'unavailable' },
   validated: true }
-关键信息:【 交易费: 0.01】 
+关键信息:【 交易费: 0.01 】
 ```
 #### 返回结果说明
 |参数|类型|说明|
@@ -425,13 +429,12 @@ remote.connect(function(err, result) {
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://swtclib.daszichan.com:5020', local_sign:
-true});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
 remote.connect(function(err, result) {
     if (err) {
         return console.log('err:',err);
     }
-    var options = {account: 'jBqK2a3EkxaRWYzGKYFWCtBHTxNjFAKgT9'};
+    var options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz'};
     var req = remote.requestAccountInfo(options);
     req.submit(function(err, result) {
         if(err) {console.log('err:',err);}
@@ -444,20 +447,20 @@ remote.connect(function(err, result) {
 #### 返回结果
 ```javascript
 > res: { account_data:
-   { Account: 'jBqK2a3EkxaRWYzGKYFWCtBHTxNjFAKgT9',
-     Balance: '2914980050000',
+   { Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+     Balance: '100000000000',
      Flags: 0,
      LedgerEntryType: 'AccountRoot',
      OwnerCount: 0,
      PreviousTxnID:
-      '439EB733519BB04DF30AFB642802409695534D46D18CC1AA9251A816D4BB9736',
-     PreviousTxnLgrSeq: 12431344,
-     Sequence: 409096,
+      '2C3F60ABEC539BEE768FAE1820B9C284C7EC2D45EF1D7F9E28F4357056E822F7',
+     PreviousTxnLgrSeq: 2840396,
+     Sequence: 1,
      index:
-      '79172D17D7DE465BAFBAFC0B996DDA4714AE188364CD6E80E4E87D49B46BD190' },
+      'DB35CDEAF3F0D3C190B041C0C7D92FB0E43CBCBFAD4F498C28858A35CEA8BBB7' },
   ledger_hash:
-   '7CF10201787B334D97D96429D44F2DBA1A6B6FA8DFCC0980615BD5EF36F68339',
-  ledger_index: 12432642,
+   '7669E43FAD8A9926ECDDF642939A0B7EA48E0584FD4730F4CA68994E4C6890AB',
+  ledger_index: 2840469,
   validated: true }
 ```
 #### 返回结果说明
@@ -538,7 +541,212 @@ remote.connect(function(err, result) {
 |----|----|---:|
 |account|String|井通钱包地址|
 |type|String|关系类型，固定的三个值:trust、authorize、freeze|
+### <a name="paymentTx"></a> 4.14 支付
+#### 首先通过buildPaymentTx方法返回一个Transaction对象，然后通过setSecret传入密钥，addMemo添加备注为可选项，最后通过submit方法提交支付信息。
+#### <a name="paymentBuildTx"></a> 4.14.1 创建支付对象
+##### 方法: remote.buildPaymentTx({});
+##### 参数:
+|参数|类型|说明|
+|----|----|---:|
+|account|String|发起账号|
+|to|String|目标账号|
+|amount|Object|支付金额|
+|value|String|支付数量|
+|currency|String|货币种类，三到六个字母或20字节的自定义货币|
+|issuer|String|货币发行方|
+##### 返回:Transaction对象
+#### <a name="paymentSetSecret"></a> 4.14.2 传入密钥
+##### 方法:tx.setSecret(secret);
+##### 参数:
+|参数|类型|说明|
+|----|----|---:|
+|secret|String|井通钱包私钥|
+#### <a name="paymentSetMemo"></a> 4.14.3 设置备注
+##### 方法:tx.addMemo(memo);
+##### 参数:
+|参数|类型|说明|
+|----|----|---:|
+|memo|String|备注信息|
+#### <a name="paymentSubmit"></a> 4.14.4 提交支付
+##### 方法:tx.submit(callback);
+##### 参数:无
+#### 支付完整例子
+```javascript
+var jlib = require('swtc-lib');
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
+remote.connect(function(err, result) {
+    if (err) {
+        return console.log('err:',err);
+    }
+    var tx = remote.buildPaymentTx({
+        account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+        to: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
+        amount: {
+            "value": 99900,
+            "currency": "SWT",
+            "issuer": ""
+        }
+    });
+    tx.setSecret('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C');
+    tx.addMemo('给支付'); // 可选
+    tx.submit(function(err, result) {
+        if(err) {console.log('err:',err);}
+        else if(result){
+            console.log('res:', result);
+        }
+    });
+});
+```
+#### 返回结果
+```javascript
+> res: { engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message:
+   'The transaction was applied. Only final in a validated ledger.',
+  tx_blob:
+   '120000220000000024000000016140000017428107006840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E1574473045022100EC761F10DDA2371C77437EE2C7A71379B4214CF77E1C4058C46236B3E446ACE90220456CFB5ACDEE1EB7DEAC4819B5CD19C09911518BD38810A77EF20863C776FC8081141359AA928F4D98FDB3D93E8B690C80D37DED11C38314054FADDC8595E2950FA43F673F65C2009F58C7F1F9EA7D09E7BB99E694AFE4BB98E1F1',
+  tx_json:
+   { Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+     Amount: '99900000000',
+     Destination: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
+     Fee: '10000',
+     Flags: 0,
+     Memos: [ [Object] ],
+     Sequence: 1,
+     SigningPubKey:
+      '029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15',
+     TransactionType: 'Payment',
+     TxnSignature:
+      '3045022100EC761F10DDA2371C77437EE2C7A71379B4214CF77E1C4058C46236B3E446ACE90220456CFB5ACDEE1EB7DEAC4819B5CD19C09911518BD38810A77EF20863C776FC80',
+     hash:
+      'EB94F5155E8977B888E553C10C8EAC9567426BD3AF186E321CB614F4DCD1A4F2' } }
+```
+#### 返回结果说明
+|参数|类型|说明|
+|----|----|---:|
+|engine_result|String|请求结果|
+|engine_result_code|Array|请求结果编码|
+|engine_result_message|String|请求结果message信息|
+|&nbsp;&nbsp;&nbsp;tx_blob|String|16进制签名后的交易|
+|&nbsp;&nbsp;&nbsp;tx_json|Object|交易内容|
+|&nbsp;&nbsp;&nbsp;Account|String|账号地址|
+|&nbsp;&nbsp;&nbsp;Amount|String|交易金额|
+|&nbsp;&nbsp;&nbsp;Destination|String|对家|
+|&nbsp;&nbsp;&nbsp;Fee|String|交易费|
+|&nbsp;&nbsp;&nbsp;Flags|Integer|交易标记|
+|&nbsp;&nbsp;&nbsp;Memos|Array|备注|
+|&nbsp;&nbsp;&nbsp;Sequence|Integer|单子序列号|
+|&nbsp;&nbsp;&nbsp;SigningPubKey|Object|签名公钥|
+|&nbsp;&nbsp;&nbsp;TransactionType|String|交易类型|
+|&nbsp;&nbsp;&nbsp;TxnSignature|String|交易签名|
+|&nbsp;&nbsp;&nbsp;hash|String|交易hash|
+### <a name="relationTx"></a> 4.15 设置关系
+#### 首先通过buildRelationTx方法返回一个Transaction对象，然后通过setSecret传入密钥，最 后通过submit方法提交支付信息。目前支持的关系类型:信任(trust)、授权(authorize)、冻结 (freeze)
+#### <a name="relationBuildTx"></a> 4.15.1 创建关系对象
+##### 方法:remote.buildRelationTx({});
+##### 参数
+|参数|类型|说明|
+|----|----|---:|
+|type|String|关系种类|
+|account|String|设置关系的源账号|
+|target|String|目标账号，授权和冻结才有|
+|limit|Object|关系金额|
+|value|String|数量|
+|currency|String|货币种类，三到六个字母或20字节的自定义货币|
+|issuer|String|货币发行方|
+##### 返回:Transaction对象
+#### <a name="relationSetSecret"></a> 4.15.2 传入密钥
+##### 方法:tx.setSecret(secret);
+##### 参数
+|参数|类型|说明|
+|----|----|---:|
+|secret|String|井通钱包私钥|
+#### <a name="relationSubmit"></a> 4.15.3 关系设置
+##### 方法: tx.submit(callback);
+#####  参数:无
+#### 设置关系完整例子 not working...
+```javascript
+// var jlib = require('jcc_jingtum_lib');
+// var jlib = require('jingtum-lib');
+var jlib = require('swtc-lib');
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
+remote.connect(function(err, result) {
+    if (err) {
+        return console.log('err:',err);
+    }
+    var options = {
+        account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+        target: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
+        limit:{
+            currency: 'SWT',
+            value: "31",
+            issuer: ''
+        },
+        type:'authorize'
+    };
+    var tx = remote.buildRelationTx(options);
+    tx.setSecret('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C');
+    tx.submit(function(err, result) {
+        if(err) {console.log('err:',err);}
+        else if(result){
+            console.log('res:', result);
+        }
+    });
+});
+```
+#### 返回结果
+```javascript
+```
+#### 返回结果说明
+|参数|类型|说明|
+|----|----|---:|
+|engine_result|String|请求结果|
+|engine_result_code|Array|请求结果编码|
+|engine_result_message|String|请求结果message信息|
+|tx_blob|String|16进制签名后的交易|
+|tx_json|Object|交易内容|
+|&nbsp;&nbsp;Account|String|账号地址|
+|&nbsp;&nbsp;Fee|String|交易费|
+|&nbsp;&nbsp;Flags|Integer|交易标记|
+|&nbsp;&nbsp;LimitAmount|Object|关系的额度|
+|&nbsp;&nbsp;&nbsp;&nbsp;currency|String|货币|
+|&nbsp;&nbsp;&nbsp;&nbsp;issuer|String|货币发行方|
+|&nbsp;&nbsp;&nbsp;&nbsp;value|String|额度|
+|&nbsp;&nbsp;RelationType|Integer|关系类型:0信任;1授权;3冻结/解冻;|
+|&nbsp;&nbsp;Sequence|Integer|单子序列号|
+|&nbsp;&nbsp;SigningPubKey|Object|签名公钥|
+|&nbsp;&nbsp;Target|String|关系对家|
+|&nbsp;&nbsp;Timestamp|Integer|时间戳|
+|&nbsp;&nbsp;TransactionType|String|交易类型:TrustSet信任;RelationDel解冻;RelationSet 授权/冻结|
+|&nbsp;&nbsp;TxnSignature|String|交易签名|
+|&nbsp;&nbsp;hash|String|交易hash|
+### <a name="listen"></a> 4.21 监听事件
+#### Remote有两个监听事件:监听所有交易(transactions)和监听所有账本(ledger_closed)，监听结果放到回调函数中，回调中只有一个参数，为监听到的消息。
+#### 方法:remote.on('transactions',callback);
+#### 方法:remote.on('ledger_closed',callback);
+#### 例子:
+```javascript
+var jlib = require('swtc-lib');
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
+remote.connect(function (err, result) {
+    if (err) {
+        return console.log('err:', err);
+    }
+    remote.on('transactions', function (msg) {
+      console.log('tx: ',msg);
+    });
+    remote.on('ledger_closed', function (msg) {
+        console.log('ledger: ',msg);
+    });
+});
+```
 ## <a name="request"></a>5 REQUEST类
+#### Request类主管GET请求，包括获得服务器、账号、挂单、路径等信息。请求时不需要提供密 钥，且对所有用户公开。所有的请求是异步的，会提供一个回调函数。每个回调函数有两个参 数，一个是错误，另一个是结果。提供以下方法:
+* selectLedger(ledger)
+* submit(callback)
 ## <a name="transaction"></a>6 TRANSACTION类
 ## <a name="errors"></a>7 底层常见错误附录
 
