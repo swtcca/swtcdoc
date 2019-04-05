@@ -2,7 +2,7 @@
 
 ## jingtum-lib接口说明
 V2.0.3
-除了合约外的测试全都通过
+合约测试只能在特定节点运行
 
 ## [应用实例](../)
 
@@ -13,7 +13,7 @@ V2.0.3
 |2.0.0|整体接口说明|吴丹|2018/3/2|
 |2.0.1|Remote类增加返回结果说明|吴丹|2018/3/15|
 |2.0.2|Remote类增加合约方法|吴丹|2018/5/31|
-|2.0.3|swtc-lib|2019/4/2|
+|2.0.3|swtc-lib|lospringliu|2019/4/2|
 
 ## 目录
 1. ### [安装](#installation)
@@ -66,7 +66,7 @@ V2.0.3
 
 5. ### [REQUEST类](#request)
 > ### 5.1 [指定账本](#requestLedger)
-> ### 5.1 [提交请求](#requestSubmit)
+> ### 5.2 [提交请求](#requestSubmit)
 6. ### [TRANSACTION类](#transaction)
 > ### 6.1 [获得交易账号](#transactionAccount)
 > ### 6.2 [获得交易类型](#transactionType)
@@ -536,12 +536,12 @@ remote.connect(function(err, result) {
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://swtclib.daszichan.com:5020', local_sign: true});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
 remote.connect(function(err, result) {
     if (err) {
         return console.log('err:',err);
     }
-    var options = {account: 'jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG'};
+    var options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz'};
     var req = remote.requestAccountTums(options);
     req.submit(function(err, result) {
         if(err) {console.log('err:',err);}
@@ -554,20 +554,10 @@ remote.connect(function(err, result) {
 #### 返回结果
 ```javascript
 > res: { ledger_hash:
-   '972AEB187D7B0E0A90BF4B2352B9BCB8868C7169591D5EAD0FEDA463DC97C6D9',
-  ledger_index: 12436860,
-  receive_currencies:
-   [ 'CNY',
-     'HJT',
-     'SPC',
-     'VCC',
-     'JEKT',
-     'JJCC',
-     'JCALL',
-     'JSLASH',
-     '800000000000000000000000416FE9044CDAA1A2' ],
-  send_currencies:
-   [ 'HJT', 'JSLASH', '800000000000000000000000416FE9044CDAA1A2' ],
+   '80F7661460F62D707F923F4D6932624A1CBA6EF5E1F1CC4577AEA27D545CF2BD',
+  ledger_index: 2861794,
+  receive_currencies: [ 'CNY' ],
+  send_currencies: [ 'CNY' ],
   validated: true }
 ```
 #### 返回结果说明
@@ -592,12 +582,12 @@ remote.connect(function(err, result) {
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://swtclib.daszichan.com:5020', local_sign: true});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
 remote.connect(function(err, result) {
     if (err) {
         return console.log('err:',err);
     }
-    var options = {account: 'jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG',type:'trust'};
+    var options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',type:'trust'};
     var req = remote.requestAccountRelations(options);
     req.submit(function(err, result) {
         if(err) {console.log('err:',err);}
@@ -609,31 +599,15 @@ remote.connect(function(err, result) {
 ```
 #### 返回结果
 ```javascript
-> res: { account: 'jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG',
+> res: { account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
   ledger_hash:
-   '42A3FCE4EA421EF7AD829454B65F39F3A63DED503160BE67BC2297C08CC04D4E',
-  ledger_index: 12436892,
+   '427B3AD89CDA0A9B7ED229796EA4D10B781E4CAA14F89DBDA61086BBCCD0BA42',
+  ledger_index: 2861802,
   lines:
-   [ { account: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
-       balance: '0',
+   [ { account: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS',
+       balance: '100',
        currency: 'CNY',
-       limit: '100000',
-       limit_peer: '0',
-       no_skywell: true,
-       quality_in: 0,
-       quality_out: 0 },
-     { account: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
-       balance: '300',
-       currency: 'HJT',
-       limit: '10000000000',
-       limit_peer: '0',
-       no_skywell: true,
-       quality_in: 0,
-       quality_out: 0 },
-     { account: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
-       balance: '1088',
-       currency: 'JSLASH',
-       limit: '10000000000',
+       limit: '1000000000',
        limit_peer: '0',
        no_skywell: true,
        quality_in: 0,
@@ -666,12 +640,12 @@ remote.connect(function(err, result) {
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://swtclib.daszichan.com:5020', local_sign: true});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
 remote.connect(function(err, result) {
     if (err) {
         return console.log('err:',err);
     }
-    var options = {account: 'jEH8YPZZBc1rbdg7x9jD9nthDLmD7c398m'};
+    var options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz'};
     var req = remote.requestAccountOffers(options);
     req.submit(function(err, result) {
         if(err) {console.log('err:',err);}
@@ -683,19 +657,15 @@ remote.connect(function(err, result) {
 ```
 #### 返回结果
 ```javascript
-> res: { account: 'jEH8YPZZBc1rbdg7x9jD9nthDLmD7c398m',
+> res: { account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
   ledger_hash:
-   '234D6AE1C6A7B6CE4ED6C78F9526328ED85B92C785C6DD248FBA490B4C458FC2',
-  ledger_index: 12437049,
+   'E02BA6ED09F7D946D6D4FE85FB5F29590A358551ECD463D9FEE40B8B9F6141E9',
+  ledger_index: 2861816,
   offers:
-   [ { flags: 0,
-       seq: 14,
-       taker_gets: [Object],
-       taker_pays: '20064000000' },
-     { flags: 0,
-       seq: 16,
-       taker_gets: [Object],
-       taker_pays: '176359000000' } ],
+   [ { flags: 131072,
+       seq: 4,
+       taker_gets: '1000000',
+       taker_pays: [Object] } ],
   validated: true }
 ```
 #### 返回结果说明
@@ -803,15 +773,15 @@ remote.connect(function(err, result) {
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://swtclib.daszichan.com:5020', local_sign: true});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
 remote.connect(function(err, result) {
     if (err) {
         return console.log('err:',err);
     }
     var options = {
         limit: 5,
-        gets: { currency: 'SWT', issuer: '' },
-        pays: { currency: 'CNY', issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or' }
+        pays: { currency: 'SWT', issuer: '' },
+        gets: { currency: 'CNY', issuer: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D' }
     };
     var req = remote.requestOrderBook(options);
     req.submit(function(err, result) {
@@ -824,93 +794,25 @@ remote.connect(function(err, result) {
 ```
 #### 返回结果
 ```javascript
-> res: { ledger_current_index: 12436990,
+> res: { ledger_current_index: 2861869,
   offers:
-   [ { Account: 'jUmsyjx1gbxh3ZLZgWWUvBxwsG7XUT8zEt',
+   [ { Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
        BookDirectory:
-        '51603377F758E3C8FA007C77312DDA06A737A1395CD5FC435D063E68B2026CE1',
+        'AEC975E9D5B0DB3D88C5D0A31AB2884D40328C8ABE4E02664D038D7EA4C68000',
        BookNode: '0000000000000000',
-       Flags: 0,
-       LedgerEntryType: 'Offer',
-       OwnerNode: '0000000000000002',
-       PreviousTxnID:
-        '54EB3F3CA637E15D07E63B59DBE25EF715A016CD5FFA72764DA69D79532D3101',
-       PreviousTxnLgrSeq: 12436982,
-       Sequence: 14049,
-       TakerGets: [Object],
-       TakerPays: '519656598000',
-       index:
-        'D2F7B3746F088D85A9CDAF94D6C8FB6F8965549222588646AE646E7E0F39EC5D',
-       owner_funds: '2956.847399410501',
-       quality: '175746924.4288225' },
-     { Account: 'jykjXsYLPzhrr7fvzbcj7WQsJ8EjUcS3y',
-       BookDirectory:
-        '51603377F758E3C8FA007C77312DDA06A737A1395CD5FC435D063E68B2026CE1',
-       BookNode: '0000000000000000',
-       Flags: 0,
+       Flags: 131072,
        LedgerEntryType: 'Offer',
        OwnerNode: '0000000000000000',
        PreviousTxnID:
-        '76C67C2E559E2EB085161493EA2AB22FECF702AAE862DC1C64933DF3919A6FC4',
-       PreviousTxnLgrSeq: 12436845,
-       Sequence: 4470,
-       TakerGets: [Object],
-       TakerPays: '50440000000',
+        '3EB37E4CB1017C1A5F4DA81B95CBB94345405BA7F791445BF9EEA9AB8C177DD8',
+       PreviousTxnLgrSeq: 2861851,
+       Sequence: 7,
+       TakerGets: '1000000',
+       TakerPays: [Object],
        index:
-        'E92893B72C0EC95222F4EB5E9A812C307C6E572E0777EBFB86FE40643A91560C',
-       owner_funds: '1034.107276378333',
-       quality: '175746924.4288225' },
-     { Account: 'j9irCqYkPgsQhNSeBpuyjsQTsqSdkVn1Az',
-       BookDirectory:
-        '51603377F758E3C8FA007C77312DDA06A737A1395CD5FC435D0640F0F32E7488',
-       BookNode: '0000000000000000',
-       Flags: 0,
-       LedgerEntryType: 'Offer',
-       OwnerNode: '0000000000000000',
-       PreviousTxnID:
-        'A8DAEA5A9C31145C07A8190A89437D912F87827F7B2F72BAB0ACAE3B1E8DBBE1',
-       PreviousTxnLgrSeq: 12436651,
-       Sequence: 31716,
-       TakerGets: [Object],
-       TakerPays: '1000000000000',
-       index:
-        '130C0E6490B6CD75013DB62CCD60ED0B664095F781B93550AFE7D756D930D486',
-       owner_funds: '83329.64129504086',
-       quality: '176025347.6500616' },
-     { Account: 'jEH8YPZZBc1rbdg7x9jD9nthDLmD7c398m',
-       BookDirectory:
-        '51603377F758E3C8FA007C77312DDA06A737A1395CD5FC435D0641391AE2E15A',
-       BookNode: '0000000000000000',
-       Flags: 0,
-       LedgerEntryType: 'Offer',
-       OwnerNode: '0000000000000000',
-       PreviousTxnID:
-        'C4C5307FF99B1562F20A5EA29859B8F7672F1EC75F9DF41D547C79A8BBF3CD32',
-       PreviousTxnLgrSeq: 12436588,
-       Sequence: 16,
-       TakerGets: [Object],
-       TakerPays: '176359000000',
-       index:
-        'EC8814CBBB4C9D91110CC08762739D31A58DE4764743190AFF82F10B96EEFE2F',
-       owner_funds: '1102.04444',
-       quality: '176056338.028169' },
-     { Account: 'j34t3QRwuTjjW2hBQ2TUviM4RtWeaMTF6c',
-       BookDirectory:
-        '51603377F758E3C8FA007C77312DDA06A737A1395CD5FC435D0641391AE2E15A',
-       BookNode: '0000000000000000',
-       Flags: 0,
-       LedgerEntryType: 'Offer',
-       OwnerNode: '0000000000000000',
-       PreviousTxnID:
-        'EFAF0D2C657B31C3AFB6CA0F7E865914D58BA581B359687A6A3D072B17C4790F',
-       PreviousTxnLgrSeq: 12436670,
-       Sequence: 9024,
-       TakerGets: [Object],
-       TakerPays: '2868649000000',
-       index:
-        '8478EB2BE4ED83586476841FD5EC84DFFB83EBAC06758FEDD3DB1840E2E9F001',
-       owner_funds: '16293.92685819301',
-       quality: '176056338.028169' } ],
+        '483DCDC95C3B1BECE5E67CBE8AD883607F6B63151E3233C9151C50AE4E96C59E',
+       owner_funds: '11085930000',
+       quality: '0.00000001' } ],
   validated: false }
 ```
 #### 返回结果说明
@@ -1062,27 +964,25 @@ remote.connect(function(err, result) {
 #####  参数:无
 #### 设置关系完整例子
 ```javascript
-// var jlib = require('jcc_jingtum_lib');
-// var jlib = require('jingtum-lib');
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://swtclib.daszichan.com:5020', local_sign: true});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
 remote.connect(function(err, result) {
     if (err) {
         return console.log('err:',err);
     }
     var options = {
-        account: 'jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG',
-        target: 'jLvo6LSKNEYJ4KDwDuM8LU5fuSsQkE4HVW',
+        account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+        target: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
         limit:{
-            currency: 'SPC',
-            value: "31",
-            issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or'
+            currency: 'CNY',
+            value: "1",
+            issuer: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D'
         },
         type:'authorize'
     };
     var tx = remote.buildRelationTx(options);
-    tx.setSecret('s..................');
+    tx.setSecret('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C');
     tx.submit(function(err, result) {
         if(err) {console.log('err:',err);}
         else if(result){
@@ -1098,25 +998,25 @@ remote.connect(function(err, result) {
   engine_result_message:
    'The transaction was applied. Only final in a validated ledger.',
   tx_blob:
-   '1200152200000000240000022520230000000163D4838D7EA4C680000000000000000000000000005350430000000000A582E432BFC48EEDEF852C814EC57F3CD2D41596684000000000002710732102197F1426BCA2F59B6B910F0391E55888B4FE80AF962478493104A33274B1B03A74473045022100A3864A2071294B75B78D57AC52CFA4E738A978C3A1E672BEAB084DEC9D17E33E02206D7630E3027841B8CABEB45DA9C01DD3B35302CE3ADFA51952E08F058CEF19A58114AF09183A11AA70DA06E115E03B0E5478232740B58714DA976A4DE4827163F062B09050832D8D78025D5A',
+   '1200152200000000240000000820230000000163D4838D7EA4C68000000000000000000000000000434E590000000000054FADDC8595E2950FA43F673F65C2009F58C7F16840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E1574463044022078E283810BF73CB8D932077C757A9FC5881C52B7475BE010BFD8A9731FDE1BB802202268AE34DFF38C171A70623A5E4EFA9069645E39F12D03DE6D9DD826F481FAC881141359AA928F4D98FDB3D93E8B690C80D37DED11C38714054FADDC8595E2950FA43F673F65C2009F58C7F1',
   tx_json:
-   { Account: 'jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG',
+   { Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
      Fee: '10000',
      Flags: 0,
      LimitAmount:
-      { currency: 'SPC',
-        issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
+      { currency: 'CNY',
+        issuer: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
         value: '1' },
      RelationType: 1,
-     Sequence: 549,
+     Sequence: 8,
      SigningPubKey:
-      '02197F1426BCA2F59B6B910F0391E55888B4FE80AF962478493104A33274B1B03A',
-     Target: 'jLvo6LSKNEYJ4KDwDuM8LU5fuSsQkE4HVW',
+      '029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15',
+     Target: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
      TransactionType: 'RelationSet',
      TxnSignature:
-      '3045022100A3864A2071294B75B78D57AC52CFA4E738A978C3A1E672BEAB084DEC9D17E33E02206D7630E3027841B8CABEB45DA9C01DD3B35302CE3ADFA51952E08F058CEF19A5',
+      '3044022078E283810BF73CB8D932077C757A9FC5881C52B7475BE010BFD8A9731FDE1BB802202268AE34DFF38C171A70623A5E4EFA9069645E39F12D03DE6D9DD826F481FAC8',
      hash:
-      '7BAE63A74F87E2490F696407972600D6A9D19A5261598BC56B7EFDA251D952B3' } }
+      'C95235169DB1F994F67E0CC73BB98D0D044D2C4093E846675B29E4F13BE97DAC' } }
 ```
 #### 返回结果说明
 |参数|类型|说明|
@@ -1237,18 +1137,18 @@ remote.connect(function(err, result) {
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://swtclib.daszichan.com:5020', local_sign: true});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
 remote.connect(function (err, result) {
     if (err) {
         return console.log('err:', err);
     }
     var options = {
         type: 'Sell',
-        account: 'jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG',
+        account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
         taker_pays: {
             value: '0.01',
             currency: 'CNY',
-            issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or'
+            issuer: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D'
         },
         taker_gets: {
             value: '1',
@@ -1257,7 +1157,7 @@ remote.connect(function (err, result) {
         }
     };
     var tx = remote.buildOfferCreateTx(options);
-    tx.setSecret('s......................');
+    tx.setSecret('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C');
     tx.submit(function (err, result) {
         if (err) {
             console.log('err:', err);
@@ -1270,29 +1170,29 @@ remote.connect(function (err, result) {
 ```
 ##### 返回结果:
 ```javascript
-res: { engine_result: 'tesSUCCESS',
+> res: { engine_result: 'tesSUCCESS',
   engine_result_code: 0,
   engine_result_message:
    'The transaction was applied. Only final in a validated ledger.',
   tx_blob:
-   '1200072200080000240000022664D4038D7EA4C68000000000000000000000000000434E590000000000A582E432BFC48EEDEF852C814EC57F3CD2D415966540000000000F424068400000000000000C732102197F1426BCA2F59B6B910F0391E55888B4FE80AF962478493104A33274B1B03A74473045022100A2990C4E1880A7FAD3FE0C34C10219C3A07359ED53588D535AD1EB7CF3684FF102204AD1A8FBC1C9C93A671E6FF3B31D9E3F45E2A1D56E93864A964D3375D0D545C88114AF09183A11AA70DA06E115E03B0E5478232740B5',
+   '1200072200080000240000000764D4038D7EA4C68000000000000000000000000000434E590000000000054FADDC8595E2950FA43F673F65C2009F58C7F16540000000000F42406840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15744730450221009BC83757257D09A5B66B07BD06E9368B5DED0FD576487FE88F8DD6B1D96B735A022020827BE97AD1DE11D528721E3BBCB0DA4C8E0591DBC244905AB776DCD72ED20981141359AA928F4D98FDB3D93E8B690C80D37DED11C3',
   tx_json:
-   { Account: 'jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG',
-     Fee: '12',
+   { Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+     Fee: '10000',
      Flags: 524288,
-     Sequence: 550,
+     Sequence: 7,
      SigningPubKey:
-      '02197F1426BCA2F59B6B910F0391E55888B4FE80AF962478493104A33274B1B03A',
+      '029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15',
      TakerGets: '1000000',
      TakerPays:
       { currency: 'CNY',
-        issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
+        issuer: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
         value: '0.01' },
      TransactionType: 'OfferCreate',
      TxnSignature:
-      '3045022100A2990C4E1880A7FAD3FE0C34C10219C3A07359ED53588D535AD1EB7CF3684FF102204AD1A8FBC1C9C93A671E6FF3B31D9E3F45E2A1D56E93864A964D3375D0D545C8',
+      '30450221009BC83757257D09A5B66B07BD06E9368B5DED0FD576487FE88F8DD6B1D96B735A022020827BE97AD1DE11D528721E3BBCB0DA4C8E0591DBC244905AB776DCD72ED209',
      hash:
-      'DE4F1023A86F04519E30283C816FBC52AA05B32490B1F679D595440772DDF445' } }
+      '3EB37E4CB1017C1A5F4DA81B95CBB94345405BA7F791445BF9EEA9AB8C177DD8' } }
 ```
 ##### 返回结果说明:
 |参数|类型|说明|
@@ -1339,14 +1239,14 @@ res: { engine_result: 'tesSUCCESS',
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://swtclib.daszichan.com:5020', local_sign: true});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
 remote.connect(function (err, result) {
     if (err) {
         return console.log('err:', err);
     }
-    var options = {account: 'jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG', sequence: 550};
+    var options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', sequence: 7};
     var tx = remote.buildOfferCancelTx(options);
-    tx.setSecret('s............................');
+    tx.setSecret('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C');
     tx.submit(function (err, result) {
         if (err) {
             console.log('err:', err);
@@ -1359,25 +1259,25 @@ remote.connect(function (err, result) {
 ```
 #### 返回结果
 ```javascript
-{ engine_result: 'tesSUCCESS',
+> res: { engine_result: 'tesSUCCESS',
   engine_result_code: 0,
   engine_result_message:
    'The transaction was applied. Only final in a validated ledger.',
   tx_blob:
-   '1200082200000000240000022720190000022668400000000000000C732102197F1426BCA2F59B6B910F0391E55888B4FE80AF962478493104A33274B1B03A74473045022100A5605A210AAC29EBD85CA072BC05DBFE7F30C1AFBEA441AC50AAB445E4B2421902205A20CE1F2B90A37EED9029361DD5C5609C6029C897A78F5238C281BCCFDBC9638114AF09183A11AA70DA06E115E03B0E5478232740B5',
+   '120008220000000024000000092019000000076840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E1574473045022100DA68AEF2F6A29A593490AD89218890E98CB0D9DEB645DCA92A6444E3DE9957440220141D389B41ACB777B14A862B58FCE2CDBC5353ECBDED42C2FD9D584B39F61AF181141359AA928F4D98FDB3D93E8B690C80D37DED11C3',
   tx_json:
-   { Account: 'jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG',
-     Fee: '12',
+   { Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+     Fee: '10000',
      Flags: 0,
-     OfferSequence: 550,
-     Sequence: 551,
+     OfferSequence: 7,
+     Sequence: 9,
      SigningPubKey:
-      '02197F1426BCA2F59B6B910F0391E55888B4FE80AF962478493104A33274B1B03A',
+      '029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15',
      TransactionType: 'OfferCancel',
      TxnSignature:
-      '3045022100A5605A210AAC29EBD85CA072BC05DBFE7F30C1AFBEA441AC50AAB445E4B2421902205A20CE1F2B90A37EED9029361DD5C5609C6029C897A78F5238C281BCCFDBC963',
+      '3045022100DA68AEF2F6A29A593490AD89218890E98CB0D9DEB645DCA92A6444E3DE9957440220141D389B41ACB777B14A862B58FCE2CDBC5353ECBDED42C2FD9D584B39F61AF1',
      hash:
-      '00B31E97D36C5579FFA19D337EB64282505FD51BA38D15C9C0A1A3BABC2A7783' } }
+      'AAD3063387632E3BEDF947FBBD2694A364FE1FF15EC1CDE26B7FEBA70B32BDD7' } }
 ```
 #### 返回结果说明
 |参数|类型|说明|
@@ -1426,7 +1326,7 @@ remote.connect(function (err, result) {
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
 var utils = jlib.utils;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
+var remote = new Remote({server: 'ws://123.57.209.177:5030', local_sign: true});
 remote.connect(function (err, result) {
     if (err) {
         return console.log('err:', err);
@@ -1434,8 +1334,8 @@ remote.connect(function (err, result) {
     var options = {
         account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
         amount: 10,
-        //payload: utils.stringToHex('result={}; function Init(t) result=scGetAccountBalance(t) return result end; function foo(t) result=scGetAccountBalance(t) return result end;'),
-        payload: utils.stringToHex('result={}; function Init(t) result=scGetAccountInfo(t) return result end; function foo(t) a={} result=scGetAccountInfo(t) return result end'),
+        payload: utils.stringToHex('result={}; function Init(t) result=scGetAccountBalance(t) return result end; function foo(t) result=scGetAccountBalance(t) return result end;'),
+        // payload: utils.stringToHex('result={}; function Init(t) result=scGetAccountInfo(t) return result end; function foo(t) a={} result=scGetAccountInfo(t) return result end'),
         params: ['jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz']
     };
     var tx = remote.deployContractTx(options);
@@ -1452,6 +1352,30 @@ remote.connect(function (err, result) {
 ```
 #### 返回结果
 ```javascript
+> res: { ContractState: 'jNdpxLQbmMMf4ZVXjn3nb98xPYQ7EpEpTN',
+  engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message:
+   'The transaction was applied. Only final in a validated ledger.',
+  tx_blob:
+   '12001E220000000024000000052024000000006140000000009896806840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E1574473045022100EDC511C9AD68BEBD47F00CF7271E7DD6BF608E6C7A1ACC3B1D471B057B5E2C0C02203292629E4E6905C222BF99BE8023356B3040355D446DE2FAE6D1099DA6AE426B7F8D726573756C743D7B7D3B2066756E6374696F6E20496E697428742920726573756C743D73634765744163636F756E7442616C616E63652874292072657475726E20726573756C7420656E643B2066756E6374696F6E20666F6F28742920726573756C743D73634765744163636F756E7442616C616E63652874292072657475726E20726573756C7420656E643B81141359AA928F4D98FDB3D93E8B690C80D37DED11C3FAEB7012226A706D4B456D32735565766670466A533751486454385378375A476F4558544A417AE1F1',
+  tx_json:
+   { Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+     Amount: '10000000',
+     Args: [ [Object] ],
+     Fee: '10000',
+     Flags: 0,
+     Method: 0,
+     Payload:
+      '726573756C743D7B7D3B2066756E6374696F6E20496E697428742920726573756C743D73634765744163636F756E7442616C616E63652874292072657475726E20726573756C7420656E643B2066756E6374696F6E20666F6F28742920726573756C743D73634765744163636F756E7442616C616E63652874292072657475726E20726573756C7420656E643B',
+     Sequence: 5,
+     SigningPubKey:
+      '029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15',
+     TransactionType: 'ConfigContract',
+     TxnSignature:
+      '3045022100EDC511C9AD68BEBD47F00CF7271E7DD6BF608E6C7A1ACC3B1D471B057B5E2C0C02203292629E4E6905C222BF99BE8023356B3040355D446DE2FAE6D1099DA6AE426B',
+     hash:
+      '71C1AAEAAB9D2F9CC4C65D9A9DB733EB80DF6037BDC6D4A6F1445BFDBDE25A02' } }
 ```
 #### 返回结果说明
 |参数|类型|说明|
@@ -1498,9 +1422,51 @@ remote.connect(function (err, result) {
 ##### 参数:无
 #### 执行合约完整例子
 ```javascript
+var jlib = require('swtc-lib');
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'ws://123.57.209.177:5030', local_sign: true});
+remote.connect(function (err, result) {
+    if (err) {
+        return console.log('err:', err);
+    }
+    var options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', destination: 'jNdpxLQbmMMf4ZVXjn3nb98xPYQ7EpEpTN',foo: 'foo',params: ['jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz']};
+    var tx = remote.callContractTx(options);
+    tx.setSecret('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C');
+    tx.submit(function (err, result) {
+        if (err) {
+            console.log('err:', err);
+        }
+        else if (result) {
+            console.log('res:', result);
+        }
+    });
+});
 ```
 #### 返回结果
 ```javascript
+> res: { ContractState: '99889937242',
+  engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message:
+   'The transaction was applied. Only final in a validated ledger.',
+  tx_blob:
+   '12001E220000000024000000062024000000016840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E1574473045022100DCB940C040EC1FE8BCC12E6BC2B4F980249048A29BDE21819851A794267E3CF9022033589643344130F1B8DA29C437B411875BA98C84056228AC1CC758FE8E98DB4F701103666F6F81141359AA928F4D98FDB3D93E8B690C80D37DED11C38314956A3DB0148D023D018A67AD20FE8E5275FB5B17FAEB7012226A706D4B456D32735565766670466A533751486454385378375A476F4558544A417AE1F1',
+  tx_json:
+   { Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+     Args: [ [Object] ],
+     ContractMethod: '666F6F',
+     Destination: 'jNdpxLQbmMMf4ZVXjn3nb98xPYQ7EpEpTN',
+     Fee: '10000',
+     Flags: 0,
+     Method: 1,
+     Sequence: 6,
+     SigningPubKey:
+      '029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15',
+     TransactionType: 'ConfigContract',
+     TxnSignature:
+      '3045022100DCB940C040EC1FE8BCC12E6BC2B4F980249048A29BDE21819851A794267E3CF9022033589643344130F1B8DA29C437B411875BA98C84056228AC1CC758FE8E98DB4F',
+     hash:
+      '060E534F8274A25EF4D48C5A6DC49F4200173BF6E61F287854821F598829BEBC' } }
 ```
 #### 返回结果说明
 |参数|类型|说明|
@@ -1613,8 +1579,8 @@ remote.connect(function (err, result) {
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://swtclib.daszichan.com:5020'});
-var options = {account: 'jaQ9StmjynXyd2xmPATqLJ2rCe4fqy4etp', sequence: 9};
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020'});
+var options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', sequence: 4};
 var tx = remote.buildOfferCancelTx(options);
 var account = tx.getAccount();
 console.log(account);
@@ -1627,8 +1593,8 @@ console.log(account);
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://swtclib.daszichan.com:5020'});
-var options = {account: 'jaQ9StmjynXyd2xmPATqLJ2rCe4fqy4etp', sequence: 9};
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020'});
+var options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', sequence: 4};
 var tx = remote.buildOfferCancelTx(options);
 var type = tx.getTransactionType();
 console.log(type);
