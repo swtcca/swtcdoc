@@ -85,4 +85,4 @@ $ npm list | grep swtc
 ### Remote
 ![Remote](./m-remote.png)
 ### ApiRemote
-![ApiRemote](./omni-vim.png)
+![ApiRemote](./m-apiremote.png)
