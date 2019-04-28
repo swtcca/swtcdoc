@@ -1,37 +1,35 @@
-# 井通科技
-
-## swtc-lib增强
+# swtc-lib增强
 
 ## [应用实例](../)
 
 ## 目录
-- 强兼容
-- 现代性
-- class实现
-- typescript实现
-- 格式化代码
-- 按照功能分发包
-- travis集成
-- 完善测试
+> ### 强兼容
+> ### 现代性
+> ### class实现
+> ### typescript实现
+> ### 格式化代码
+> ### 按照功能分发包
+> ### travis集成
+> ### 完善测试
 
 ## 内容
-- 扩展
+### 扩展
   - 实现了ApiRemote(swtc-api)
   - 默认使用 https://api.jingtum.com
-- 安全
+### 安全
   - 本地签名
   - 密钥不出本机
-- 强兼容
+### 强兼容
   - 所有包确保零配置webpack和browserify兼容
   - 可以用于网络应用 桌面应用 终端应用 移动应用
-- 现代性
+### 现代性
   - 原生Promise支持
   - Remote.connectPromise()
   - Request.submitPromise()
   - Transaction.signPromise()
   - Transaction.submitPromise()
   - ApiRemote.allmethods()
-- class实现
+### class实现
   - ApiRemote
   - Server
   - Remote
@@ -41,7 +39,7 @@
 	- 提交实现
   - Wallet (swtc-factory)
     - 支持swtc bitcoin ripple bwt call stm
-- typescript实现
+### typescript实现
   - 编辑器帮助提示
   - ApiRemote
   - Server
@@ -49,10 +47,10 @@
   - Request
   - Transaction
   - Wallet
-- 格式化代码
+### 格式化代码
   - prettier格式化
   - eslint / tslint
-- 按照功能分发包
+### 按照功能分发包
 ```bash
 $ npm list | grep swtc
 └─┬ swtc-lib@1.6.10
@@ -74,7 +72,17 @@ $ npm list | grep swtc
     │ └─┬ swtc-utils@1.0.3
     │   ├── swtc-factory@1.2.1 deduped
 ```
-- travis集成
+### travis集成
   - 代码提交自动测试
-- 完善测试
+### 完善测试
   - 添加新功能测试
+
+## 方法汇总
+### Wallet
+![Wallet](./m-wallet.png)
+### Transaction
+![Transaction](./m-transaction.png)
+### Remote
+![Remote](./m-remote.png)
+### ApiRemote
+![ApiRemote](./omni-vim.png)
