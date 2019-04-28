@@ -1,4 +1,4 @@
-# Vue.js Web应用
+# Angular Web应用
 
 ## 准备
 
@@ -38,14 +38,14 @@ $ npm run serv
 ```html
 <div class="box">
     <img src="../../../assets/images/angular.png">
-	<div>
-		<h3>钱包</h3><hr>
-		<div><pre>{{ wallet_text }}</pre></div>
-		<h3>帐本</h3><hr>
-		<div><pre>{{ ledger_text }}</pre></div>
-		<h3>价格</h3><hr>
-		<div><pre>{{ price_text }}</pre></div>
-	</div>
+  <div>
+    <h3>钱包</h3><hr>
+    <div><pre>{{ wallet_text }}</pre></div>
+    <h3>帐本</h3><hr>
+    <div><pre>{{ ledger_text }}</pre></div>
+    <h3>价格</h3><hr>
+    <div><pre>{{ price_text }}</pre></div>
+  </div>
 </div>
 ```
 8. 对应typescript脚本为 `src/app/modules/home/home.component.ts`, 内容
@@ -94,21 +94,18 @@ export class HomeComponent implements OnInit {
     const ROUND = 20
     var round = 0
     // 定义查询价格的函数
-    const query_price = (remote) =>  remote.requestOrderBook(swt_vs_cny).submit( (error, orderbooks) => {
-            if (error) {
-              console.log("\n查询挂单出错了")
-              console.log(error)
-            } else {
-              console.log("\n...出价...")
-              orderbooks.offers.map( offer => {
-                let quantity = Math.floor(parseInt(offer.TakerPays ) / 1000000)
-                let price = Math.floor(1000000 * 1000 * 100 / Number(offer.quality)) / 100000
-                this.price.unshift(`\n价格: ${price}\t挂单量: ${quantity}\t${offer.Account}`)
-              })
-              this.price.splice(5)
-                this.price_text = this.price.join('\n')
-            }
-          })
+    const query_price = (remote) =>  remote.requestOrderBook(swt_vs_cny).submitPromise()
+        .then(orderbooks -=> {
+           console.log("\n...出价...")
+           orderbooks.offers.map( offer => {
+             let quantity = Math.floor(parseInt(offer.TakerPays ) / 1000000)
+             let price = Math.floor(1000000 * 1000 * 100 / Number(offer.quality)) / 100000
+             this.price.unshift(`\n价格: ${price}\t挂单量: ${quantity}\t${offer.Account}`)
+           })
+           this.price.splice(5)
+           this.price_text = this.price.join('\n')
+        })
+        .catch(console.error)
     // 生成一个钱包并且之后每十秒更新
     this.wallet = Wallet.generate()
     this.wallet_text = JSON.stringify(this.wallet, '', 2)

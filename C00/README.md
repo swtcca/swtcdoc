@@ -29,7 +29,7 @@ undefined
 ```
 2. 脚本文件运行
 ```bash
-$ echo -e "const Wallet = require('swtc-wallet').Wallet\nvar wallet = new Wallet('snJT6UyLWWSpHd7BurPZnXjjvQgYE')\nconsole.log(wallet)" > file.js
+$ echo -e "const Wallet = require('swtc-factory').Wallet\nvar wallet = new Wallet('snJT6UyLWWSpHd7BurPZnXjjvQgYE')\nconsole.log(wallet)" > file.js
 $ cat file.js
 const Wallet = require('swtc-wallet').Wallet
 var wallet = new Wallet('snJT6UyLWWSpHd7BurPZnXjjvQgYE')
@@ -45,7 +45,7 @@ Wallet {
 ```
 3. 半交互式
 ```bash
-$ echo -e "const Wallet = require('swtc-wallet').Wallet\nvar wallet = Wallet.fromSecret('snJT6UyLWWSpHd7BurPZnXjjvQgYE')\n" >  file2.js
+$ echo -e "const Wallet = require('swtc-factory').Wallet\nvar wallet = Wallet.fromSecret('snJT6UyLWWSpHd7BurPZnXjjvQgYE')\n" >  file2.js
 $ cat file2.js 
 const Wallet = require('swtc-wallet').Wallet
 var wallet = Wallet.fromSecret('snJT6UyLWWSpHd7BurPZnXjjvQgYE')

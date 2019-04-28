@@ -106,13 +106,10 @@ a {
 </template>
 
 <script>
-import { promisifyAll } from 'bluebird'
 const SwtcLib = require('swtc-lib')
-// promisify, add Async() methods
-promisifyAll(SwtcLib)
 const Wallet = SwtcLib.Wallet
 const Remote = SwtcLib.Remote
-const remote = new Remote({server: 'ws://swtclib.daszichan.com:5020', local_sign: true})
+const remote = new Remote({server: 'ws://swtclib.daszichan.com:5020'})
 const currency_swt = { currency: 'SWT', issuer: '' }
 const currency_cny = { currency: 'CNY', issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or' }
 const swt_vs_cny = { limit: 5, gets: currency_swt, pays: currency_cny }
@@ -141,7 +138,7 @@ export default {
 	async mounted () {
 		try {
 			// 同步连接
-			await remote.connectAsync()
+			await remote.connectPromise()
 			// 订阅帐本
 			remote.on('ledger_closed', (ledger_data) => {
 				this.ledger = ledger_data
@@ -151,7 +148,7 @@ export default {
 			// 十秒钟查价格
 			setInterval( async () => {
 				try {
-					let orderbooks = await remote.requestOrderBook(swt_vs_cny).submitAsync()
+					let orderbooks = await remote.requestOrderBook(swt_vs_cny).submitPromise()
 					orderbooks.offers.map( offer => {
 						let quantity = Math.floor(parseInt(offer.TakerPays ) / 1000000)
 						let price = Math.floor(1000000 * 1000 * 100 / Number(offer.quality)) / 100000

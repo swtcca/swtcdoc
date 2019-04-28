@@ -45,71 +45,61 @@ $ mkdir dist; touch dist/main.js
 			</section>
 		</main>
 		<script>
-const Wallet = swtc_lib.Wallet
-const Remote = swtc_lib.Remote
-const dom_wallet = document.querySelector('.js-wallet')
-const dom_ledger = document.querySelector('.js-ledger')
-const dom_price = document.querySelector('.js-price')
-const remote = new Remote({server: 'ws://swtclib.daszichan.com:5020', local_sign: true})
-const currency_swt = { currency: 'SWT', issuer: '' }
-const currency_cny = { currency: 'CNY', issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or' }
-const swt_vs_cny = { limit: 5, gets: currency_swt, pays: currency_cny }
-
-// 收到ROUND次数的帐本后结束程序
-const ROUND = 20
-var round = 0
-// 定义查询价格的函数
-const query_price = (remote) =>	remote.requestOrderBook(swt_vs_cny).submit( (error, orderbooks) => {
-				if (error) {
-					console.log("\n查询挂单出错了")
-					console.log(error)
-				} else {
-					console.log("\n...出价...")
-				let price_list = ''
-					orderbooks.offers.map( offer => {
-						let quantity = Math.floor(parseInt(offer.TakerPays ) / 1000000)
-						let price = Math.floor(1000000 * 1000 * 100 / Number(offer.quality)) / 100000
-						price_list += `\n价格: ${price}\t挂单量: ${quantity}\t${offer.Account}`
-					})
-				dom_price.innerHTML = `<pre>${price_list}</pre>`
-				}
-			})
-
-// 生成一个钱包并且每十秒钟更新
-let wallet = Wallet.generate()
-dom_wallet.innerHTML = `<pre>${JSON.stringify(wallet, '', 2)}</pre>`
-setInterval( () => {
-		let wallet = Wallet.generate()
-		console.log("\n...新钱包...")
-		dom_wallet.innerHTML = `<pre>${JSON.stringify(wallet, '', 2)}</pre>`
-	}, 10000
-)
-
-// 连接到服务器
-remote.connect( (error, server_info) => {
-		// 连接出错
-		if (error) {
-			console.log(error)
-		} else {
-		// 连接成功
-			console.log("\n...服务器信息...")
-			// 订阅帐本变动
-			remote.on('ledger_closed', (ledger_data) => {
-					console.log("\n...最新帐本...")
-					dom_ledger.innerHTML = `<pre>${JSON.stringify(ledger_data, '', 2)}</pre>`
-					round += 1
-					if ( round >= ROUND ) {
-						console.log("\n...结束程序...")
-						remote.disconnect()
-						alert("已断开连接")
-					}
-				}
-			)
-			// 查询价格并且每十秒钟更新
-			query_price(remote)
-			setInterval( () => query_price(remote), 10000)
-		}
-	})
+  const Wallet = swtc_lib.Wallet
+  const Remote = swtc_lib.Remote
+  const dom_wallet = document.querySelector('.js-wallet')
+  const dom_ledger = document.querySelector('.js-ledger')
+  const dom_price = document.querySelector('.js-price')
+  const remote = new Remote({server: 'ws://swtclib.daszichan.com:5020', local_sign: true})
+  const currency_swt = { currency: 'SWT', issuer: '' }
+  const currency_cny = { currency: 'CNY', issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or' }
+  const swt_vs_cny = { limit: 5, gets: currency_swt, pays: currency_cny }
+  
+  // 收到ROUND次数的帐本后结束程序
+  const ROUND = 20
+  var round = 0
+  // 定义查询价格的函数
+  const query_price = (remote) =>  remote.requestOrderBook(swt_vs_cny).submitPromise()
+      .then(orderbooks => {
+      let price_list = ''
+        orderbooks.offers.map( offer => {
+          let quantity = Math.floor(parseInt(offer.TakerPays ) / 1000000)
+          let price = Math.floor(1000000 * 1000 * 100 / Number(offer.quality)) / 100000
+          price_list += `\n价格: ${price}\t挂单量: ${quantity}\t${offer.Account}`
+        })
+      dom_price.innerHTML = `<pre>${price_list}</pre>`
+      
+    })
+    .catch(console.error)
+  
+  // 每十秒钟生成一个钱包并且打印出来
+  setInterval( () => {
+      let wallet = Wallet.generate()
+      console.log("\n...新钱包...")
+      dom_wallet.innerHTML = `<pre>${JSON.stringify(wallet, '', 2)}</pre>`
+    }, 10000
+  )
+  
+  // 连接到服务器
+  remote.connectPromise()
+  .then(server_info => {
+      console.log("\n...服务器信息...")
+      // 订阅帐本变动
+      remote.on('ledger_closed', (ledger_data) => {
+          console.log("\n...最新帐本...")
+          dom_ledger.innerHTML = `<pre>${JSON.stringify(ledger_data, '', 2)}</pre>`
+          round += 1
+          if ( round >= ROUND ) {
+            console.log("\n...结束程序...")
+            remote.disconnect()
+            alert("已断开连接")
+          }
+        }
+      )
+      // 每10秒钟查询价格
+      setInterval( () => query_price(remote), 10000)
+  })
+  .catch(console.error)
 		</script>
 	</body>
 </html>
@@ -166,55 +156,45 @@ const swt_vs_cny = { limit: 5, gets: currency_swt, pays: currency_cny }
 const ROUND = 20
 var round = 0
 // 定义查询价格的函数
-const query_price = (remote) =>	remote.requestOrderBook(swt_vs_cny).submit( (error, orderbooks) => {
-				if (error) {
-					console.log("\n查询挂单出错了")
-					console.log(error)
-				} else {
-					console.log("\n...出价...")
-				let price_list = ''
-					orderbooks.offers.map( offer => {
-						let quantity = Math.floor(parseInt(offer.TakerPays ) / 1000000)
-						let price = Math.floor(1000000 * 1000 * 100 / Number(offer.quality)) / 100000
-						price_list += `\n价格: ${price}\t挂单量: ${quantity}\t${offer.Account}`
-					})
-				dom_price.innerHTML = `<pre>${price_list}</pre>`
-				}
-			})
+const query_price = (remote) =>  remote.requestOrderBook(swt_vs_cny).submitPromise()
+    .then(orderbooks => {
+    let price_list = ''
+      orderbooks.offers.map( offer => {
+        let quantity = Math.floor(parseInt(offer.TakerPays ) / 1000000)
+        let price = Math.floor(1000000 * 1000 * 100 / Number(offer.quality)) / 100000
+        price_list += `\n价格: ${price}\t挂单量: ${quantity}\t${offer.Account}`
+      })
+    dom_price.innerHTML = `<pre>${price_list}</pre>`
 
-// 生成一个钱包并且每十秒钟更新
-let wallet = Wallet.generate()
-dom_wallet.innerHTML = `<pre>${JSON.stringify(wallet, '', 2)}</pre>`
+  })
+  .catch(console.error)
+
+// 每十秒钟生成一个钱包并且打印出来
 setInterval( () => {
-		let wallet = Wallet.generate()
-		console.log("\n...新钱包...")
-		dom_wallet.innerHTML = `<pre>${JSON.stringify(wallet, '', 2)}</pre>`
-	}, 10000
+    let wallet = Wallet.generate()
+    console.log("\n...新钱包...")
+    dom_wallet.innerHTML = `<pre>${JSON.stringify(wallet, '', 2)}</pre>`
+  }, 10000
 )
 
 // 连接到服务器
-remote.connect( (error, server_info) => {
-		// 连接出错
-		if (error) {
-			console.log(error)
-		} else {
-		// 连接成功
-			console.log("\n...服务器信息...")
-			// 订阅帐本变动
-			remote.on('ledger_closed', (ledger_data) => {
-					console.log("\n...最新帐本...")
-					dom_ledger.innerHTML = `<pre>${JSON.stringify(ledger_data, '', 2)}</pre>`
-					round += 1
-					if ( round >= ROUND ) {
-						console.log("\n...结束程序...")
-						remote.disconnect()
-						alert("已断开连接")
-					}
-				}
-			)
-			// 查询价格并且每十秒钟更新
-			query_price(remote)
-			setInterval( () => query_price(remote), 10000)
-		}
-	})
+remote.connectPromise()
+  .then(server_info => {
+      console.log("\n...服务器信息...")
+      // 订阅帐本变动
+      remote.on('ledger_closed', (ledger_data) => {
+          console.log("\n...最新帐本...")
+          dom_ledger.innerHTML = `<pre>${JSON.stringify(ledger_data, '', 2)}</pre>`
+          round += 1
+          if ( round >= ROUND ) {
+            console.log("\n...结束程序...")
+            remote.disconnect()
+            alert("已断开连接")
+          }
+        }
+      )
+      // 每10秒钟查询价格
+      setInterval( () => query_price(remote), 10000)
+  })
+  .catch(console.error)
 ```

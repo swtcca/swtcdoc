@@ -11,6 +11,8 @@ features:
   details: node web mobile   angular vue react
 - title: 模块化
   details: 理顺依赖关系 反馈正式版本
+- title: Typescript Promise
+  details: 原生Promise, typescript编辑器关联提示
 - title: 扩展性
   details: 可以增加api或者代理版remote
 
@@ -28,7 +30,7 @@ features:
 - 正常情况下，我们使用[脚本方式运行](C00)
 - 用npm安装
 ```bash
-$ npm install swtc-lib # jingtum-lib接口, 版本为1.6.x
+$ npm install swtc-lib # jingtum-lib接口, 版本为1.6.x, typescript promise
 $ npm install swtc-lib@next # jingtum-lib v2接口, 版本为2.0.x
 $ npm install swtc-lib@jcc # jcc_jingtum_lib接口， 版本为1.5.x
 $ npm install swtc-lib@nativescript # 为nativescript定制， 版本为1.7.x
@@ -107,6 +109,7 @@ const Remote = require('swtc-lib').Remote
 > - [A01 esm方式导入](A01)
 > - [A02 承诺 promisify](A02)
 > - [A03 同步 async/await](A03)
+> - [A04 Typescript](A04)
 > - 终端图形界面
 
 ## 相关知识

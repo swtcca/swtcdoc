@@ -100,10 +100,7 @@ $ tns run android --bundle
 </template>
 
 <script>
-    import { promisifyAll } from 'bluebird'
     const SwtcLib = require('swtc-lib')
-    // promisify, add Async() methods
-    promisifyAll(SwtcLib)
     const Wallet = SwtcLib.Wallet
     const Remote = SwtcLib.Remote
     const remote = new Remote({server: 'ws://swtclib.daszichan.com:5020', local_sign: true})
@@ -131,7 +128,7 @@ $ tns run android --bundle
         async mounted () {
             try {
                 // 同步连接
-                await remote.connectAsync()
+                await remote.connectPromise()
                 // 订阅帐本
                 remote.on('ledger_closed', (ledger_data) => {
                     this.ledger = ledger_data
