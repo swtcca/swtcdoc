@@ -19,7 +19,7 @@ $ cd vuemobapp
 ```
 4. 安装swtc-lib@nativescript定制版本
 ```bash
-$ npm install swtc-lib@nativescript
+$ npm install swtc-lib
 ```
 5. 更新webpack配置文件，应该只要添加一行就可以了
 > - 编辑webpack.config.js
