@@ -33,7 +33,6 @@ features:
 - 用npm安装
 ```bash
 $ npm install swtc-lib # jingtum-lib接口, 版本为1.6.x, typescript promise
-$ npm install swtc-lib@next # jingtum-lib v2接口, 版本为2.0.x
 $ npm install swtc-lib@jcc # jcc_jingtum_lib接口， 版本为1.5.x
 ```
 - 浏览器直接引用
@@ -48,10 +47,10 @@ const Remote = require('swtc-lib').Remote
 ```
 ## 单行代码操作
 0. 导入钱包/库
-> - `const Wallet = require('swtc-lib').Wallet; const Remote = require('swtc-lib').Remote`
-> - `import { Remote, Wallet } from 'swtc-lib'`
+> - `const Remote = require('swtc-lib').Remote`
+> - `import { Remote } from 'swtc-lib'`
 1. 创建remote对象
->  `const remote = new (require('swtc-lib').Remote)({server: 'ws://ts5.jingtum.com:5020'})`
+>  `const remote = new (require('swtc-lib').Remote)({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS', solidity: true})`
 2. 连接服务器
 >  `remote.connectPromise().then(console.log).catch(console.error)`
 3. 获取帐本
@@ -63,9 +62,9 @@ const Remote = require('swtc-lib').Remote
 6. 获得账号可接收和发送的货币
 >  `remote.requestAccountTums({account: 'address'}).submitPromise().then(console.log)`
 7. 支付
->  `remote.buildPaymentTx({source: 'address1', to: 'address2', amount: Wallet.makeAmount(1)}).submitPromise('secret', 'memo').then(console.log)`
+>  `remote.buildPaymentTx({source: 'address1', to: 'address2', amount: remote.makeAmount(1)}).submitPromise('secret', 'memo').then(console.log)`
 8. 挂单
->  `remote.buildOfferCreateTx({type: 'Sell', account: 'address', taker_gets: Wallet.makeAmount(1), taker_pays: Wallet.makeAmount(0.01, 'cnt')}).submitPromise('secret', 'memo').then(console.log).catch(console.error)`
+>  `remote.buildOfferCreateTx({type: 'Sell', account: 'address', taker_gets: remote.makeAmount(1), taker_pays: remote.makeAmount(0.01, 'cnt')}).submitPromise('secret', 'memo').then(console.log).catch(console.error)`
 9. 查询挂单
 >  `remote.requestAccountOffers({account: DATA.address}).submitPromise().then(console.log)`
 10. 撤单
@@ -75,11 +74,11 @@ const Remote = require('swtc-lib').Remote
 12. 获取授权
 >  `remote.requestAccountRelations({type: 'authorize', account: 'address'}).submitPromise().then(console.log)`
 13. 设置信任
->  `remote.buildRelationTx({type: 'trust', account: 'address', target; 'issuer', limit: Wallet.makeAmount(10000, 'CNY')}).submitPromise('secret', 'memo').then(console.log)`
+>  `remote.buildRelationTx({type: 'trust', account: 'address', target; 'issuer', limit: remote.makeAmount(10000, 'CNY')}).submitPromise('secret', 'memo').then(console.log)`
 14. 设置授权
->  `remote.buildRelationTx({type: 'authorize', account: 'address', target; 'address2', limit: Wallet.makeAmunt(1000, 'CNY')}).submitPromise('secret', 'memo').then(console.log)`
+>  `remote.buildRelationTx({type: 'authorize', account: 'address', target; 'address2', limit: remote.makeAmunt(1000, 'CNY')}).submitPromise('secret', 'memo').then(console.log)`
 15. 获得市场挂单列表
->  `remote.requestOrderBook({gets: Wallet.makeCurrency(), pays: Wallet.makeCurrency('cnt')}).submitPromise().then(console.log).catch(console.error)`
+>  `remote.requestOrderBook({gets: remote.makeCurrency(), pays: remote.makeCurrency('cnt')}).submitPromise().then(console.log).catch(console.error)`
 ## 示例内容
 
 - [x] 展示wallet的创建
