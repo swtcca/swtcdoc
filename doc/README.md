@@ -1,7 +1,7 @@
 # 井通科技
 
 ## jingtum-lib接口说明
-V2.0.3
+V2.1.0
 合约测试只能在特定节点运行
 
 ## [应用实例](../)
@@ -14,6 +14,7 @@ V2.0.3
 |2.0.1|Remote类增加返回结果说明|吴丹|2018/3/15|
 |2.0.2|Remote类增加合约方法|吴丹|2018/5/31|
 |2.0.3|swtc-lib|lospringliu|2019/4/2|
+|2.1.0|合约类solidity|lospringliu|2019/5/7|
 
 ## 目录
 1. ### [安装](#installation)
@@ -33,36 +34,49 @@ V2.0.3
 > ### 4.11 [获得账号挂单](#requestAccountOffers)
 > ### 4.12 [获得账号交易列表](#requestAccountTx)
 > ### 4.13 [获得市场挂单列表](#requestOrderBook)
-> ### 4.14 [支付](#paymentTx)
-> - 4.14.1 创建支付对象
-> - 4.14.2 传入密钥
-> - 4.14.3 设置备注
-> - 4.14.4 提交支付
-> ### 4.15 [设置关系](#relationTx)
-> - 4.15.1 创建关系对象
+> ### 4.14 [获得挂单佣金设置信息](#requestBrokerage)
+> ### 4.15 [支付](#paymentTx)
+> - 4.15.1 创建支付对象
 > - 4.15.2 传入密钥
-> - 4.15.3 关系设置
-> ### 4.16 [设置账号属性 --- 待完善](#accountSetTx)
-> - 4.16.1 创建属性对象
+> - 4.15.3 设置备注
+> - 4.15.4 提交支付
+> ### 4.16 [设置关系](#relationTx)
+> - 4.16.1 创建关系对象
 > - 4.16.2 传入密钥
-> - 4.16.3 属性设置
-> ### 4.17 [挂单](#offerCreate)
-> - 4.17.1 创建挂单对象
+> - 4.16.3 关系设置
+> ### 4.17 [设置账号属性 --- 待完善](#accountSetTx)
+> - 4.17.1 创建属性对象
 > - 4.17.2 传入密钥
-> - 4.17.3 提交挂单
-> ### 4.18 [取消挂单](#offerCancel)
-> - 4.18.1 创建取消挂单对象
+> - 4.17.3 属性设置
+> ### 4.18 [挂单](#offerCreate)
+> - 4.18.1 创建挂单对象
 > - 4.18.2 传入密钥
-> - 4.18.3 取消挂单
-> ### 4.19 [部署合约](#contractDeploy)
-> - 4.19.1 创建部署合约对象
+> - 4.18.3 提交挂单
+> ### 4.19 [取消挂单](#offerCancel)
+> - 4.19.1 创建取消挂单对象
 > - 4.19.2 传入密钥
-> - 4.19.3 部署合约
-> ### 4.20 [调用合约](#contractCall)
-> - 4.20.1 创建执行合约对象
+> - 4.19.3 取消挂单
+> ### 4.20 [部署合约 lua](#contractDeploy)
+> - 4.20.1 创建部署合约对象
 > - 4.20.2 传入密钥
-> - 4.20.3 执行合约
-> ### 4.21 [监听事件](#listen)
+> - 4.20.3 部署合约
+> ### 4.21 [调用合约 lua](#contractCall)
+> - 4.21.1 创建执行合约对象
+> - 4.21.2 传入密钥
+> - 4.21.3 执行合约
+> ### 4.22 [设置挂单佣金](#buildBrokerageTx)
+> - 4.22.1 创建挂单佣金对象
+> - 4.22.2 传入密钥
+> - 4.22.3 设置挂单佣金
+> ### 4.23 [部署合约 solidity](#initContract)
+> - 4.23.1 创建部署合约对象
+> - 4.23.2 传入密钥
+> - 4.23.3 部署合约
+> ### 4.24 [调用合约 solidity](#invokeContract)
+> - 4.24.1 创建执行合约对象
+> - 4.24.2 传入密钥
+> - 4.24.3 执行合约
+> ### 4.25 [监听事件](#listen)
 
 5. ### [REQUEST类](#request)
 > ### 5.1 [指定账本](#requestLedger)
@@ -73,7 +87,10 @@ V2.0.3
 > ### 6.3 [传入私钥](#transactionSecret)
 > ### 6.4 [添加备注](#transactionMemo)
 > ### 6.5 [提交请求](#transactionSubmit)
-7. ### [底层常见错误附录](#errors)
+7. ### 工具类 swtc-utils类是工具类
+8. ### [底层常见错误附录](#errors)
+9. ### [solidity erc20 源码](#erc20src)
+10. ### [solidity erc721 源码](#erc721src)
 
 ## <a name="installation"></a>1 安装
 1. 安装官方库
@@ -838,9 +855,13 @@ remote.connect(function(err, result) {
 |owner_funds|String|用户swt资产|
 |quality|String|价格或价格的倒数|
 |validated|Boolean|交易是否通过验证|
-### <a name="paymentTx"></a> 4.14 支付
+### <a name="requestBrokerage"></a> 4.14 获得挂单佣金设置信息
+#### 首先通过requestBrokerage方法返回一个Transaction对象，然后通过submit方法提交。
+##### 方法: remote.requestBrokerage({});
+##### 参数:
+### <a name="paymentTx"></a> 4.15 支付
 #### 首先通过buildPaymentTx方法返回一个Transaction对象，然后通过setSecret传入密钥，addMemo添加备注为可选项，最后通过submit方法提交支付信息。
-#### <a name="paymentBuildTx"></a> 4.14.1 创建支付对象
+#### <a name="paymentBuildTx"></a> 4.15.1 创建支付对象
 ##### 方法: remote.buildPaymentTx({});
 ##### 参数:
 |参数|类型|说明|
@@ -852,19 +873,19 @@ remote.connect(function(err, result) {
 |currency|String|货币种类，三到六个字母或20字节的自定义货币|
 |issuer|String|货币发行方|
 ##### 返回:Transaction对象
-#### <a name="paymentSetSecret"></a> 4.14.2 传入密钥
+#### <a name="paymentSetSecret"></a> 4.15.2 传入密钥
 ##### 方法:tx.setSecret(secret);
 ##### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |secret|String|井通钱包私钥|
-#### <a name="paymentSetMemo"></a> 4.14.3 设置备注
+#### <a name="paymentSetMemo"></a> 4.15.3 设置备注
 ##### 方法:tx.addMemo(memo);
 ##### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |memo|String|备注信息|
-#### <a name="paymentSubmit"></a> 4.14.4 提交支付
+#### <a name="paymentSubmit"></a> 4.15.4 提交支付
 ##### 方法:tx.submit(callback);
 ##### 参数:无
 #### 支付完整例子
@@ -938,9 +959,9 @@ remote.connect(function(err, result) {
 |&nbsp;&nbsp;&nbsp;TransactionType|String|交易类型|
 |&nbsp;&nbsp;&nbsp;TxnSignature|String|交易签名|
 |&nbsp;&nbsp;&nbsp;hash|String|交易hash|
-### <a name="relationTx"></a> 4.15 设置关系
+### <a name="relationTx"></a> 4.17 设置关系
 #### 首先通过buildRelationTx方法返回一个Transaction对象，然后通过setSecret传入密钥，最 后通过submit方法提交支付信息。目前支持的关系类型:信任(trust)、授权(authorize)、冻结 (freeze)
-#### <a name="relationBuildTx"></a> 4.15.1 创建关系对象
+#### <a name="relationBuildTx"></a> 4.17.1 创建关系对象
 ##### 方法:remote.buildRelationTx({});
 ##### 参数
 |参数|类型|说明|
@@ -953,13 +974,13 @@ remote.connect(function(err, result) {
 |currency|String|货币种类，三到六个字母或20字节的自定义货币|
 |issuer|String|货币发行方|
 ##### 返回:Transaction对象
-#### <a name="relationSetSecret"></a> 4.15.2 传入密钥
+#### <a name="relationSetSecret"></a> 4.17.2 传入密钥
 ##### 方法:tx.setSecret(secret);
 ##### 参数
 |参数|类型|说明|
 |----|----|---:|
 |secret|String|井通钱包私钥|
-#### <a name="relationSubmit"></a> 4.15.3 关系设置
+#### <a name="relationSubmit"></a> 4.17.3 关系设置
 ##### 方法: tx.submit(callback);
 #####  参数:无
 #### 设置关系完整例子
@@ -1041,9 +1062,9 @@ remote.connect(function(err, result) {
 |&nbsp;&nbsp;TransactionType|String|交易类型:TrustSet信任;RelationDel解冻;RelationSet 授权/冻结|
 |&nbsp;&nbsp;TxnSignature|String|交易签名|
 |&nbsp;&nbsp;hash|String|交易hash|
-### <a name="accountSetTx"></a> 4.16 设置账号属性 ------待完善
+### <a name="accountSetTx"></a> 4.17 设置账号属性 ------待完善
 #### 首先通过buildAccountSetTx方法返回一个Transaction对象，然后通过setSecret传入密钥， 最后通过submit方法设置账号属性。目前支持的三类:`property`、`delegate` 、`signer`。property 用于设置账号一般属性;delegate用于某账号设置委托帐户;signer用于设置签名。
-#### <a name="accountSetBuild"></a>4.16.1 创建属性对象
+#### <a name="accountSetBuild"></a>4.17.1 创建属性对象
 ##### 方法:remote.buildAccountSetTx({});
 ##### 参数:
 |参数|类型|说明|
@@ -1052,13 +1073,13 @@ remote.connect(function(err, result) {
 |account|String|设置属性的源账号|
 |set_flag|String|属性编号|
 ##### 返回:Transaction对象
-#### <a name="accountSetSecret"></a>4.16.2 传入密钥
+#### <a name="accountSetSecret"></a>4.17.2 传入密钥
 ##### 方法:tx.setSecret(secret);
 ##### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |secret|String|井通钱包私钥|
-#### <a name="accountSetSubmit"></a>4.16.3 属性设置
+#### <a name="accountSetSubmit"></a>4.17.3 属性设置
 ##### 方法:tx.submit(callback);
 ##### 参数:无
 #### 设置属性完整例子
@@ -1489,7 +1510,71 @@ remote.connect(function (err, result) {
 |&nbsp;&nbsp;&nbsp;TransactionType|String|交易类型:ConfigContract合约类|
 |&nbsp;&nbsp;&nbsp;TxnSignature|String|交易签名|
 |&nbsp;&nbsp;&nbsp;hash|String|交易hash|
-### <a name="listen"></a> 4.21 监听事件
+### <a name="buildBrokerageTx"></a> 4.22 设置挂单佣金
+#### 首先通过buildBrokerageTx方法返回一个Transaction对象，然后通过setSecret传入密钥，最后 通过submit方法设置平台手续费
+#### 4.22.1 创建挂单佣金对象
+##### 方法: remote.buildBrokerageTx({})
+##### 参数:
+|参数|类型|说明|
+|----|----|---:|
+|account|String|管理员账号|
+|mol|Integer|分子(0和正整数)|
+|den|Integer|分母(正整数)|
+|app|Integer|应用来源序号(正整数)|
+|amount|Object|币种对象|
+|value|String|数量，这里只是占位，没有实际意义。|
+|currency|String|货币种类|
+|issuer|String|货币发行方|
+#### 4.22.2 传入密钥
+##### 方法:tx.setSecret(secret)
+##### 参数:
+#### 4.22.3 设置挂单佣金
+##### 方法:tx.submit(callback);
+##### 参数:无
+### <a name="initContract"></a>4.23 部署合约 Solidity版
+#### 首先通过initContract方法返回一个Transaction对象，然后通过setSecret传入密钥，最后通过submit方法完成合约的部署
+#### 4.23.1 创建合约部署对象
+##### 方法:remote.initContract({});
+##### 参数
+|参数|类型|说明|
+|----|----|---:|
+|account|String|合约发布者|
+|amount|Integer|手续费|
+|payload|String|合约编译后的16进制字节码|
+|abi|Array|合约abi|
+|params|Array|可选，合约初始化参数|
+##### 返回:Transaction对象
+#### <a name="initContractSetSecret"></a> 4.23.2 传入密钥
+##### 方法:tx.setSecret(secret);
+##### 参数:
+|参数|类型|说明|
+|----|----|---:|
+|secret|String|合约发布者私钥|
+#### <a name="initContractSubmit"></a> 4.23.3 部署合约
+##### 方法:tx.submit(callback);
+##### 参数:无
+### <a name="invokeContract"></a>4.24 调用合约(Solidity版)
+#### 首先通过invokeContract方法返回一个Transaction对象，然后通过setSecret传入密钥，最后通过submit方法完成合约的调用。 
+#### 4.24.1 创建合约调用对象
+##### 方法:remote.invokeContract({})
+##### 参数
+|参数|类型|说明|
+|----|----|---:|
+|account|String|合约发布者|
+|destination|String|合约帐号|
+|abi|Array|合约abi|
+|func|String|合约函数名及参数|
+##### 返回:Transaction对象
+#### <a name="invokeContractSetSecret"></a> 4.24.2 传入密钥
+##### 方法:tx.setSecret(secret);
+##### 参数:
+|参数|类型|说明|
+|----|----|---:|
+|secret|String|合约执行者私钥|
+#### <a name="invokeContractSubmit"></a> 4.24.3 执行合约
+##### 方法:tx.submit(callback);
+##### 参数:无
+### <a name="listen"></a> 4.25 监听事件
 #### Remote有两个监听事件:监听所有交易(transactions)和监听所有账本(ledger_closed)，监听结果放到回调函数中，回调中只有一个参数，为监听到的消息。
 #### 方法:remote.on('transactions',callback);
 #### 方法:remote.on('ledger_closed',callback);
@@ -1757,3 +1842,60 @@ if (err) {
 |terPRE_SEQ|Missing/inapplicable prior transaction.|
 |terOWNERS|Non-zero owner count.|
 |tesSUCCESS|The transaction was applied. Only final in a validated ledger.|
+## 9. <a name="erc20src"></a>erc20源码
+```solidity
+pragma solidity ^0.4.19;
+contract TokenTest {
+  string public name;
+  string public symbol;
+  uint8 public decimals = 18; // decimals 可以有的小数点个数，最小的代币单位。18 是建议的默认值
+  uint256 public totalSupply;
+  // 用mapping保存每个地址对应的余额
+  mapping (address => uint256) public balanceOf; // 存储对账号的控制
+  mapping (address => mapping (address => uint256)) public allowance;
+  
+  /*
+   *
+   * 初始化构造
+   */
+  function TokenTest(uint256 initialSupply, string tokenName, string tokenSymbol) public {
+    totalSupply = initialSupply * 10 ** uint256(decimals); // 供应的 份额，份额跟最小的代币单位有关，份额 = 币数 * 10 ** decimals。
+    balanceOf[msg.sender] = totalSupply;
+    name = tokenName; // 代币名称
+    symbol = tokenSymbol; // 代币符号
+  }
+  
+  /*
+   *
+   * 代币交易转移的内部实现
+   */
+  function _transfer(address _from, address _to, uint _value) internal {
+    // 确保目标地址不为0x0，因为0x0地址代表销毁 require(_to != 0x0);
+    // 检查发送者余额
+    require(balanceOf[_from] >= _value);
+    // 确保转移为正数个
+    require(balanceOf[_to] + _value > balanceOf[_to]);
+    // 以下用来检查交易，
+    uint previousBalances = balanceOf[_from] + balanceOf[_to]; // Subtract from the sender
+    balanceOf[_from] -= _value;
+    // Add the same to the recipient
+    balanceOf[_to] += _value;
+    // 用assert来检查代码逻辑。
+    assert(balanceOf[_from] + balanceOf[_to] == previousBalances);
+  }
+  
+  /*
+   *
+   * 代币交易转移
+   * 从自己(创建交易者)账号发送`_value`个代币到 `_to`账号 * @param _to 接收者地址
+   * @param _value 转移数额
+   */
+    function transfer(address _to, uint256 _value) public {
+      _transfer(msg.sender, _to, _value);
+    }
+    function() public {
+      revert();
+    }
+}
+```
+## 10. erc721源码
