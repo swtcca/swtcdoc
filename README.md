@@ -143,6 +143,7 @@ const Remote = require('swtc-lib').Remote
 > - [A02 承诺 promisify](A02)
 > - [A03 同步 async/await](A03)
 > - [A04 Typescript](A04)
+> - [A05 KOA](A05)
 > - 终端图形界面
 
 ## 相关知识
