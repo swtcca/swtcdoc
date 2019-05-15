@@ -23,7 +23,7 @@ features:
 
 ## [swtc-api](docapi) 
 ## [swtc-lib增强](docswtc) 
-## [jingtum-lib 文档](doc)
+## [swtc-lib文档](doc)
 
 ## 使用swtc-lib
 

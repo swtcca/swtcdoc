@@ -9,10 +9,6 @@ V2.1.0
 ## 版本历史
 |版本|简介|作者|日期|
 |-----|--------|-----------|-------------|
-|1.0.0|初版主要接口说明|吴丹|2018/2/28|
-|2.0.0|整体接口说明|吴丹|2018/3/2|
-|2.0.1|Remote类增加返回结果说明|吴丹|2018/3/15|
-|2.0.2|Remote类增加合约方法|吴丹|2018/5/31|
 |2.0.3|swtc-lib|lospringliu|2019/4/2|
 |2.1.0|合约类solidity|lospringliu|2019/5/7|
 
@@ -37,45 +33,34 @@ V2.1.0
 > ### 4.14 [获得挂单佣金设置信息](#requestBrokerage)
 > ### 4.15 [支付](#paymentTx)
 > - 4.15.1 创建支付对象
-> - 4.15.2 传入密钥
-> - 4.15.3 设置备注
-> - 4.15.4 提交支付
+> - 4.15.2 提交支付
 > ### 4.16 [设置关系](#relationTx)
 > - 4.16.1 创建关系对象
-> - 4.16.2 传入密钥
-> - 4.16.3 关系设置
+> - 4.16.2 关系设置
 > ### 4.17 [设置账号属性 --- 待完善](#accountSetTx)
 > - 4.17.1 创建属性对象
-> - 4.17.2 传入密钥
-> - 4.17.3 属性设置
+> - 4.17.2 属性设置
 > ### 4.18 [挂单](#offerCreate)
 > - 4.18.1 创建挂单对象
-> - 4.18.2 传入密钥
-> - 4.18.3 提交挂单
+> - 4.18.2 提交挂单
 > ### 4.19 [取消挂单](#offerCancel)
 > - 4.19.1 创建取消挂单对象
-> - 4.19.2 传入密钥
-> - 4.19.3 取消挂单
+> - 4.19.2 取消挂单
 > ### 4.20 [部署合约 lua](#contractDeploy)
 > - 4.20.1 创建部署合约对象
-> - 4.20.2 传入密钥
-> - 4.20.3 部署合约
+> - 4.20.2 部署合约
 > ### 4.21 [调用合约 lua](#contractCall)
 > - 4.21.1 创建执行合约对象
-> - 4.21.2 传入密钥
-> - 4.21.3 执行合约
+> - 4.21.2 执行合约
 > ### 4.22 [设置挂单佣金](#buildBrokerageTx)
 > - 4.22.1 创建挂单佣金对象
-> - 4.22.2 传入密钥
-> - 4.22.3 设置挂单佣金
+> - 4.22.2 设置挂单佣金
 > ### 4.23 [部署合约 solidity](#initContract)
 > - 4.23.1 创建部署合约对象
-> - 4.23.2 传入密钥
-> - 4.23.3 部署合约
+> - 4.23.2 部署合约
 > ### 4.24 [调用合约 solidity](#invokeContract)
 > - 4.24.1 创建执行合约对象
-> - 4.24.2 传入密钥
-> - 4.24.3 执行合约
+> - 4.24.2 执行合约
 > ### 4.25 [监听事件](#listen)
 
 5. ### [REQUEST类](#request)
@@ -163,36 +148,51 @@ console.log(w2);
 * buildOfferCancelTx(options)
 * deployContractTx(options)
 * callContractTx(options)
+### swtc-lib REMOTE 独享
+* remote.connectPromise()
+* req.submitPromise()
+* tx.signPromise()
+* tx.submitPromise()
+
 ### <a name="remoteCreate"></a>4.1 创建Remote对象
 #### 方法:new Remote(options);
 #### 参数:
 |参数    |类型    |说明        |
 |--------|--------|-----------:|
 |server|String|井通底层服务地址|
-|local_sign|Boolean|交易是否以本地签名的方式发送给底层|
+|issuer|String|默认银关|
+|solidity|Boolean|启用solidity支持|
 #### 例子
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 ```
 ### <a name="remoteConnect"></a>4.2 创建连接
 #### 每个Remote对象都应该首先手动连接底层，然后才可以请求底层的数据。请求结果在回调函数callback中
 #### 方法: connect(callback)
 #### 参数: 回调函数 callback(err, result)
+#### 方法: connectPromise()
+#### 参数: 无
 #### 例子
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign:
-true});
-remote.connect(function(err, result) {
-    if (err) {
-        console.log('err:',err);
-    }else{
-        console.log(result);
-    }
-});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+// remote.connect( (error, server_info) => {
+// 	if (error) {
+// 		console.log(error)
+// 	} else {
+// 		console.log(server_info)
+// 		remote.disconnect()
+// 	}
+// })
+remote.connectPromise()
+	.then( server_info => {
+		console.log(server_info)
+		remote.disconnect()
+	})
+	.catch(console.error)
 ```
 #### 返回结果
 ```json
@@ -235,14 +235,8 @@ remote.connect(function(err, result) {
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
-remote.connect(function(err, result) {
-    if (err) {
-        console.log('err:',err);
-    }else{
-        remote.disconnect(); //关闭连接
-    }
-});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+remote.connectPromise().then( () => remote.disconnect() ).catch(console.error)
 ```
 ### <a name="requestServerInfo"></a> 4.4 请求底层服务器信息
 #### 首先通过本方法返回一个Request对象，然后通过submit方法获得井通底层的服务器信息，包含 服务程序版本号version、该服务器缓存的账本区间ledgers、节点公钥node、服务器当前状态 state。其中服务器当前状态包含可提供服务状态full和验证节点状态proposing。
@@ -253,22 +247,15 @@ remote.connect(function(err, result) {
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign:
-true});
-remote.connect(function (err, result) {
-    if (err) {
-        console.log('err:', err);
-    } else {
-        var req = remote.requestServerInfo();
-        req.submit(function (err, result) {
-            if (err) {
-                console.log('err:', err);
-            } else {
-                console.log('serverInfo:', result);
-            }
-       });
-    }
-});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+remote.connectPromise()
+	.then(async () => { 
+			let response = await remote.requestServerInfo().submitPromise()
+			console.log(response)
+			remote.disconnect()
+		}
+	)
+	.catch(console.error)
         
 ```
 #### 返回结果
@@ -297,21 +284,15 @@ remote.connect(function (err, result) {
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign:
-true});
-remote.connect(function (err, result) {
-    if (err) {
-        console.log('err:', err);
-    } else {
-        var req = remote.requestLedgerClosed(); req.submit(function (err, result) {
-            if (err) {
-                console.log('err:', err);
-            } else {
-                console.log('ledgerInfo:', result);
-            }
-        });
-    }
-});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+remote.connectPromise()
+	.then(async () => { 
+			let response = await remote.requestLedgerClosed().submitPromise()
+			console.log(response)
+			remote.disconnect()
+		}
+	)
+	.catch(console.error)
 ```
 #### 返回结果
 ```javascript
@@ -339,24 +320,18 @@ remote.connect(function (err, result) {
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign:
-true});
-remote.connect(function(err, result) {
-    if (err) {
-        return console.log('err:',err);
-    }
-    //var req = remote.requestLedger({}); // 将默认返回最新账本信息
-    var req = remote.requestLedger({
-        ledger_index: '2838718',
-        transactions: true
-    });
-    req.submit(function(err, result) {
-        if(err) {console.log('err:',err);}
-        else if(result){
-            console.log('res:', result);
-        }
-    });
-});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+remote.connectPromise()
+	.then(async () => { 
+			let response = await remote.requestLedger({
+					ledger_index: '2838718',
+					transactions: true
+				}).submitPromise()
+			console.log(response)
+			remote.disconnect()
+		}
+	)
+	.catch(console.error)
 ```
 #### 返回结果
 ```javascript
@@ -411,20 +386,16 @@ remote.connect(function(err, result) {
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
-remote.connect(function(err, result) {
-    if (err) {
-        return console.log('err:',err);
-    }
-    var req = remote.requestTx({hash: '2C3F60ABEC539BEE768FAE1820B9C284C7EC2D45EF1D7F9E28F4357056E822F7'});
-    req.submit(function(err, result) {
-        if(err) {console.log('err:',err);}
-        else if(result){
-            console.log('res:', result);
-            var fee = result.Fee/1000000; console.log('关键信息:【 交易费:', fee, '】');
-        }
-    });
-});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+remote.connectPromise()
+	.then(async () => {
+    		let req = remote.requestTx({hash: '2C3F60ABEC539BEE768FAE1820B9C284C7EC2D45EF1D7F9E28F4357056E822F7'});
+			let response = await req.submitPromise()
+			console.log(response)
+			remote.disconnect()
+		}
+	)
+	.catch(console.error)
 ```
 #### 返回结果
 ```javascript
@@ -488,20 +459,17 @@ remote.connect(function(err, result) {
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
-remote.connect(function(err, result) {
-    if (err) {
-        return console.log('err:',err);
-    }
-    var options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz'};
-    var req = remote.requestAccountInfo(options);
-    req.submit(function(err, result) {
-        if(err) {console.log('err:',err);}
-        else if(result){
-            console.log('res:', result);
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+remote.connectPromise()
+    .then(async () => {
+    		let options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz'};
+    		let req = remote.requestAccountInfo(options);
+            let response = await req.submitPromise()
+            console.log(response)
+            remote.disconnect()
         }
-    });
-});
+    )
+    .catch(console.error)
 ```
 #### 返回结果
 ```javascript
@@ -553,20 +521,17 @@ remote.connect(function(err, result) {
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
-remote.connect(function(err, result) {
-    if (err) {
-        return console.log('err:',err);
-    }
-    var options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz'};
-    var req = remote.requestAccountTums(options);
-    req.submit(function(err, result) {
-        if(err) {console.log('err:',err);}
-        else if(result){
-            console.log('res:', result);
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+remote.connectPromise()
+    .then(async () => {
+            let options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz'};
+    		let req = remote.requestAccountTums(options);
+            let response = await req.submitPromise()
+            console.log(response)
+            remote.disconnect()
         }
-    });
-});
+    )
+    .catch(console.error)
 ```
 #### 返回结果
 ```javascript
@@ -599,20 +564,17 @@ remote.connect(function(err, result) {
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
-remote.connect(function(err, result) {
-    if (err) {
-        return console.log('err:',err);
-    }
-    var options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',type:'trust'};
-    var req = remote.requestAccountRelations(options);
-    req.submit(function(err, result) {
-        if(err) {console.log('err:',err);}
-        else if(result){
-            console.log('res:', result);
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+remote.connectPromise()
+    .then(async () => {
+    		let options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',type:'trust'};
+    		let req = remote.requestAccountRelations(options);
+            let response = await req.submitPromise()
+            console.log(response)
+            remote.disconnect()
         }
-    });
-});
+    )
+    .catch(console.error)
 ```
 #### 返回结果
 ```javascript
@@ -657,20 +619,17 @@ remote.connect(function(err, result) {
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
-remote.connect(function(err, result) {
-    if (err) {
-        return console.log('err:',err);
-    }
-    var options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz'};
-    var req = remote.requestAccountOffers(options);
-    req.submit(function(err, result) {
-        if(err) {console.log('err:',err);}
-        else if(result){
-            console.log('res:', result);
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+remote.connectPromise()
+    .then(async () => {
+    	    let options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz'};
+   		    let req = remote.requestAccountOffers(options);
+            let response = await req.submitPromise()
+            console.log(response)
+            remote.disconnect()
         }
-    });
-});
+    )
+    .catch(console.error)
 ```
 #### 返回结果
 ```javascript
@@ -716,20 +675,17 @@ remote.connect(function(err, result) {
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
-remote.connect(function(err, result) {
-    if (err) {
-        return console.log('err:',err);
-    }
-    var options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz'};
-    var req = remote.requestAccountTx(options);
-    req.submit(function(err, result) {
-        if(err) {console.log('err:',err);}
-        else if(result){
-            console.log('res:', result);
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+remote.connectPromise()
+    .then(async () => {
+    	    let options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz'};
+    	    let req = remote.requestAccountTx(options);
+            let response = await req.submitPromise()
+            console.log(response)
+            remote.disconnect()
         }
-    });
-});
+    )
+    .catch(console.error)
 ```
 #### 返回结果
 ```javascript
@@ -790,24 +746,21 @@ remote.connect(function(err, result) {
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
-remote.connect(function(err, result) {
-    if (err) {
-        return console.log('err:',err);
-    }
-    var options = {
-        limit: 5,
-        pays: { currency: 'SWT', issuer: '' },
-        gets: { currency: 'CNY', issuer: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D' }
-    };
-    var req = remote.requestOrderBook(options);
-    req.submit(function(err, result) {
-        if(err) {console.log('err:',err);}
-        else if(result){
-            console.log('res:', result);
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+remote.connectPromise()
+    .then(async () => {
+   		    let options = {
+   		        limit: 5,
+   		        pays: remote.makeCurrency(),
+   		        gets: remote.makeCurrency('CNY')
+   		    }
+            let req = remote.requestOrderBook(options);
+            let response = await req.submitPromise()
+            console.log(response)
+            remote.disconnect()
         }
-    });
-});
+    )
+    .catch(console.error)
 ```
 #### 返回结果
 ```javascript
@@ -873,48 +826,32 @@ remote.connect(function(err, result) {
 |currency|String|货币种类，三到六个字母或20字节的自定义货币|
 |issuer|String|货币发行方|
 ##### 返回:Transaction对象
-#### <a name="paymentSetSecret"></a> 4.15.2 传入密钥
-##### 方法:tx.setSecret(secret);
+#### <a name="paymentSubmit"></a> 4.15.2 提交支付
+##### 方法:tx.submitPromise(secret, memo)
 ##### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |secret|String|井通钱包私钥|
-#### <a name="paymentSetMemo"></a> 4.15.3 设置备注
-##### 方法:tx.addMemo(memo);
-##### 参数:
-|参数|类型|说明|
-|----|----|---:|
 |memo|String|备注信息|
-#### <a name="paymentSubmit"></a> 4.15.4 提交支付
-##### 方法:tx.submit(callback);
-##### 参数:无
+##### 返回: Promise
 #### 支付完整例子
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
-remote.connect(function(err, result) {
-    if (err) {
-        return console.log('err:',err);
-    }
-    var tx = remote.buildPaymentTx({
-        account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
-        to: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
-        amount: {
-            "value": 99900,
-            "currency": "SWT",
-            "issuer": ""
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+remote.connectPromise()
+    .then(async () => {
+   		     let tx = remote.buildPaymentTx({
+   		         account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+   		         to: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
+   		         amount: remote.makeAmount(99900)
+   		     });
+            let response = await tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C', '给支付')
+            console.log(response)
+            remote.disconnect()
         }
-    });
-    tx.setSecret('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C');
-    tx.addMemo('给支付'); // 可选
-    tx.submit(function(err, result) {
-        if(err) {console.log('err:',err);}
-        else if(result){
-            console.log('res:', result);
-        }
-    });
-});
+    )
+    .catch(console.error)
 ```
 #### 返回结果
 ```javascript
@@ -959,9 +896,9 @@ remote.connect(function(err, result) {
 |&nbsp;&nbsp;&nbsp;TransactionType|String|交易类型|
 |&nbsp;&nbsp;&nbsp;TxnSignature|String|交易签名|
 |&nbsp;&nbsp;&nbsp;hash|String|交易hash|
-### <a name="relationTx"></a> 4.17 设置关系
+### <a name="relationTx"></a> 4.16 设置关系
 #### 首先通过buildRelationTx方法返回一个Transaction对象，然后通过setSecret传入密钥，最 后通过submit方法提交支付信息。目前支持的关系类型:信任(trust)、授权(authorize)、冻结 (freeze)
-#### <a name="relationBuildTx"></a> 4.17.1 创建关系对象
+#### <a name="relationBuildTx"></a> 4.16.1 创建关系对象
 ##### 方法:remote.buildRelationTx({});
 ##### 参数
 |参数|类型|说明|
@@ -974,43 +911,36 @@ remote.connect(function(err, result) {
 |currency|String|货币种类，三到六个字母或20字节的自定义货币|
 |issuer|String|货币发行方|
 ##### 返回:Transaction对象
-#### <a name="relationSetSecret"></a> 4.17.2 传入密钥
-##### 方法:tx.setSecret(secret);
-##### 参数
+#### <a name="relationSubmit"></a> 4.16.2 关系设置
+##### 方法:tx.submitPromise(secret, memo)
+##### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |secret|String|井通钱包私钥|
-#### <a name="relationSubmit"></a> 4.17.3 关系设置
+|memo|String|备注信息|
+##### 返回: Promise
 ##### 方法: tx.submit(callback);
 #####  参数:无
 #### 设置关系完整例子
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
-remote.connect(function(err, result) {
-    if (err) {
-        return console.log('err:',err);
-    }
-    var options = {
-        account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
-        target: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
-        limit:{
-            currency: 'CNY',
-            value: "1",
-            issuer: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D'
-        },
-        type:'authorize'
-    };
-    var tx = remote.buildRelationTx(options);
-    tx.setSecret('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C');
-    tx.submit(function(err, result) {
-        if(err) {console.log('err:',err);}
-        else if(result){
-            console.log('res:', result);
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+remote.connectPromise()
+    .then(async () => {
+   		    let options = {
+   		        account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+   		        target: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
+   		        limit: remote.makeAmount(1, 'CNY'),
+   		        type:'authorize'
+   		    };
+   		    let tx = remote.buildRelationTx(options);
+            let response = await tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C', '授权')
+            console.log(response)
+            remote.disconnect()
         }
-    });
-});
+    )
+    .catch(console.error)
 ```
 #### 返回结果
 ```javascript
@@ -1073,20 +1003,19 @@ remote.connect(function(err, result) {
 |account|String|设置属性的源账号|
 |set_flag|String|属性编号|
 ##### 返回:Transaction对象
-#### <a name="accountSetSecret"></a>4.17.2 传入密钥
-##### 方法:tx.setSecret(secret);
+#### <a name="accountSetSubmit"></a>4.17.2 属性设置
+##### 方法:tx.submitPromise(secret, memo)
 ##### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |secret|String|井通钱包私钥|
-#### <a name="accountSetSubmit"></a>4.17.3 属性设置
-##### 方法:tx.submit(callback);
-##### 参数:无
+|memo|String|备注信息|
+##### 返回: Promise
 #### 设置属性完整例子
 ```javascript
 var jlib = require('swtc-lib')
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 remote.connect(function(err, result) {
     if (err) {
         return console.log('err:',err);
@@ -1127,9 +1056,9 @@ remote.connect(function(err, result) {
      hash:
       '56969504AF776BB5EBC8830D87822E201973C4EBCD24CEA64A90D10EF740BD90' } }
 ```
-### <a name="offerCreate"></a> 4.17 挂单
+### <a name="offerCreate"></a> 4.18 挂单
 #### 首先通过buildOfferCreateTx方法返回一个Transaction对象，然后通过setSecret传入密钥，最后通过submit方法提交挂单。
-#### <a name="offerCreateBuild"></a> 4.17.1 创建挂单对象
+#### <a name="offerCreateBuild"></a> 4.18.1 创建挂单对象
 ##### 方法:remote.buildOfferCreateTx({});
 ##### 参数:
 |参数|类型|说明|
@@ -1145,49 +1074,35 @@ remote.connect(function(err, result) {
 |&nbsp;&nbsp;&nbsp;currency|String|货币种类|
 |&nbsp;&nbsp;&nbsp;issuer|String|货币发行方|
 ##### 返回:Transaction对象
-#### <a name="offerCreateSetSecret"></a> 4.17.2 传入密钥
-##### 方法:tx.setSecret(secret);
+#### <a name="offerCreateSubmit"></a> 4.18.2 提交挂单
+##### 方法:tx.submitPromise(secret, memo)
 ##### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |secret|String|井通钱包私钥|
-#### <a name="offerCreateSubmit"></a> 4.17.3 提交挂单
-##### 方法:tx.submit(callback);
-##### 参数:无
+|memo|String|备注信息|
+##### 返回: Promise
+#### 设置属性完整例子
 #### 挂单完整例子
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
-remote.connect(function (err, result) {
-    if (err) {
-        return console.log('err:', err);
-    }
-    var options = {
-        type: 'Sell',
-        account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
-        taker_pays: {
-            value: '0.01',
-            currency: 'CNY',
-            issuer: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D'
-        },
-        taker_gets: {
-            value: '1',
-            currency: 'SWT',
-            issuer: ''
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+remote.connectPromise()
+    .then(async () => {
+    		let options = {
+    		    type: 'Sell',
+    		    account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+    		    taker_pays: remote.makeAmount(0.01, 'CNY'),
+    		    taker_gets: remote.makeAmount(1)
+    		};
+    		let tx = remote.buildOfferCreateTx(options);
+            let response = await tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C')
+            console.log(response)
+            remote.disconnect()
         }
-    };
-    var tx = remote.buildOfferCreateTx(options);
-    tx.setSecret('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C');
-    tx.submit(function (err, result) {
-        if (err) {
-            console.log('err:', err);
-        }
-        else if (result) {
-            console.log('res:', result);
-        }
-    });
-});
+    )
+    .catch(console.error)
 ```
 ##### 返回结果:
 ```javascript
@@ -1237,9 +1152,9 @@ remote.connect(function (err, result) {
 |&nbsp;&nbsp;&nbsp;TransactionType|String|交易类型:TrustSet信任;RelationDel解冻;RelationSet 授权/冻结|
 |&nbsp;&nbsp;&nbsp;TxnSignature|String|交易签名|
 |&nbsp;&nbsp;&nbsp;hash|String|交易hash|
-### <a name="offerCancel"></a> 4.18 取消挂单
+### <a name="offerCancel"></a> 4.19 取消挂单
 #### 首先通过buildOfferCancelTx方法返回一个Transaction对象，然后通过setSecret传入密钥，最后通过submit方法取消挂单。
-#### 4.18.1 <a name="offerCancelBuild"></a> 创建取消挂单对象
+#### 4.19.1 <a name="offerCancelBuild"></a> 创建取消挂单对象
 #### 方法:remote.buildOfferCancelTx({});
 #### 参数:
 |参数|类型|说明|
@@ -1247,36 +1162,29 @@ remote.connect(function (err, result) {
 |account|String||挂单方账号|
 |sequence|Integer|取消的单子号|
 #### 返回:Transaction对象
-#### <a name="offerCancelSetSecret"></a> 4.18.2 传入密钥
-##### 方法:tx.setSecret(secret);
+#### <a name="offerCancelSubmit"></a> 4.19.2 取消挂单
+##### 方法:tx.submitPromise(secret, memo)
 ##### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |secret|String|井通钱包私钥|
-#### <a name="offerCancelSubmit"></a> 4.18.3 取消挂单
-##### 方法:tx.submit(callback);
-##### 参数:无
+|memo|String|备注信息|
+##### 返回: Promise
 #### 挂单完整例子
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
-remote.connect(function (err, result) {
-    if (err) {
-        return console.log('err:', err);
-    }
-    var options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', sequence: 7};
-    var tx = remote.buildOfferCancelTx(options);
-    tx.setSecret('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C');
-    tx.submit(function (err, result) {
-        if (err) {
-            console.log('err:', err);
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+remote.connectPromise()
+    .then(async () => {
+   		    let options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', sequence: 7};
+   		    let tx = remote.buildOfferCancelTx(options);
+            let response = await tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C')
+            console.log(response)
+            remote.disconnect()
         }
-        else if (result) {
-            console.log('res:', result);
-        }
-    });
-});
+    )
+    .catch(console.error)
 ```
 #### 返回结果
 ```javascript
@@ -1318,9 +1226,9 @@ remote.connect(function (err, result) {
 |&nbsp;&nbsp;&nbsp;TransactionType|String|交易类型:OfferCancel取消订单|
 |&nbsp;&nbsp;&nbsp;TxnSignature|String|交易签名|
 |&nbsp;&nbsp;&nbsp;hash|String|交易hash|
-### <a name="contractDeploy"></a>4.19 部署合约
+### <a name="contractDeploy"></a>4.20 部署合约 lua
 #### 首先通过deployContractTx方法返回一个Transaction对象，然后通过setSecret传入密钥，最后通过submit方法取消挂单。
-#### <a name="contractDeployBuild"></a>4.19.1 创建部署合约对象
+#### <a name="contractDeployBuild"></a>4.20.1 创建部署合约对象
 ##### 方法:remote.deployContractTx({});
 ##### 参数:
 |参数|类型|说明|
@@ -1333,21 +1241,21 @@ remote.connect(function (err, result) {
 |----|----|---:|
 |params|String|合约参数|
 #### 返回:Transaction对象
-#### <a name="contractDeploySetSecret"></a> 4.19.2 传入密钥
+#### <a name="contractDeploySetSecret"></a> 4.20.2 传入密钥
 ##### 方法:tx.setSecret(secret);
 ##### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |secret|String|井通钱包私钥|
-#### <a name="contractDeploySubmit"></a> 4.19.3 部署合约
+#### <a name="contractDeploySubmit"></a> 4.20.3 部署合约
 ##### 方法:tx.submit(callback);
 ##### 参数:无
 #### 部署合约完整例子
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var utils = jlib.utils;
-var remote = new Remote({server: 'ws://123.57.209.177:5030', local_sign: true});
+var utils = Remote.utils;
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 remote.connect(function (err, result) {
     if (err) {
         return console.log('err:', err);
@@ -1417,9 +1325,9 @@ remote.connect(function (err, result) {
 |&nbsp;&nbsp;&nbsp;TransactionType|String|交易类型:ConfigContract部署合约|
 |&nbsp;&nbsp;&nbsp;TxnSignature|String|交易签名|
 |&nbsp;&nbsp;&nbsp;hash|String|交易hash|
-### <a name="contractCall"></a> 4.20 执行合约
+### <a name="contractCall"></a> 4.21 执行合约 lua
 #### 首先通过callContractTx方法返回一个Transaction对象，然后通过setSecret传入密钥，最后通过submit方法取消挂单
-#### <a name="contractCallBuild"></a> 4.20.1 创建执行合约对象
+#### <a name="contractCallBuild"></a> 4.21.1 创建执行合约对象
 ##### 方法:remote.callContractTx({});
 ##### 参数:
 |参数|类型|说明|
@@ -1432,20 +1340,20 @@ remote.connect(function (err, result) {
 |----|----|---:|
 |params|String|合约参数|
 #### 返回:Transaction对象
-#### <a name="contractCallSetSecret"></a> 4.20.2 传入密钥
+#### <a name="contractCallSetSecret"></a> 4.21.2 传入密钥
 ##### 方法:tx.setSecret(secret);
 ##### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |secret|String|井通钱包私钥|
-#### <a name="contractCallSubmit"></a> 4.20.3 执行合约
+#### <a name="contractCallSubmit"></a> 4.21.3 执行合约
 ##### 方法:tx.submit(callback);
 ##### 参数:无
 #### 执行合约完整例子
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://123.57.209.177:5030', local_sign: true});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 remote.connect(function (err, result) {
     if (err) {
         return console.log('err:', err);
@@ -1544,15 +1452,71 @@ remote.connect(function (err, result) {
 |abi|Array|合约abi|
 |params|Array|可选，合约初始化参数|
 ##### 返回:Transaction对象
-#### <a name="initContractSetSecret"></a> 4.23.2 传入密钥
-##### 方法:tx.setSecret(secret);
-##### 参数:
+#### <a name="initContractSubmit"></a> 4.23.2 部署合约
+##### 方法:tx.submitPromise(secret);
+##### 参数: 密钥
 |参数|类型|说明|
 |----|----|---:|
 |secret|String|合约发布者私钥|
-#### <a name="initContractSubmit"></a> 4.23.3 部署合约
-##### 方法:tx.submit(callback);
-##### 参数:无
+##### 返回: Promise
+#### 部署合约完整例子
+```javascript
+const jlib = require("swtc-lib");
+var Remote = jlib.Remote;
+var remote = new Remote({
+  server: "ws://ts5.jingtum.com:5020",
+  solidity: true
+});
+const v = {
+  address: "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+  secret: "ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C"
+};
+const abi = [{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"withdraw","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[{"name":"_from","type":"address"}],"name":"SWTBalance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"},{"name":"","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"initialSupply","type":"uint256"},{"name":"tokenName","type":"string"},{"name":"tokenSymbol","type":"string"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]
+const payload =
+  "60806040526012600260006101000a81548160ff021916908360ff16021790555034801561002c57600080fd5b50604051610c57380380610c578339810180604052606081101561004f57600080fd5b8101908080519060200190929190805164010000000081111561007157600080fd5b8281019050602081018481111561008757600080fd5b81518560018202830111640100000000821117156100a457600080fd5b505092919060200180516401000000008111156100c057600080fd5b828101905060208101848111156100d657600080fd5b81518560018202830111640100000000821117156100f357600080fd5b5050929190505050600260009054906101000a900460ff1660ff16600a0a8302600381905550600354600560003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000208190555081600090805190602001906101759291906101d6565b50806001908051906020019061018c9291906101d6565b5033600460006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050505061027b565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061021757805160ff1916838001178555610245565b82800160010185558215610245579182015b82811115610244578251825591602001919060010190610229565b5b5090506102529190610256565b5090565b61027891905b8082111561027457600081600090555060010161025c565b5090565b90565b6109cd8061028a6000396000f3fe6080604052600436106100915760003560e01c806370a082311161005957806370a08231146101f15780638da5cb5b1461025657806395d89b41146102ad578063a9059cbb1461033d578063dd62ed3e1461039857610091565b806306fdde031461009657806318160ddd14610126578063313ce567146101515780633ccfd60b14610182578063675c7ae61461018c575b600080fd5b3480156100a257600080fd5b506100ab61041d565b6040518080602001828103825283818151815260200191508051906020019080838360005b838110156100eb5780820151818401526020810190506100d0565b50505050905090810190601f1680156101185780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b34801561013257600080fd5b5061013b6104bb565b6040518082815260200191505060405180910390f35b34801561015d57600080fd5b506101666104c1565b604051808260ff1660ff16815260200191505060405180910390f35b61018a6104d4565b005b34801561019857600080fd5b506101db600480360360208110156101af57600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff1690602001909291905050506105b0565b6040518082815260200191505060405180910390f35b3480156101fd57600080fd5b506102406004803603602081101561021457600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff1690602001909291905050506105d1565b6040518082815260200191505060405180910390f35b34801561026257600080fd5b5061026b6105e9565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b3480156102b957600080fd5b506102c261060f565b6040518080602001828103825283818151815260200191508051906020019080838360005b838110156103025780820151818401526020810190506102e7565b50505050905090810190601f16801561032f5780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b34801561034957600080fd5b506103966004803603604081101561036057600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803590602001909291905050506106ad565b005b3480156103a457600080fd5b50610407600480360360408110156103bb57600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803573ffffffffffffffffffffffffffffffffffffffff1690602001909291905050506106bc565b6040518082815260200191505060405180910390f35b60008054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156104b35780601f10610488576101008083540402835291602001916104b3565b820191906000526020600020905b81548152906001019060200180831161049657829003601f168201915b505050505081565b60035481565b600260009054906101000a900460ff1681565b600460009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff161461052e57600080fd5b600460009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166108fc3073ffffffffffffffffffffffffffffffffffffffff16319081150290604051600060405180830381858888f193505050501580156105ad573d6000803e3d6000fd5b50565b60008173ffffffffffffffffffffffffffffffffffffffff16319050919050565b60056020528060005260406000206000915090505481565b600460009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b60018054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156106a55780601f1061067a576101008083540402835291602001916106a5565b820191906000526020600020905b81548152906001019060200180831161068857829003601f168201915b505050505081565b6106b83383836106e1565b5050565b6006602052816000526040600020602052806000526040600020600091509150505481565b600073ffffffffffffffffffffffffffffffffffffffff168273ffffffffffffffffffffffffffffffffffffffff16141561071b57600080fd5b80600560008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054101561076757600080fd5b600560008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000205481600560008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000205401116107f357600080fd5b6000600560008473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054600560008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000205401905081600560008673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828254039250508190555081600560008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000206000828254019250508190555080600560008573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054600560008773ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054011461099b57fe5b5050505056fea165627a7a7230582047b95b1b8a2bc24c06873b863700753ca50fb618552cb25aa48296fc5adba9530029";
+
+remote.connectPromise()
+    .then( async () => {
+      let tx = remote.initContract({
+        account: v.address,
+        amount: 10,
+        payload,
+        abi,
+        params: [2000, "TestCurrency", "TEST1"]
+      })
+      let result = await tx.submitPromise(v.secret)
+      console.log(result)
+      remote.disconnect()
+    })
+    .catch(console.error)
+
+```
+#### 输出
+```javascript
+{ ContractState: 'j415Nd59n68G9mFMih7jmiu6uw6P1AWKXS',
+  engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message:
+   'The transaction was applied. Only final in a validated ledger.',
+  tx_blob:
+   '12001F2200000000240000021B2026000000006140000000009896806840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E1574463044022048F79F4CC4A56297B7F886FCE212F9EEA72E7C5ED86F3EFA966EDCBAFED1D9AF02201FFCAB49C5739C901A9514781595B56099AE27C0BD0E24F78B976287F3DF3DFF7010DAAD3630383036303430353236303132363030323630303036313031303030613831353438313630666630323139313639303833363066663136303231373930353535303334383031353631303032633537363030303830666435623530363034303531363130633537333830333830363130633537383333393831303138303630343035323630363038313130313536313030346635373630303038306664356238313031393038303830353139303630323030313930393239313930383035313634303130303030303030303831313131353631303037313537363030303830666435623832383130313930353036303230383130313834383131313135363130303837353736303030383066643562383135313835363030313832303238333031313136343031303030303030303038323131313731353631303061343537363030303830666435623530353039323931393036303230303138303531363430313030303030303030383131313135363130306330353736303030383066643562383238313031393035303630323038313031383438313131313536313030643635373630303038306664356238313531383536303031383230323833303131313634303130303030303030303832313131373135363130306633353736303030383066643562353035303932393139303530353035303630303236303030393035343930363130313030306139303034363066663136363066663136363030613061383330323630303338313930353535303630303335343630303536303030333337336666666666666666666666666666666666666666666666666666666666666666666666666666666631363733666666666666666666666666666666666666666666666666666666666666666666666666666666663136383135323630323030313930383135323630323030313630303032303831393035353530383136303030393038303531393036303230303139303631303137353932393139303631303164363536356235303830363030313930383035313930363032303031393036313031386339323931393036313031643635363562353033333630303436303030363130313030306138313534383137336666666666666666666666666666666666666666666666666666666666666666666666666666666630323139313639303833373366666666666666666666666666666666666666666666666666666666666666666666666666666666313630323137393035353530353035303530363130323762353635623832383035343630303138313630303131363135363130313030303230333136363030323930303439303630303035323630323036303030323039303630316630313630323039303034383130313932383236303166313036313032313735373830353136306666313931363833383030313137383535353631303234353536356238323830303136303031303138353535383231353631303234353537393138323031356238323831313131353631303234343537383235313832353539313630323030313931393036303031303139303631303232393536356235623530393035303631303235323931393036313032353635363562353039303536356236313032373839313930356238303832313131353631303237343537363030303831363030303930353535303630303130313631303235633536356235303930353635623930353635623631303963643830363130323861363030303339363030306633666536303830363034303532363030343336313036313030393135373630303033353630653031633830363337306130383233313131363130303539353738303633373061303832333131343631303166313537383036333864613563623562313436313032353635373830363339356438396234313134363130326164353738303633613930353963626231343631303333643537383036336464363265643365313436313033393835373631303039313536356238303633303666646465303331343631303039363537383036333138313630646464313436313031323635373830363333313363653536373134363130313531353738303633336363666436306231343631303138323537383036333637356337616536313436313031386335373562363030303830666435623334383031353631303061323537363030303830666435623530363130306162363130343164353635623630343035313830383036303230303138323831303338323532383338313831353138313532363032303031393135303830353139303630323030313930383038333833363030303562383338313130313536313030656235373830383230313531383138343031353236303230383130313930353036313030643035363562353035303530353039303530393038313031393036303166313638303135363130313138353738303832303338303531363030313833363032303033363130313030306130333139313638313532363032303031393135303562353039323530353035303630343035313830393130333930663335623334383031353631303133323537363030303830666435623530363130313362363130346262353635623630343035313830383238313532363032303031393135303530363034303531383039313033393066333562333438303135363130313564353736303030383066643562353036313031363636313034633135363562363034303531383038323630666631363630666631363831353236303230303139313530353036303430353138303931303339306633356236313031386136313034643435363562303035623334383031353631303139383537363030303830666435623530363130316462363030343830333630333630323038313130313536313031616635373630303038306664356238313031393038303830333537336666666666666666666666666666666666666666666666666666666666666666666666666666666631363930363032303031393039323931393035303530353036313035623035363562363034303531383038323831353236303230303139313530353036303430353138303931303339306633356233343830313536313031666435373630303038306664356235303631303234303630303438303336303336303230383131303135363130323134353736303030383066643562383130313930383038303335373366666666666666666666666666666666666666666666666666666666666666666666666666666666313639303630323030313930393239313930353035303530363130356431353635623630343035313830383238313532363032303031393135303530363034303531383039313033393066333562333438303135363130323632353736303030383066643562353036313032366236313035653935363562363034303531383038323733666666666666666666666666666666666666666666666666666666666666666666666666666666663136373366666666666666666666666666666666666666666666666666666666666666666666666666666666313638313532363032303031393135303530363034303531383039313033393066333562333438303135363130326239353736303030383066643562353036313032633236313036306635363562363034303531383038303630323030313832383130333832353238333831383135313831353236303230303139313530383035313930363032303031393038303833383336303030356238333831313031353631303330323537383038323031353138313834303135323630323038313031393035303631303265373536356235303530353035303930353039303831303139303630316631363830313536313033326635373830383230333830353136303031383336303230303336313031303030613033313931363831353236303230303139313530356235303932353035303530363034303531383039313033393066333562333438303135363130333439353736303030383066643562353036313033393636303034383033363033363034303831313031353631303336303537363030303830666435623831303139303830383033353733666666666666666666666666666666666666666666666666666666666666666666666666666666663136393036303230303139303932393139303830333539303630323030313930393239313930353035303530363130366164353635623030356233343830313536313033613435373630303038306664356235303631303430373630303438303336303336303430383131303135363130336262353736303030383066643562383130313930383038303335373366666666666666666666666666666666666666666666666666666666666666666666666666666666313639303630323030313930393239313930383033353733666666666666666666666666666666666666666666666666666666666666666666666666666666663136393036303230303139303932393139303530353035303631303662633536356236303430353138303832383135323630323030313931353035303630343035313830393130333930663335623630303038303534363030313831363030313136313536313031303030323033313636303032393030343830363031663031363032303830393130343032363032303031363034303531393038313031363034303532383039323931393038313831353236303230303138323830353436303031383136303031313631353631303130303032303331363630303239303034383031353631303462333537383036303166313036313034383835373631303130303830383335343034303238333532393136303230303139313631303462333536356238323031393139303630303035323630323036303030323039303562383135343831353239303630303130313930363032303031383038333131363130343936353738323930303336303166313638323031393135623530353035303530353038313536356236303033353438313536356236303032363030303930353439303631303130303061393030343630666631363831353635623630303436303030393035343930363130313030306139303034373366666666666666666666666666666666666666666666666666666666666666666666666666666666313637336666666666666666666666666666666666666666666666666666666666666666666666666666666631363333373366666666666666666666666666666666666666666666666666666666666666666666666666666666313631343631303532653537363030303830666435623630303436303030393035343930363130313030306139303034373366666666666666666666666666666666666666666666666666666666666666666666666666666666313637336666666666666666666666666666666666666666666666666666666666666666666666666666666631363631303866633330373366666666666666666666666666666666666666666666666666666666666666666666666666666666313633313930383131353032393036303430353136303030363034303531383038333033383138353838383866313933353035303530353031353830313536313035616435373364363030303830336533643630303066643562353035363562363030303831373366666666666666666666666666666666666666666666666666666666666666666666666666666666313633313930353039313930353035363562363030353630323035323830363030303532363034303630303032303630303039313530393035303534383135363562363030343630303039303534393036313031303030613930303437336666666666666666666666666666666666666666666666666666666666666666666666666666666631363831353635623630303138303534363030313831363030313136313536313031303030323033313636303032393030343830363031663031363032303830393130343032363032303031363034303531393038313031363034303532383039323931393038313831353236303230303138323830353436303031383136303031313631353631303130303032303331363630303239303034383031353631303661353537383036303166313036313036376135373631303130303830383335343034303238333532393136303230303139313631303661353536356238323031393139303630303035323630323036303030323039303562383135343831353239303630303130313930363032303031383038333131363130363838353738323930303336303166313638323031393135623530353035303530353038313536356236313036623833333833383336313036653135363562353035303536356236303036363032303532383136303030353236303430363030303230363032303532383036303030353236303430363030303230363030303931353039313530353035343831353635623630303037336666666666666666666666666666666666666666666666666666666666666666666666666666666631363832373366666666666666666666666666666666666666666666666666666666666666666666666666666666313631343135363130373162353736303030383066643562383036303035363030303835373366666666666666666666666666666666666666666666666666666666666666666666666666666666313637336666666666666666666666666666666666666666666666666666666666666666666666666666666631363831353236303230303139303831353236303230303136303030323035343130313536313037363735373630303038306664356236303035363030303833373366666666666666666666666666666666666666666666666666666666666666666666666666666666313637336666666666666666666666666666666666666666666666666666666666666666666666666666666631363831353236303230303139303831353236303230303136303030323035343831363030353630303038353733666666666666666666666666666666666666666666666666666666666666666666666666666666663136373366666666666666666666666666666666666666666666666666666666666666666666666666666666313638313532363032303031393038313532363032303031363030303230353430313131363130376633353736303030383066643562363030303630303536303030383437336666666666666666666666666666666666666666666666666666666666666666666666666666666631363733666666666666666666666666666666666666666666666666666666666666666666666666666666663136383135323630323030313930383135323630323030313630303032303534363030353630303038363733666666666666666666666666666666666666666666666666666666666666666666666666666666663136373366666666666666666666666666666666666666666666666666666666666666666666666666666666313638313532363032303031393038313532363032303031363030303230353430313930353038313630303536303030383637336666666666666666666666666666666666666666666666666666666666666666666666666666666631363733666666666666666666666666666666666666666666666666666666666666666666666666666666663136383135323630323030313930383135323630323030313630303032303630303038323832353430333932353035303831393035353530383136303035363030303835373366666666666666666666666666666666666666666666666666666666666666666666666666666666313637336666666666666666666666666666666666666666666666666666666666666666666666666666666631363831353236303230303139303831353236303230303136303030323036303030383238323534303139323530353038313930353535303830363030353630303038353733666666666666666666666666666666666666666666666666666666666666666666666666666666663136373366666666666666666666666666666666666666666666666666666666666666666666666666666666313638313532363032303031393038313532363032303031363030303230353436303035363030303837373366666666666666666666666666666666666666666666666666666666666666666666666666666666313637336666666666666666666666666666666666666666666666666666666666666666666666666666666631363831353236303230303139303831353236303230303136303030323035343031313436313039396235376665356235303530353035303536666561313635363237613761373233303538323034376239356231623861326263323463303638373362383633373030373533636135306662363138353532636232356161343832393666633561646261393533303032393030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303037643030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303630303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303061303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030306335343635373337343433373537323732363536653633373930303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030353534343535333534333130303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303081141359AA928F4D98FDB3D93E8B690C80D37DED11C3',
+  tx_json:
+   { Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+     Amount: '10000000',
+     Fee: '10000',
+     Flags: 0,
+     Method: 0,
+     Payload:
+      '36303830363034303532363031323630303236303030363130313030306138313534383136306666303231393136393038333630666631363032313739303535353033343830313536313030326335373630303038306664356235303630343035313631306335373338303338303631306335373833333938313031383036303430353236303630383131303135363130303466353736303030383066643562383130313930383038303531393036303230303139303932393139303830353136343031303030303030303038313131313536313030373135373630303038306664356238323831303139303530363032303831303138343831313131353631303038373537363030303830666435623831353138353630303138323032383330313131363430313030303030303030383231313137313536313030613435373630303038306664356235303530393239313930363032303031383035313634303130303030303030303831313131353631303063303537363030303830666435623832383130313930353036303230383130313834383131313135363130306436353736303030383066643562383135313835363030313832303238333031313136343031303030303030303038323131313731353631303066333537363030303830666435623530353039323931393035303530353036303032363030303930353439303631303130303061393030343630666631363630666631363630306130613833303236303033383139303535353036303033353436303035363030303333373366666666666666666666666666666666666666666666666666666666666666666666666666666666313637336666666666666666666666666666666666666666666666666666666666666666666666666666666631363831353236303230303139303831353236303230303136303030323038313930353535303831363030303930383035313930363032303031393036313031373539323931393036313031643635363562353038303630303139303830353139303630323030313930363130313863393239313930363130316436353635623530333336303034363030303631303130303061383135343831373366666666666666666666666666666666666666666666666666666666666666666666666666666666303231393136393038333733666666666666666666666666666666666666666666666666666666666666666666666666666666663136303231373930353535303530353035303631303237623536356238323830353436303031383136303031313631353631303130303032303331363630303239303034393036303030353236303230363030303230393036303166303136303230393030343831303139323832363031663130363130323137353738303531363066663139313638333830303131373835353536313032343535363562383238303031363030313031383535353832313536313032343535373931383230313562383238313131313536313032343435373832353138323535393136303230303139313930363030313031393036313032323935363562356235303930353036313032353239313930363130323536353635623530393035363562363130323738393139303562383038323131313536313032373435373630303038313630303039303535353036303031303136313032356335363562353039303536356239303536356236313039636438303631303238613630303033393630303066336665363038303630343035323630303433363130363130303931353736303030333536306530316338303633373061303832333131313631303035393537383036333730613038323331313436313031663135373830363338646135636235623134363130323536353738303633393564383962343131343631303261643537383036336139303539636262313436313033336435373830363364643632656433653134363130333938353736313030393135363562383036333036666464653033313436313030393635373830363331383136306464643134363130313236353738303633333133636535363731343631303135313537383036333363636664363062313436313031383235373830363336373563376165363134363130313863353735623630303038306664356233343830313536313030613235373630303038306664356235303631303061623631303431643536356236303430353138303830363032303031383238313033383235323833383138313531383135323630323030313931353038303531393036303230303139303830383338333630303035623833383131303135363130306562353738303832303135313831383430313532363032303831303139303530363130306430353635623530353035303530393035303930383130313930363031663136383031353631303131383537383038323033383035313630303138333630323030333631303130303061303331393136383135323630323030313931353035623530393235303530353036303430353138303931303339306633356233343830313536313031333235373630303038306664356235303631303133623631303462623536356236303430353138303832383135323630323030313931353035303630343035313830393130333930663335623334383031353631303135643537363030303830666435623530363130313636363130346331353635623630343035313830383236306666313636306666313638313532363032303031393135303530363034303531383039313033393066333562363130313861363130346434353635623030356233343830313536313031393835373630303038306664356235303631303164623630303438303336303336303230383131303135363130316166353736303030383066643562383130313930383038303335373366666666666666666666666666666666666666666666666666666666666666666666666666666666313639303630323030313930393239313930353035303530363130356230353635623630343035313830383238313532363032303031393135303530363034303531383039313033393066333562333438303135363130316664353736303030383066643562353036313032343036303034383033363033363032303831313031353631303231343537363030303830666435623831303139303830383033353733666666666666666666666666666666666666666666666666666666666666666666666666666666663136393036303230303139303932393139303530353035303631303564313536356236303430353138303832383135323630323030313931353035303630343035313830393130333930663335623334383031353631303236323537363030303830666435623530363130323662363130356539353635623630343035313830383237336666666666666666666666666666666666666666666666666666666666666666666666666666666631363733666666666666666666666666666666666666666666666666666666666666666666666666666666663136383135323630323030313931353035303630343035313830393130333930663335623334383031353631303262393537363030303830666435623530363130326332363130363066353635623630343035313830383036303230303138323831303338323532383338313831353138313532363032303031393135303830353139303630323030313930383038333833363030303562383338313130313536313033303235373830383230313531383138343031353236303230383130313930353036313032653735363562353035303530353039303530393038313031393036303166313638303135363130333266353738303832303338303531363030313833363032303033363130313030306130333139313638313532363032303031393135303562353039323530353035303630343035313830393130333930663335623334383031353631303334393537363030303830666435623530363130333936363030343830333630333630343038313130313536313033363035373630303038306664356238313031393038303830333537336666666666666666666666666666666666666666666666666666666666666666666666666666666631363930363032303031393039323931393038303335393036303230303139303932393139303530353035303631303661643536356230303562333438303135363130336134353736303030383066643562353036313034303736303034383033363033363034303831313031353631303362623537363030303830666435623831303139303830383033353733666666666666666666666666666666666666666666666666666666666666666666666666666666663136393036303230303139303932393139303830333537336666666666666666666666666666666666666666666666666666666666666666666666666666666631363930363032303031393039323931393035303530353036313036626335363562363034303531383038323831353236303230303139313530353036303430353138303931303339306633356236303030383035343630303138313630303131363135363130313030303230333136363030323930303438303630316630313630323038303931303430323630323030313630343035313930383130313630343035323830393239313930383138313532363032303031383238303534363030313831363030313136313536313031303030323033313636303032393030343830313536313034623335373830363031663130363130343838353736313031303038303833353430343032383335323931363032303031393136313034623335363562383230313931393036303030353236303230363030303230393035623831353438313532393036303031303139303630323030313830383331313631303439363537383239303033363031663136383230313931356235303530353035303530383135363562363030333534383135363562363030323630303039303534393036313031303030613930303436306666313638313536356236303034363030303930353439303631303130303061393030343733666666666666666666666666666666666666666666666666666666666666666666666666666666663136373366666666666666666666666666666666666666666666666666666666666666666666666666666666313633333733666666666666666666666666666666666666666666666666666666666666666666666666666666663136313436313035326535373630303038306664356236303034363030303930353439303631303130303061393030343733666666666666666666666666666666666666666666666666666666666666666666666666666666663136373366666666666666666666666666666666666666666666666666666666666666666666666666666666313636313038666333303733666666666666666666666666666666666666666666666666666666666666666666666666666666663136333139303831313530323930363034303531363030303630343035313830383330333831383538383838663139333530353035303530313538303135363130356164353733643630303038303365336436303030666435623530353635623630303038313733666666666666666666666666666666666666666666666666666666666666666666666666666666663136333139303530393139303530353635623630303536303230353238303630303035323630343036303030323036303030393135303930353035343831353635623630303436303030393035343930363130313030306139303034373366666666666666666666666666666666666666666666666666666666666666666666666666666666313638313536356236303031383035343630303138313630303131363135363130313030303230333136363030323930303438303630316630313630323038303931303430323630323030313630343035313930383130313630343035323830393239313930383138313532363032303031383238303534363030313831363030313136313536313031303030323033313636303032393030343830313536313036613535373830363031663130363130363761353736313031303038303833353430343032383335323931363032303031393136313036613535363562383230313931393036303030353236303230363030303230393035623831353438313532393036303031303139303630323030313830383331313631303638383537383239303033363031663136383230313931356235303530353035303530383135363562363130366238333338333833363130366531353635623530353035363562363030363630323035323831363030303532363034303630303032303630323035323830363030303532363034303630303032303630303039313530393135303530353438313536356236303030373366666666666666666666666666666666666666666666666666666666666666666666666666666666313638323733666666666666666666666666666666666666666666666666666666666666666666666666666666663136313431353631303731623537363030303830666435623830363030353630303038353733666666666666666666666666666666666666666666666666666666666666666666666666666666663136373366666666666666666666666666666666666666666666666666666666666666666666666666666666313638313532363032303031393038313532363032303031363030303230353431303135363130373637353736303030383066643562363030353630303038333733666666666666666666666666666666666666666666666666666666666666666666666666666666663136373366666666666666666666666666666666666666666666666666666666666666666666666666666666313638313532363032303031393038313532363032303031363030303230353438313630303536303030383537336666666666666666666666666666666666666666666666666666666666666666666666666666666631363733666666666666666666666666666666666666666666666666666666666666666666666666666666663136383135323630323030313930383135323630323030313630303032303534303131313631303766333537363030303830666435623630303036303035363030303834373366666666666666666666666666666666666666666666666666666666666666666666666666666666313637336666666666666666666666666666666666666666666666666666666666666666666666666666666631363831353236303230303139303831353236303230303136303030323035343630303536303030383637336666666666666666666666666666666666666666666666666666666666666666666666666666666631363733666666666666666666666666666666666666666666666666666666666666666666666666666666663136383135323630323030313930383135323630323030313630303032303534303139303530383136303035363030303836373366666666666666666666666666666666666666666666666666666666666666666666666666666666313637336666666666666666666666666666666666666666666666666666666666666666666666666666666631363831353236303230303139303831353236303230303136303030323036303030383238323534303339323530353038313930353535303831363030353630303038353733666666666666666666666666666666666666666666666666666666666666666666666666666666663136373366666666666666666666666666666666666666666666666666666666666666666666666666666666313638313532363032303031393038313532363032303031363030303230363030303832383235343031393235303530383139303535353038303630303536303030383537336666666666666666666666666666666666666666666666666666666666666666666666666666666631363733666666666666666666666666666666666666666666666666666666666666666666666666666666663136383135323630323030313930383135323630323030313630303032303534363030353630303038373733666666666666666666666666666666666666666666666666666666666666666666666666666666663136373366666666666666666666666666666666666666666666666666666666666666666666666666666666313638313532363032303031393038313532363032303031363030303230353430313134363130393962353766653562353035303530353035366665613136353632376137613732333035383230343762393562316238613262633234633036383733623836333730303735336361353066623631383535326362323561613438323936666335616462613935333030323930303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030376430303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303036303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030613030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303063353436353733373434333735373237323635366536333739303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303535343435353335343331303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030',
+     Sequence: 539,
+     SigningPubKey:
+      '029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15',
+     TransactionType: 'AlethContract',
+     TxnSignature:
+      '3044022048F79F4CC4A56297B7F886FCE212F9EEA72E7C5ED86F3EFA966EDCBAFED1D9AF02201FFCAB49C5739C901A9514781595B56099AE27C0BD0E24F78B976287F3DF3DFF',
+     hash:
+      'A406944B0AD2A17043E52A12DEB48F06D546AFD636E48E154BAA33AC33A5997E' } }
+```
 ### <a name="invokeContract"></a>4.24 调用合约(Solidity版)
 #### 首先通过invokeContract方法返回一个Transaction对象，然后通过setSecret传入密钥，最后通过submit方法完成合约的调用。 
 #### 4.24.1 创建合约调用对象
@@ -1582,7 +1546,7 @@ remote.connect(function (err, result) {
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 remote.connect(function (err, result) {
     if (err) {
         return console.log('err:', err);
@@ -1609,7 +1573,7 @@ remote.connect(function (err, result) {
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 remote.connect(function (err, result) {
     if (err) {
         return console.log('err:', err);
@@ -1627,11 +1591,13 @@ remote.connect(function (err, result) {
 ### <a name="requestSubmit"></a> 5.2 提交请求
 #### 方法:submit(callback);
 #### 参数:回调函数，包含两个参数:错误信息和结果信息
+#### 方法:submitPromise(secret, memo);
+#### 参数: secret, memo
 #### 例子
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 remote.connect(function (err, result) {
     if (err) {
         return console.log('err:', err);
@@ -1656,6 +1622,9 @@ remote.connect(function (err, result) {
 * setTransferRate(rate)
 * setFlags(flags)
 * submit(callback)
+#### 额外
+* signPromise(secret, [memo, [sequence])]
+* submitPromise(secret, [memo, [sequence])]
 ### <a name="transactionAccount"></a> 6.1 获得交易账号
 #### 方法:getAccount();
 #### 参数:无
@@ -1664,7 +1633,7 @@ remote.connect(function (err, result) {
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 var options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', sequence: 4};
 var tx = remote.buildOfferCancelTx(options);
 var account = tx.getAccount();
@@ -1678,7 +1647,7 @@ console.log(account);
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 var options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', sequence: 4};
 var tx = remote.buildOfferCancelTx(options);
 var type = tx.getTransactionType();
@@ -1696,7 +1665,7 @@ console.log(type);
 ```javascript
 var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 var options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', sequence: 8};
 var tx = remote.buildOfferCancelTx(options);
 tx.setSecret('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C');;
@@ -1711,7 +1680,7 @@ tx.setSecret('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C');;
 ```javascript
 var jlib = require('jingtum-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 var tx = remote.buildPaymentTx({
     account: 'jB7rxgh43ncbTX4WeMoeadiGMfmfqY2xLZ',
     to: 'jDUjqoDZLhzx4DCf6pvSivjkjgtRESY62c',
@@ -1725,11 +1694,13 @@ var tx = remote.buildPaymentTx({
 ### <a name="transactionSubmit"></a> 6.5 提交请求
 #### 方法:submit(callback);
 #### 参数:回调函数，包含两个参数:错误信息和结果信息
+#### 方法:submitPromise(secret, memo);
+#### 参数:密钥, 留言
 #### 例子:
 ```javascript
 var jlib = require('jingtum-lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign: true});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 remote.connect(function (err, result) {
 if (err) {
         return console.log('err:', err);
@@ -1843,58 +1814,66 @@ if (err) {
 |terOWNERS|Non-zero owner count.|
 |tesSUCCESS|The transaction was applied. Only final in a validated ledger.|
 ## 9. <a name="erc20src"></a>erc20源码
-```solidity
-pragma solidity ^0.4.19;
+```javascript
+pragma solidity ^0.5.4;
 contract TokenTest {
-  string public name;
-  string public symbol;
-  uint8 public decimals = 18; // decimals 可以有的小数点个数，最小的代币单位。18 是建议的默认值
-  uint256 public totalSupply;
-  // 用mapping保存每个地址对应的余额
-  mapping (address => uint256) public balanceOf; // 存储对账号的控制
-  mapping (address => mapping (address => uint256)) public allowance;
-  
-  /*
-   *
-   * 初始化构造
-   */
-  function TokenTest(uint256 initialSupply, string tokenName, string tokenSymbol) public {
-    totalSupply = initialSupply * 10 ** uint256(decimals); // 供应的 份额，份额跟最小的代币单位有关，份额 = 币数 * 10 ** decimals。
-    balanceOf[msg.sender] = totalSupply;
-    name = tokenName; // 代币名称
-    symbol = tokenSymbol; // 代币符号
-  }
-  
-  /*
-   *
-   * 代币交易转移的内部实现
-   */
-  function _transfer(address _from, address _to, uint _value) internal {
-    // 确保目标地址不为0x0，因为0x0地址代表销毁 require(_to != 0x0);
-    // 检查发送者余额
-    require(balanceOf[_from] >= _value);
-    // 确保转移为正数个
-    require(balanceOf[_to] + _value > balanceOf[_to]);
-    // 以下用来检查交易，
-    uint previousBalances = balanceOf[_from] + balanceOf[_to]; // Subtract from the sender
-    balanceOf[_from] -= _value;
-    // Add the same to the recipient
-    balanceOf[_to] += _value;
-    // 用assert来检查代码逻辑。
-    assert(balanceOf[_from] + balanceOf[_to] == previousBalances);
-  }
-  
-  /*
-   *
-   * 代币交易转移
-   * 从自己(创建交易者)账号发送`_value`个代币到 `_to`账号 * @param _to 接收者地址
-   * @param _value 转移数额
-   */
-    function transfer(address _to, uint256 _value) public {
-      _transfer(msg.sender, _to, _value);
+    string public name;
+    string public symbol;
+    uint8  public decimals = 18;  // decimals 可以有的小数点个数，最小的代币单位。18 是建议的默认值
+    uint256 public totalSupply;
+    address  payable public owner;
+    // 用mapping保存每个地址对应的余额
+    mapping (address => uint256) public balanceOf;
+    // 存储对账号的控制
+    mapping (address => mapping (address => uint256)) public allowance;
+    /**
+     * 初始化构造
+     */
+    constructor(uint256 initialSupply, string memory tokenName , string  memory tokenSymbol) public {
+        totalSupply = initialSupply * 10 ** uint256(decimals);  // 供应的份额，份额跟最小的代币单位有关，份额 = 币数 * 10 ** decimals。
+        balanceOf[msg.sender] = totalSupply;
+        name = tokenName; // 代币名称
+        symbol = tokenSymbol;  // 代币符号
+        owner = msg.sender;
     }
-    function() public {
-      revert();
+
+    /**
+     * 代币交易转移的内部实现
+     */
+    function _transfer(address   _from, address  _to, uint  _value) internal{
+        // 确保目标地址不为0x0，因为0x0地址代表销毁
+        require(_to != address(0x0));
+        // 检查发送者余额
+        require(balanceOf[_from] >= _value);
+        // 确保转移为正数个
+        require(balanceOf[_to] + _value > balanceOf[_to]);
+
+        // 以下用来检查交易，
+        uint previousBalances = balanceOf[_from] + balanceOf[_to];
+        // Subtract from the sender
+        balanceOf[_from] -= _value;
+        // Add the same to the recipient
+        balanceOf[_to] += _value;
+
+        // 用assert来检查代码逻辑。
+        assert(balanceOf[_from] + balanceOf[_to] == previousBalances);
+    }
+    /**
+     *  代币交易转移
+     * 从自己（创建交易者）账号发送`_value`个代币到 `_to`账号
+     * @param _to 接收者地址
+     * @param _value 转移数额
+     */
+    function transfer(address _to, uint256 _value) public {
+        _transfer(msg.sender, _to, _value);
+    }
+
+    function withdraw() payable public{
+        require(msg.sender == owner);
+        owner.transfer(address(this).balance);
+    }
+    function SWTBalance(address _from) public view returns (uint256)  {
+        return _from.balance;
     }
 }
 ```
