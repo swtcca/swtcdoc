@@ -1538,6 +1538,44 @@ remote.connectPromise()
 #### <a name="invokeContractSubmit"></a> 4.24.3 执行合约
 ##### 方法:tx.submit(callback);
 ##### 参数:无
+##### 例子
+```javascript
+// var jlib = require('swtc-lib');
+var jlib = require('jingtum-lib');
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', local_sign:true, solidity: true});
+const v = {
+  address: "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+  secret: "ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C"
+};
+const abi = [{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"withdraw","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[{"name":"_from","type":"address"}],"name":"SWTBalance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"},{"name":"","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"initialSupply","type":"uint256"},{"name":"tokenName","type":"string"},{"name":"tokenSymbol","type":"string"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]
+var tx
+remote.connect((error, result) => {
+	if (error) {
+		console.error(error)
+	} else {
+		tx = remote.invokeContract({
+			account: v.address, 
+		    destination: 'jGoffpqkCTf42HaZAs2F32CDq1bbNV51Bj',
+		    abi,
+		    func:"transfer('jGoffpqkCTf42HaZAs2F32CDq1bbNV51Bj', 5)"});
+		    tx.setSecret(v.secret);
+		    tx.submit(function (err, result) {
+		        if (err) {
+		            console.log('err:', err);
+		        }
+		        else if (result) {
+		            console.log('res:', result);
+		        }
+		    });
+	}
+})
+//	remote.connectPromise()
+//	.then(async () => {
+//	})
+//	.catch(console.error)
+
+```
 ### <a name="listen"></a> 4.25 监听事件
 #### Remote有两个监听事件:监听所有交易(transactions)和监听所有账本(ledger_closed)，监听结果放到回调函数中，回调中只有一个参数，为监听到的消息。
 #### 方法:remote.on('transactions',callback);
