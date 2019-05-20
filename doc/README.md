@@ -1528,15 +1528,13 @@ remote.connectPromise()
 |abi|Array|合约abi|
 |func|String|合约函数名及参数|
 ##### 返回:Transaction对象
-#### <a name="invokeContractSetSecret"></a> 4.24.2 传入密钥
-##### 方法:tx.setSecret(secret);
+#### <a name="invokeContractSubmit"></a> 4.24.3 执行合约
+##### 方法:tx.submitPromise(secret);
 ##### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |secret|String|合约执行者私钥|
-#### <a name="invokeContractSubmit"></a> 4.24.3 执行合约
-##### 方法:tx.submit(callback);
-##### 参数:无
+##### 返回: Promise
 ##### 例子
 ```javascript
 var jlib = require('swtc-lib');
