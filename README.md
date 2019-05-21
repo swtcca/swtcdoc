@@ -24,6 +24,7 @@ features:
 ## [swtc-api](docapi) 
 ## [swtc-lib增强](docswtc) 
 ## [swtc-lib文档](doc)
+## [swtc-x-lib联盟连](docxlib)
 
 ## 使用swtc-lib
 

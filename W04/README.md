@@ -68,8 +68,8 @@ class App extends Component {
   componentDidMount() {
     this.Wallet = require('swtc-lib').Wallet
 	const Remote = require('swtc-lib').Remote
-    const currency_swt = { currency: 'SWT', issuer: '' }
-    const currency_cny = { currency: 'CNY', issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or' }
+    const currency_swt = remote.makeCurrency()
+    const currency_cny = remote.makeCurrency('CNY')
     const swt_vs_cny = { limit: 5, gets: currency_swt, pays: currency_cny }
 	this.remote = new Remote({server: 'ws://swtclib.daszichan.com:5020'})
     this.remote.connect((error,server_info) => {

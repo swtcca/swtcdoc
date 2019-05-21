@@ -27,8 +27,8 @@ $ npm install swtc-lib
 6. 启动模拟器或者连接手机，调试
 ```bash
 # tns preview 这里不能使用
-$ tns run ios --bundle
-$ tns run android --bundle
+$ tns run ios
+$ tns run android
 ```
 7. Vue的默认页面内容文件 app/components/Home.vue 如下
 ```vue
@@ -103,9 +103,9 @@ $ tns run android --bundle
     const SwtcLib = require('swtc-lib')
     const Wallet = SwtcLib.Wallet
     const Remote = SwtcLib.Remote
-    const remote = new Remote({server: 'ws://swtclib.daszichan.com:5020', local_sign: true})
-    const currency_swt = { currency: 'SWT', issuer: '' }
-    const currency_cny = { currency: 'CNY', issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or' }
+    const remote = new Remote({server: 'ws://swtclib.daszichan.com:5020'})
+    const currency_swt = remote.makeCurrency()
+    const currency_cny = remote.makeCurrency('CNY')
     const swt_vs_cny = { limit: 5, gets: currency_swt, pays: currency_cny }
 
     export default {

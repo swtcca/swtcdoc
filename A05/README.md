@@ -43,7 +43,7 @@ app.use(async ctx => {
     console.log('remote was connected')
   }
   ctx.body = '<div>Hello World</div>';
-  let result_api = await remoteapi.getOrderBooks('SWT', `CNY+${remotelib.makeCurrency('CNY').issuer}`, {results_per_page: 10})
+  let result_api = await remoteapi.getOrderBooks('SWT', `CNY+${remotelib._token}`, {results_per_page: 10})
   ctx.body += `
   <div>
   	<h1>using api remote</h1>
