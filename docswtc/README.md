@@ -1,4 +1,4 @@
-# swtc-lib增强
+# swtc-lib swtc-x-lib 增强
 
 ## [应用实例](../)
 
@@ -15,7 +15,7 @@
 
 ## 内容
 ### 扩展
-  - 实现了ApiRemote(swtc-api)
+  - 实现了ApiRemote(swtc-api) - 目前只支持井通
   - 默认使用 https://api.jingtum.com
 ### 安全
   - 本地签名
