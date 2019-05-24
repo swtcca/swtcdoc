@@ -14,7 +14,9 @@ features:
 - title: Typescript Promise
   details: 原生Promise, typescript编辑器关联提示
 - title: 扩展性
-  details: 可以增加api或者代理版remote
+  details: 已经增加api, 可加代理版remote
+- title: 联盟链支持
+  details: 等同支持所有井通联盟链
 
 ---
 

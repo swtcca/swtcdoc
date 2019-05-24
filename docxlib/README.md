@@ -1,20 +1,17 @@
 # swtc-x-lib 无差别联盟链开发库
 
+## 无差别联盟链支持
+- 井通
+- 商链
+- CALL
+- STM
+- ...
 ## 应用开发者专用库
 - 统一实例
 - 统一文档
 - 体验
 - 共享
 - 无障碍沟通
-
-
-## 赞助方
-### 井畅
-![jccdex](./jccdex.png)
-### SWTC基金会
-![swtc](./swtcfdt.png)
-### 商链
-![bizain](./bizain.png)
 
 ## [对井通库的改进](../docswtc)
 > ### 安全提升
@@ -27,10 +24,6 @@
 > ### travis集成
 > ### 完善测试
 
-### 无差别联盟链支持
-  - 井通
-  - 商链
-  - ...
 ## 改进内容
 ### 安全提升
   - 强制本地签名
@@ -123,3 +116,12 @@ const remoteB = new RemoteB({server: 'ws://123.207.226.229:5020'})
 1. swtc-api, jingtum-api 尚未支持联盟链
 2. contract 尚未支持联盟链
 3. solidity 尚未支持联盟链
+
+## 赞助方
+### 井畅
+![jccdex](./jccdex.png)
+### SWTC基金会
+![swtc](./swtcfdt.png)
+### 商链
+![bizain](./bizain.png)
+
