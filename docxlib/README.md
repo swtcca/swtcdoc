@@ -81,6 +81,7 @@ $ npm list | grep -i swtc
 
 ## 使用 (web)
 - located at `./node_modules/swtc-x-lib/dist`
+- the global name is `swtc_x_lib`
 
 ## 使用 (nodejs)
 ```javascript
@@ -114,8 +115,7 @@ const remoteB = new RemoteB({server: 'ws://123.207.226.229:5020'})
 
 ## 改进
 1. swtc-api, jingtum-api 尚未支持联盟链
-2. contract 尚未支持联盟链
-3. solidity 尚未支持联盟链
+2. solidity 尚未支持联盟链
 
 ## 赞助方
 ### 井畅

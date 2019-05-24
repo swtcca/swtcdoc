@@ -5,6 +5,13 @@ module.exports = {
 		lastUpdated: 'Last Updated', // string | boolean
 		repoLabel: 'Contribute!',
 		docsRepo: 'swtcca/swtc-app-examples',
-		editLinks: true
+		editLinks: true,
+		nav: [
+			{ text: '实例', link: '/' },
+			{ text: 'LIB文档', link: '/doc/' },
+			{ text: 'LIB增强', link: '/docswtc/' },
+			{ text: '联盟链', link: '/docxlib/' },
+			{ text: 'API', link: '/docapi/' }
+		]
 	}
 }
