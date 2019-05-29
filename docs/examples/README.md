@@ -23,11 +23,6 @@ features:
 
 # DAPP Examples Using Javascript and SWTC-LIB
 
-## [swtc-api](docapi) 
-## [swtc-x-lib 联盟链](docxlib)
-## [swtc-lib swtc-x-lib 增强](docswtc) 
-## [swtc-lib 文档](doc)
-
 ## 使用swtc-lib
 
 - 正常情况下，所有实例使用的node.js为最新的LTS版本
