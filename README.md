@@ -1,5 +1,4 @@
 <h2 align="center">SWTCLIB - 社区版公链应用开发库</h2>
-<h2 align="center"><a href="http://swtc.daszichan.com">专为应用开发者打造</a></h2>
 
 <p align="center">
 	<a href="https://gitter.im/swtclib/community?utm_source=share-link&utm_medium=link&utm_campaign=share-link"><img alt="Gitter" src="https://img.shields.io/gitter/room/lospringliu/swtclib.svg" /></a>
@@ -22,7 +21,7 @@
 </p>
 
 
-<h2 align="center">文档</h2>
+<h2 align="center"><a href="http://swtc.daszichan.com">专为应用开发者打造</a></h2>
 <h3 align="center"><a href="docs/swtc/">改进提高</a></h3>
 <h3 align="center"><a href="docs/swtclib/">编程接口(lib)</a></h3>
 <h3 align="center"><a href="#">编程接口(api)</a></h3>
@@ -37,7 +36,7 @@
 	<th>功能描述</th>
 </thead>
 <tr>
-	<td><a href="docs/xlib/">swtc-x-lib</a></td>
+	<td><a href="docs/swtcxlib/">swtc-x-lib</a></td>
 	<td>等同支持井通联盟链, 基于websocket</td>
 </tr>
 
@@ -46,11 +45,11 @@
 	<td>SWTC公链库, 基于websocket</td>
 </tr>
 <tr>
-	<td><a href="docs/api/">swtc-api</a></td>
+	<td><a href="docs/swtcapi/">swtc-api</a></td>
 	<td>SWTC公链库, 基于restapi</td>
 </tr>
 <tr>
-	<td><a href="docs/transaction/">swtc-transaction</a></td>
+	<td><a href="docs/swtctx/">swtc-transaction</a></td>
 	<td>井通公链交易库, 支付/挂单/关系/合约</td>
 </tr>
 <tr>
@@ -62,7 +61,7 @@
 	<td>井通公链utility库，基于钱包</td>
 </tr>
 <tr>
-	<td><a href="docs/wallet/">swtc-wallet</a></td>
+	<td><a href="docs/swtcwallet/">swtc-wallet</a></td>
 	<td>井通公链钱包库, 支持所有联盟链</td>
 </tr>
 <tr>
