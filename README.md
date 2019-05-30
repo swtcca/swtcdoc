@@ -51,15 +51,14 @@ features:
 
 <h2 align="center">程序包</h2>
 <center>
-<thead>
+<tr>
 	<th>程序包</th>
 	<th>功能描述</th>
-</thead>
+</tr>
 <tr>
 	<td><a href="docs/swtcxlib/">swtc-x-lib</a></td>
 	<td>等同支持井通联盟链, 基于websocket</td>
 </tr>
-
 <tr>
 	<td><a href="docs/swtclib/">swtc-lib</a></td>
 	<td>SWTC公链库, 基于websocket</td>
