@@ -95,6 +95,7 @@ features:
 <tr>
 	<td>swtc-address-codec</td>
 	<td>编码解码</td>
+</tr>
 <tr>
 	<td>swtc-chains</td>
 	<td>基础信息</td>
