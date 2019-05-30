@@ -44,10 +44,10 @@ features:
 
 <h3 align="center"><a href="docs/swtc/">改进提高</a></h3>
 <h3 align="center"><a href="docs/swtclib/">编程接口(lib)</a></h3>
-<h3 align="center"><a href="#">编程接口(api)</a></h3>
+<h3 align="center"><a href="docs/api/">编程接口(api)</a></h3>
 <h3 align="center"><a href="docs/examples/">应用实例</a></h3>
-<h3 align="center"><a href="docs/swtcxlib/">联盟链库</a></h3>
-<h3 align="center"><a href="docs/swtcapi/">公链api库</a></h3>
+<h3 align="center"><a href="docs/swtcxlib/">联盟链扩展</a></h3>
+<h3 align="center"><a href="docs/swtcapi/">公链api扩展</a></h3>
 
 <h2 align="center"><a href="http://swtc.daszichan.com">程序包列表</a></h2>
 <center>

@@ -12,10 +12,11 @@ module.exports = {
 		editLinkText: '帮助维护文档!',
 		nav: [
 			{ text: '实例', link: '/docs/examples/' },
-			{ text: '文档', link: '/docs/swtclib/' },
+			{ text: 'lib文档', link: '/docs/swtclib/' },
+			{ text: 'api文档', link: '/docs/api/' },
 			{ text: '增强', link: '/docs/swtc/' },
-			{ text: '联盟链', link: '/docs/swtcxlib/' },
-			{ text: 'API', link: '/docs/swtcapi/' }
+			{ text: '联盟链扩展', link: '/docs/swtcxlib/' },
+			{ text: 'API扩展', link: '/docs/swtcapi/' }
 		]
 	}
 }

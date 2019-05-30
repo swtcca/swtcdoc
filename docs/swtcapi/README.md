@@ -1,6 +1,7 @@
 # The SWTC API JavaScript Library
 
 ## [Offical Doc 官方](http://developer.jingtum.com/api2_doc.html)
+## [编程接口](../api/)
 
 ## changelog
 

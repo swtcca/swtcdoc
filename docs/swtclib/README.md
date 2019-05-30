@@ -149,6 +149,8 @@ console.log(w2);
 * deployContractTx(options)
 * callContractTx(options)
 ### swtc-lib REMOTE 独享
+* makeCurrency()
+* makeAmount()
 * remote.connectPromise()
 * req.submitPromise()
 * tx.signPromise()
