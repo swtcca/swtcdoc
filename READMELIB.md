@@ -22,15 +22,15 @@
 </p>
 
 
-<h2 align="center">文档</h2>
-<h3 align="center"><a href="docs/swtc/">改进提高</a></h3>
-<h3 align="center"><a href="docs/swtclib/">编程接口(lib)</a></h3>
-<h3 align="center"><a href="#">编程接口(api)</a></h3>
-<h3 align="center"><a href="docs/examples/">应用实例</a></h3>
-<h3 align="center"><a href="docs/swtcxlib/">联盟链库</a></h3>
-<h3 align="center"><a href="docs/swtcapi/">公链api库</a></h3>
+<h2>文档</h2>
+<h3><a href="docs/swtc/">改进提高</a></h3>
+<h3><a href="docs/swtclib/">编程接口(lib)</a></h3>
+<h3><a href="#">编程接口(api)</a></h3>
+<h3><a href="docs/examples/">应用实例</a></h3>
+<h3><a href="docs/swtcxlib/">联盟链库</a></h3>
+<h3><a href="docs/swtcapi/">公链api库</a></h3>
 
-<h2 align="center">程序包</h2>
+<h2>程序包</h2>
 
 |程序包名称|功能描述|
 |----------|--------|
