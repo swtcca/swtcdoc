@@ -49,7 +49,7 @@ features:
 <h3 align="center"><a href="docs/swtcxlib/">联盟链库</a></h3>
 <h3 align="center"><a href="docs/swtcapi/">公链api库</a></h3>
 
-<h2 align="center">程序包</h2>
+<h2 align="center"><a href="http://swtc.daszichan.com">程序包列表</a></h2>
 <center>
 <tr>
 	<th>程序包</th>
