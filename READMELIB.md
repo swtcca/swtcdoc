@@ -23,24 +23,25 @@
 
 
 <h2>文档</h2>
+
 <h3><a href="docs/swtc/">改进提高</a></h3>
 <h3><a href="docs/swtclib/">编程接口(lib)</a></h3>
-<h3><a href="#">编程接口(api)</a></h3>
+<h3><a href="docs/api/">编程接口(api)</a></h3>
 <h3><a href="docs/examples/">应用实例</a></h3>
-<h3><a href="docs/swtcxlib/">联盟链库</a></h3>
-<h3><a href="docs/swtcapi/">公链api库</a></h3>
+<h3><a href="docs/swtcxlib/">联盟链扩展</a></h3>
+<h3><a href="docs/swtcapi/">公链api扩展</a></h3>
 
 <h2>程序包</h2>
 
 |程序包名称|功能描述|
 |----------|--------|
-|[swtc-x-lib](docs/xlib/)|等同支持井通联盟链, 基于websocket|
+|[swtc-x-lib](docs/swtcxlib/)|等同支持井通联盟链, 基于websocket|
 |[swtc-lib](docs/swtclib/)|SWTC公链库, 基于websocket|
-|[swtc-api](docs/api/)|SWTC公链库, 基于restapi|
-|[swtc-transaction](docs/transaction/)|井通公链交易库, 支付/挂单/关系/合约|
+|[swtc-api](docs/swtcapi/)|SWTC公链库, 基于restapi|
+|[swtc-transaction](docs/swtctx/)|井通公链交易库, 支付/挂单/关系/合约|
 |swtc-serializer|井通公链交易序列化库, 基于钱包|
 |swtc-utils|井通公链utility库，基于钱包|
-|[swtc-wallet](docs/wallet/)|井通公链钱包库, 支持所有联盟链|
+|[swtc-wallet](docs/swtcwallet/)|井通公链钱包库, 支持所有联盟链|
 |swtc-factory|井通公链钱包库, 井畅接口|
 |swtc-keypairs|公钥私钥|
 |swtc-address-codec|编码解码|

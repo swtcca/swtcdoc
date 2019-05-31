@@ -42,64 +42,31 @@ features:
 	<a href="https://nodei.co/npm/swtc-wallet/"><img src="https://nodei.co/npm/swtc-wallet.png?mini=true" /></a>
 </p>
 
-<h3 align="center"><a href="docs/swtc/">改进提高</a></h3>
-<h3 align="center"><a href="docs/swtclib/">编程接口(lib)</a></h3>
-<h3 align="center"><a href="docs/api/">编程接口(api)</a></h3>
-<h3 align="center"><a href="docs/examples/">应用实例</a></h3>
-<h3 align="center"><a href="docs/swtcxlib/">联盟链扩展</a></h3>
-<h3 align="center"><a href="docs/swtcapi/">公链api扩展</a></h3>
+<h2>文档</h2>
 
-<h2 align="center"><a href="http://swtc.daszichan.com">程序包列表</a></h2>
-<center>
-<tr>
-	<th>程序包</th>
-	<th>功能描述</th>
-</tr>
-<tr>
-	<td><a href="docs/swtcxlib/">swtc-x-lib</a></td>
-	<td>等同支持井通联盟链, 基于websocket</td>
-</tr>
-<tr>
-	<td><a href="docs/swtclib/">swtc-lib</a></td>
-	<td>SWTC公链库, 基于websocket</td>
-</tr>
-<tr>
-	<td><a href="docs/swtcapi/">swtc-api</a></td>
-	<td>SWTC公链库, 基于restapi</td>
-</tr>
-<tr>
-	<td><a href="docs/swtctx/">swtc-transaction</a></td>
-	<td>井通公链交易库, 支付/挂单/关系/合约</td>
-</tr>
-<tr>
-	<td>swtc-serializer</td>
-	<td>井通公链交易序列化库, 基于钱包</td>
-</tr>
-<tr>
-	<td>swtc-utils</td>
-	<td>井通公链utility库，基于钱包</td>
-</tr>
-<tr>
-	<td><a href="docs/swtcwallet/">swtc-wallet</a></td>
-	<td>井通公链钱包库, 支持所有联盟链</td>
-</tr>
-<tr>
-	<td>swtc-factory</td>
-	<td>井通公链钱包库, 井畅接口</td>
-</tr>
-<tr>
-	<td>swtc-keypairs</td>
-	<td>公钥私钥</td>
-</tr>
-<tr>
-	<td>swtc-address-codec</td>
-	<td>编码解码</td>
-</tr>
-<tr>
-	<td>swtc-chains</td>
-	<td>基础信息</td>
-</tr>
-</center>
+<h3><a href="docs/swtc/">改进提高</a></h3>
+<h3><a href="docs/swtclib/">编程接口(lib)</a></h3>
+<h3><a href="docs/api/">编程接口(api)</a></h3>
+<h3><a href="docs/examples/">应用实例</a></h3>
+<h3><a href="docs/swtcxlib/">联盟链扩展</a></h3>
+<h3><a href="docs/swtcapi/">公链api扩展</a></h3>
+
+<h2>程序包</h2>
+
+|程序包名称|功能描述|
+|----------|--------|
+|[swtc-x-lib](docs/swtcxlib/)|等同支持井通联盟链, 基于websocket|
+|[swtc-lib](docs/swtclib/)|SWTC公链库, 基于websocket|
+|[swtc-api](docs/swtcapi/)|SWTC公链库, 基于restapi|
+|[swtc-transaction](docs/swtctx/)|井通公链交易库, 支付/挂单/关系/合约|
+|swtc-serializer|井通公链交易序列化库, 基于钱包|
+|swtc-utils|井通公链utility库，基于钱包|
+|[swtc-wallet](docs/swtcwallet/)|井通公链钱包库, 支持所有联盟链|
+|swtc-factory|井通公链钱包库, 井畅接口|
+|swtc-keypairs|公钥私钥|
+|swtc-address-codec|编码解码|
+|swtc-chains|基础信息|
+
 
 <h2 align="center">支持SWTCLIB</h2>
 <p align="center">
