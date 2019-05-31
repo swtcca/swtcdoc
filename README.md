@@ -3,6 +3,8 @@ home: true
 heroText: SWTC公链nodejs库
 tagline: 应用开发者专用
 features:
+- title: 安全第一
+  details: 本地签名 密钥不出本机
 - title: 完全兼容
   details: 井通接口 井畅接口
 - title: 独享便利
