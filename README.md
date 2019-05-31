@@ -1,6 +1,6 @@
 ---
 home: true
-heroText: 社区版井通nodejs库
+heroText: SWTC公链nodejs库
 tagline: 应用开发者专用
 features:
 - title: 完全兼容
