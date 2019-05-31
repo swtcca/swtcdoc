@@ -1,8 +1,8 @@
 # SWTC-LIB
 
 ## swtc-lib接口说明
-V2.1.0
-合约测试只能在特定节点运行, solidity支持到0.5.4
+> ### 强制本地签名
+> ### 合约测试只能在特定节点运行, solidity支持到0.5.4, 需要安装 swtc-tum3 / tum3-eth-abi
 
 ## [应用实例](../examples/)
 

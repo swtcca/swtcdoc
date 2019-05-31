@@ -4,6 +4,8 @@
 
 ## swtc-api接口说明
 > ### swtc-api 对jingtum-api 作出包装， 消除不安全操作 并且提供类似swtc-lib的接口支持jingtum-api缺失的操作
+> ### 强制本地签名
+> ### 合约测试只能在特定节点运行, solidity支持到0.5.4, 需要安装 swtc-tum3 / tum3-eth-abi
 
 ## 目录
 1. ### [安装](#installation)
