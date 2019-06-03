@@ -56,7 +56,9 @@
 > ### 4.24 [调用合约 solidity](#invokeContract)
 > - 4.24.1 创建执行合约对象
 > - 4.24.2 执行合约
-5. ### [本地签名](#localSign)
+5. ### [本地签名和可选参数](#localSignOptionalParams)
+> ### 5.1 [本地签名](#localSign)
+> ### 5.2 [可选参数](#optionalParams)
 6. ### [交易信息](#transaction)
 7. ### 工具类 swtc-utils类是工具类
 8. ### [底层常见错误附录](#errors)
@@ -1570,7 +1572,8 @@ tx.submitPromise(v.secret).then(console.log).catch(console.error)
      hash:
       '7968F7E8C341F8F12DD1943B3EFE909A4F553FCFEE07E3605E2303CDF3C4641C' } }
 ```
-## <a name="localSign"></a>5 本地签名
+## <a name="localSignOptionalParams"></a>5 本地签名和可选参数
+### <a name="localSign"></a>5.1 本地签名
 #### 方法: postBlob(blob);
 #### 参数:
 |参数|类型|说明|
@@ -1610,6 +1613,23 @@ remote.postBlob({blob: '12001F22000000002400000417202600000001614000000000000000
       '3045022100FD7DF650C0C753C0589159C383A809C5F2DB7AA53705E1880EF882DFAB577EB702202A91F83336E81EA709C937E1C3DD531BBF52D9A39A386A5AEB49571F7D07F0B7',
      hash:
       '7968F7E8C341F8F12DD1943B3EFE909A4F553FCFEE07E3605E2303CDF3C4641C' } }
+```
+### <a name="optionalParams"></a>5.2 可选参数
+#### 方法: .getXYZ()
+#### 可选参数:
+可选参数自身是一个javascript对象， 放在参数后面， 常见的包括
+|参数|类型|说明|
+|----|----|---:|
+|results_per_page|Number|分页显示时每页显示的数目|
+|page|Number|分页显示返回的页码|
+|marker|Object|分页相关，位置标记|
+|currency|String|通证代码|
+|issuer|String|银关|
+#### 返回: Promise - json
+#### 例子
+```javascript
+remote.getAccountBalances('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', { currency: 'CNY' })
+remote.getAccountOffers('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', { results_per_page: 100 })
 ```
 ## <a name="transaction"></a>6 交易记录信息
 ### 用户提交的交易类型主要有Payment、OfferCreate、OfferCancel和RelationSet；
