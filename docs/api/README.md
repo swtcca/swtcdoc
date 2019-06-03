@@ -58,7 +58,7 @@
 > - 4.24.2 执行合约
 5. ### [本地签名和可选参数](#localSignOptionalParams)
 > ### 5.1 [本地签名](#localSign)
-> ### 5.2 [可选参数](#optionalParams)
+> ### 5.2 [可选参数](#optionalParameters)
 6. ### [交易信息](#transaction)
 7. ### 工具类 swtc-utils类是工具类
 8. ### [底层常见错误附录](#errors)
@@ -1614,7 +1614,7 @@ remote.postBlob({blob: '12001F22000000002400000417202600000001614000000000000000
      hash:
       '7968F7E8C341F8F12DD1943B3EFE909A4F553FCFEE07E3605E2303CDF3C4641C' } }
 ```
-### <a name="optionalParams"></a>5.2 可选参数
+### <a name="optionalParameters"></a>5.2 可选参数
 #### 方法: .getXYZ()
 #### 可选参数:
 可选参数自身是一个javascript对象， 放在参数后面， 常见的包括
