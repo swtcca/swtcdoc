@@ -734,7 +734,6 @@ remote.getOrderBooksAsks('SWT', 'CNY+' + remote._issuer).then(console.log).catch
 #### 参数:
 |参数|类型|说明|
 |----|----|---:|
-|address|String|钱包地址|
 |hash|String|交易的hash|
 #### 返回: Promise - json
 #### 例子
