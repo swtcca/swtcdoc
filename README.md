@@ -19,6 +19,8 @@ features:
   details: 已经增加api, 可加代理版remote
 - title: 联盟链支持
   details: 等同支持所有井通联盟链
+- title: CDN可用
+  details: web版本直接CDN引用
 
 ---
 
@@ -55,19 +57,19 @@ features:
 
 <h2>程序包</h2>
 
-|程序包名称|功能描述|
-|----------|--------|
-|[swtc-x-lib](docs/swtcxlib/)|等同支持井通联盟链, 基于websocket|
-|[swtc-lib](docs/swtclib/)|SWTC公链库, 基于websocket|
-|[swtc-api](docs/swtcapi/)|SWTC公链库, 基于restapi|
-|[swtc-transaction](docs/swtctx/)|井通公链交易库, 支付/挂单/关系/合约|
-|swtc-serializer|井通公链交易序列化库, 基于钱包|
-|swtc-utils|井通公链utility库，基于钱包|
-|[swtc-wallet](docs/swtcwallet/)|井通公链钱包库, 支持所有联盟链|
-|swtc-factory|井通公链钱包库, 井畅接口|
-|swtc-keypairs|公钥私钥|
-|swtc-address-codec|编码解码|
-|swtc-chains|基础信息|
+|程序包名称|CDN|功能描述|
+|----------|---|--------|
+|[swtc-x-lib](docs/swtcxlib/)|name: swtc_x_lib<br>[unpkg](https://unpkg.com/swtc-x-lib)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/swtc-x-lib)|等同支持井通联盟链, 基于websocket|
+|[swtc-lib](docs/swtclib/)|name: swtc_lib<br>[unpkg](https://unpkg.com/swtc-lib)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/swtc-lib)|SWTC公链库, 基于websocket|
+|[swtc-api](docs/swtcapi/)|name: swtc_api<br>[unpkg](https://unpkg.com/swtc-api)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/swtc-api)|SWTC公链库, 基于restapi|
+|[swtc-transaction](docs/swtctx/)|name: swtc_transaction<br>[unpkg](https://unpkg.com/swtc-transaction)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/swtc-transaction)|井通公链交易库, 支付/挂单/关系/合约|
+|swtc-serializer||井通公链交易序列化库, 基于钱包|
+|swtc-utils||井通公链utility库，基于钱包|
+|[swtc-wallet](docs/swtcwallet/)|name: swtc_wallet<br>[unpkg](https://unpkg.com/swtc-wallet)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/swtc-wallet)|井通公链钱包库, 支持所有联盟链|
+|swtc-factory||井通公链钱包库, 井畅接口|
+|swtc-keypairs||公钥私钥|
+|swtc-address-codec||编码解码|
+|swtc-chains||基础信息|
 
 
 <h2 align="center">支持SWTCLIB</h2>
