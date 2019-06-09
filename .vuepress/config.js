@@ -7,7 +7,6 @@ module.exports = {
 		lastUpdated: 'Last Updated', // string | boolean
 		repoLabel: 'Contribute!',
 		docsRepo: 'swtcca/swtcdoc',
-		docsDir: 'docs',
 		editLinks: true,
 		editLinkText: '帮助维护文档!',
 		nav: [
