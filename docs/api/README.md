@@ -958,8 +958,6 @@ remote.buildPaymentTx({
 |secret|String|井通钱包私钥|
 |memo|String|备注信息|
 ##### 返回: Promise
-##### 方法: tx.submit(callback);
-#####  参数:无
 #### 设置关系完整例子
 ```javascript
 var japi = require('swtc-api');
