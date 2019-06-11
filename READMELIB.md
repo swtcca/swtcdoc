@@ -76,6 +76,7 @@
 </h3>
 <p align="center">
 	<img valign="middle" src="https://img.shields.io/badge/swtc-donate-blue.svg" alt="swtc-donate" /> jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG
+	<img align="center" src="https://raw.githubusercontent.com/swtcca/swtc-app-examples/master/images/donate.png" alt="捐赠" />
 </p>
 
 <a name="users"></a>
