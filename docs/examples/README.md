@@ -16,7 +16,7 @@ $ npm install swtc-lib@jcc # jcc_jingtum_lib接口， 版本为1.5.x
     - `<script src='https://unpkg.com/swtc-lib'></script>`
     - 或者 `<script src='https://cdn.jsdelivr.net/npm/swtc-lib'></script>`
   - 或者当前目录下包含一份调试版本 swtc-lib.js 
-  - 可以 [自行编译](https://github.com/swtca/swtclib)
+  - 可以 [自行编译](https://github.com/swtcca/swtclib)
   - 不建议使用此方式
   - 建议使用 [webpack打包](W03) 方式替代
 - 常规导入
