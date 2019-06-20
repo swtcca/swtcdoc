@@ -100,7 +100,7 @@ features:
 	用户
 </h3>
 <p align="center">
-	CA节点 | 畅节点 <br>
+	CA节点 | 畅节点 | 至尚节点 | JSKY节点 <br>
 	<img align="center" src="https://raw.githubusercontent.com/swtcca/swtc-app-examples/master/images/jccdex.png" alt="井畅" height="100" />
 </p>
 
