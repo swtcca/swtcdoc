@@ -3,6 +3,7 @@
 ## swtc-lib接口说明
 > ### 强制本地签名
 > ### 合约测试只能在特定节点运行, solidity支持到0.5.4, 需要安装 swtc-tum3 / tum3-eth-abi
+> ### 集成生态节点failover `const remote = new Remote() ; remote.connectPromise().then(console.log).catch(console.error)`
 
 ## [应用实例](../examples/)
 

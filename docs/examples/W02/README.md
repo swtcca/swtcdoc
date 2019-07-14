@@ -17,7 +17,6 @@ $ npm init -y
 │   └── main.js
 ├── index.html
 ├── styles.css
-└── swtc-lib.js
 $ mkdir dist; touch dist/main.js
 ```
 4. index.html， 内容如下, 改变的是把javascript拷贝到文件中，用 `<script></script>`包裹起来
@@ -29,8 +28,7 @@ $ mkdir dist; touch dist/main.js
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 		<link rel="stylesheet" href="styles.css"> <!-- 装扮一下页面 -->
-		<script src="swtc-lib.js"></script> <!-- 导入库 -->
-		<!-- or use CDN <script src="https://unpkg.com/swtc-lib"></script> -->
+		<script src="https://unpkg.com/swtc-lib"></script>
 	</head>
 	<body>
 		<main>
@@ -51,7 +49,7 @@ $ mkdir dist; touch dist/main.js
   const dom_wallet = document.querySelector('.js-wallet')
   const dom_ledger = document.querySelector('.js-ledger')
   const dom_price = document.querySelector('.js-price')
-  const remote = new Remote({server: 'ws://swtclib.daszichan.com:5020'})
+  const remote = new Remote()
   const currency_swt = remote.makeCurrency()
   const currency_cny = remote.makeCurrency('CNY')
   const swt_vs_cny = { limit: 5, gets: currency_swt, pays: currency_cny }
@@ -121,8 +119,7 @@ $ mkdir dist; touch dist/main.js
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 		<link rel="stylesheet" href="styles.css"> <!-- 装扮一下页面 -->
-		<script src="swtc-lib.js"></script> <!-- 导入库 -->
-		<!-- or use CDN <script src="https://unpkg.com/swtc-lib"></script> -->
+		<script src="https://unpkg.com/swtc-lib"></script>
 	</head>
 	<body>
 		<main>
@@ -149,7 +146,7 @@ const Remote = swtc_lib.Remote
 const dom_wallet = document.querySelector('.js-wallet')
 const dom_ledger = document.querySelector('.js-ledger')
 const dom_price = document.querySelector('.js-price')
-const remote = new Remote({server: 'ws://swtclib.daszichan.com:5020'})
+const remote = new Remote()
 const currency_swt = remote.makeCurrency()
 const currency_cny = remote.makeCurrency('CNY')
 const swt_vs_cny = { limit: 5, gets: currency_swt, pays: currency_cny }

@@ -9,7 +9,7 @@ const Koa = require('koa');
 const app = new Koa();
 const RemoteLib = require('swtc-lib').Remote
 const RemoteApi = require('swtc-api').Remote
-const remotelib = new RemoteLib({server: 'wss://c05.jingtum.com:5020'})
+const remotelib = new RemoteLib()
 const remoteapi = new RemoteApi({})
 
 // logger

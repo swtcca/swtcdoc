@@ -13,7 +13,7 @@ const BLUEBIRD = require('bluebird')
 BLUEBIRD.promisifyAll(SWTCLIB)
 
 const Remote = SWTCLIB.Remote
-const remote = new Remote({server: 'ws://swtclib.daszichan.com:5020'})
+const remote = new Remote()
 // 我们现在对于每个有回调的函数就拥有相应的Async函数, 最常见
 // await必须运行于async函数中
 var someFunction = async () => {

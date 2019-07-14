@@ -21,6 +21,8 @@ features:
   details: 等同支持所有井通联盟链
 - title: CDN可用
   details: web版本直接CDN引用
+- title: 集成生态节点
+  details: 支持中型应用
 
 ---
 

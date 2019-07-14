@@ -15,7 +15,7 @@ $ tree
 const Wallet = require('swtc-lib').Wallet
 const Remote = require('swtc-lib').Remote
 
-const remote = new Remote({server: 'ws://swtclib.daszichan.com:5020'})
+const remote = new Remote()
 const currency_swt = remote.makeCurrency()
 const currency_cny = remote.makeCurrency('CNY')
 const swt_vs_cny = { limit: 5, gets: currency_swt, pays: currency_cny }

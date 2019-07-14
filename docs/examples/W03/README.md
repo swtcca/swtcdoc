@@ -70,7 +70,7 @@ import { Remote } from 'swtc-lib' // esm import也可以
 const dom_wallet = document.querySelector('.js-wallet')
 const dom_ledger = document.querySelector('.js-ledger')
 const dom_price = document.querySelector('.js-price')
-const remote = new Remote({server: 'ws://swtclib.daszichan.com:5020'})
+const remote = new Remote()
 const currency_swt = remote.makeCurrency()
 const currency_cny = remote.makeCurrency('CNY')
 const swt_vs_cny = { limit: 5, gets: currency_swt, pays: currency_cny }

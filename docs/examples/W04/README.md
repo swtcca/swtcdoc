@@ -71,7 +71,7 @@ class App extends Component {
     const currency_swt = remote.makeCurrency()
     const currency_cny = remote.makeCurrency('CNY')
     const swt_vs_cny = { limit: 5, gets: currency_swt, pays: currency_cny }
-	this.remote = new Remote({server: 'ws://swtclib.daszichan.com:5020'})
+	this.remote = new Remote()
     this.remote.connect((error,server_info) => {
       if (error) {
         console.log(error)

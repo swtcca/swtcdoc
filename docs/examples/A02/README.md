@@ -19,7 +19,7 @@ $ npm install swtc-lib
 ```javascript
 
 const Remote = SWTCLIB.Remote
-const remote = new Remote({server: 'ws://swtclib.daszichan.com:5020'})
+const remote = new Remote()
 remote.connectPromise()
 	.then( server_info => {
 			console.log(server_info)
