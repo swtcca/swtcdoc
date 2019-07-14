@@ -26,6 +26,7 @@ const Remote = require('swtc-lib').Remote
 ## 单行代码操作
 0. 导入钱包/库
 > - `const Remote = require('swtc-lib').Remote`
+
 > - `import { Remote } from 'swtc-lib'`
 1. 创建remote对象
 >  `const remote = new (require('swtc-lib').Remote)()`
