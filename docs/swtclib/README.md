@@ -806,8 +806,48 @@ remote.connectPromise()
 |validated|Boolean|交易是否通过验证|
 ### <a name="requestBrokerage"></a> 4.14 获得挂单佣金设置信息
 #### 首先通过requestBrokerage方法返回一个Transaction对象，然后通过submitPromise方法提交。
+#### <a name="requestBrokerage"></a> 4.14.1 创建查询挂单佣金对象
 ##### 方法: remote.requestBrokerage({});
 ##### 参数:
+|参数|类型|说明|
+|----|----|---:|
+|account|String|井通钱包地址|
+##### 返回:Transaction对象
+#### <a name="brokerageSubmit"></a> 4.14.2 提交查询
+##### 方法:tx.submitPromise(secret)
+##### 参数:
+|参数|类型|说明|
+|----|----|---:|
+|secret|String|井通钱包私钥|
+##### 返回: Promise
+#### 查询佣金完整例子
+```javascript
+const jlib = require('swtc-lib');
+const Remote = jlib.Remote;
+const remote = new Remote();
+account = 'jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG'
+remote.connectPromise().then( async () => {
+            let request = remote.requestBrokerage({ account });
+            let result = await request.submitPromise()
+            remote.disconnect()
+            console.log(result)
+        })
+```
+#### 返回结果
+```javascript
+{ account: 'jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG',
+  brokerages:
+   [ { FeeCurrency: 'CNY',
+       FeeCurrencyIssuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
+       OfferFeeRateDen: '1000',
+       OfferFeeRateNum: '1',
+       Platform: 'jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG',
+       fee_account: 'jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG' } ],
+  ledger_hash:
+   'D096FC540E2AA2AD0432EDF1B7F545D814D72972E6C8BA0B5A8221CB8612FE0E',
+  ledger_index: 13681307,
+  validated: true }
+```
 ### <a name="paymentTx"></a> 4.15 支付
 #### 首先通过buildPaymentTx方法返回一个Transaction对象，addMemo添加备注为可选项，最后通过submitPromise方法提交支付信息。
 #### <a name="paymentBuildTx"></a> 4.15.1 创建支付对象
@@ -1402,15 +1442,63 @@ remote.connect(function (err, result) {
 |den|Integer|分母(正整数)|
 |app|Integer|应用来源序号(正整数)|
 |amount|Object|币种对象|
-|value|String|数量，这里只是占位，没有实际意义。|
-|currency|String|货币种类|
-|issuer|String|货币发行方|
-#### 4.22.2 传入密钥
-##### 方法:tx.setSecret(secret)
-##### 参数:
-#### 4.22.3 设置挂单佣金
+|&nbsp;&nbsp;value|String|数量，这里只是占位，没有实际意义。|
+|&nbsp;&nbsp;currency|String|货币种类|
+|&nbsp;&nbsp;issuer|String|货币发行方|
+#### 4.22.2 设置挂单佣金
 ##### 方法:tx.submitPromise(secret);
 ##### 参数: `secret` 密钥
+##### 返回: Promise
+#### 设置挂单佣金完整例子
+```javascript
+const jlib = require('swtc-lib');
+const Remote = jlib.Remote;
+const remote = new Remote();
+secret = 's..........'
+account = 'jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG'
+remote.connectPromise().then( async () => {
+            let tx = remote.buildBrokerageTx({
+                account,
+                mol: 1,
+                den: 1000,
+                feeAccount: account,
+                amount: remote.makeAmount(3, "CNY")
+            });
+            let result = await tx.submitPromise(secret)
+                remote.disconnect()
+                console.log(result)
+        })
+        .catch(console.error)
+```
+#### 返回结果
+```javascript
+{ engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message:
+   'The transaction was applied. Only final in a validated ledger.',
+  tx_blob:
+   '1200CD220000000024000002873900000000000000013A00000000000003E861D48AA87BEE538000000000000000000000000000434E590000000000A582E432BFC48EEDEF852C814EC57F3CD2D41596684000000000002710732102197F1426BCA2F59B6B910F0391E55888B4FE80AF962478493104A33274B1B03A74463044022074D90571F33918F429BE4C88B33206BD0848C0DAFB4A2B88256B642AB44D858002201BBEE1EBD5C0AEE07C604BA36F6E6479D4BD7D70DA143CF27E8D3A4E30673B1B8114AF09183A11AA70DA06E115E03B0E5478232740B58914AF09183A11AA70DA06E115E03B0E5478232740B5',
+  tx_json:
+   { Account: 'jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG',
+     Amount:
+      { currency: 'CNY',
+        issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
+        value: '3' },
+     Fee: '10000',
+     FeeAccountID: 'jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG',
+     Flags: 0,
+     OfferFeeRateDen: '00000000000003E8',
+     OfferFeeRateNum: '0000000000000001',
+     Sequence: 647,
+     SigningPubKey:
+      '02197F1426BCA2F59B6B910F0391E55888B4FE80AF962478493104A33274B1B03A',
+     TransactionType: 'Brokerage',
+     TxnSignature:
+      '3044022074D90571F33918F429BE4C88B33206BD0848C0DAFB4A2B88256B642AB44D858002201BBEE1EBD5C0AEE07C604BA36F6E6479D4BD7D70DA143CF27E8D3A4E30673B1B',
+     hash:
+      'A74D89B9FBA9A6D9F4158373EF9C57180186548B48CCA9C70F933083F12B5B0B' } }
+```
+#### 返回结果说明
 ### <a name="initContract"></a>4.23 部署合约 Solidity版
 #### 首先通过initContract方法返回一个Transaction对象，然后通过setSecret传入密钥，最后通过submit方法完成合约的部署
 #### 4.23.1 创建合约部署对象
