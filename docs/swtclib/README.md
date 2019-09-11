@@ -13,7 +13,7 @@
 3. ### [创建钱包](#wallet)
 4. ### [REMOTE类](#remote)
 > ### 4.1 [创建Remote对象](#remoteCreate)
-> ### 4.2 [创建连接](#remoteConnect)
+> ### 4.2 [创建连接](#connectPromise)
 > ### 4.3 [断开连接](#remoteDisconnect)
 > ### 4.4 [请求底层服务器信息](#requestServerInfo)
 > ### 4.5 [获取最新账本信息](#requestLedgerClosed)
@@ -26,42 +26,42 @@
 > ### 4.12 [获得账号交易列表](#requestAccountTx)
 > ### 4.13 [获得市场挂单列表](#requestOrderBook)
 > ### 4.14 [获得挂单佣金设置信息](#requestBrokerage)
-> ### 4.15 [支付](#paymentTx)
+> ### 4.15 [支付](#buildPaymentTx)
 > - 4.15.1 创建支付对象
 > - 4.15.2 提交支付
-> ### 4.16 [设置关系](#relationTx)
+> ### 4.16 [设置关系](#buildRelationTx)
 > - 4.16.1 创建关系对象
 > - 4.16.2 关系设置
-> ### 4.17 [设置账号属性 --- 待完善](#accountSetTx)
+> ### 4.17 [设置账号属性 --- 待完善](#buildAccountSetTx)
 > - 4.17.1 创建属性对象
 > - 4.17.2 属性设置
-> ### 4.18 [挂单](#offerCreate)
+> ### 4.18 [挂单](#buildOfferCreateTx)
 > - 4.18.1 创建挂单对象
 > - 4.18.2 提交挂单
-> ### 4.19 [取消挂单](#offerCancel)
+> ### 4.19 [取消挂单](#buildOfferCancelTx)
 > - 4.19.1 创建取消挂单对象
 > - 4.19.2 取消挂单
-> ### 4.20 [部署合约 lua](#contractDeploy)
+> ### 4.20 [部署合约 lua](#buildContractDeployTx)
 > - 4.20.1 创建部署合约对象
 > - 4.20.2 部署合约
-> ### 4.21 [调用合约 lua](#contractCall)
+> ### 4.21 [调用合约 lua](#buildContractCallTx)
 > - 4.21.1 创建执行合约对象
 > - 4.21.2 执行合约
 > ### 4.22 [设置挂单佣金](#buildBrokerageTx)
 > - 4.22.1 创建挂单佣金对象
 > - 4.22.2 设置挂单佣金
-> ### 4.23 [部署合约 solidity](#initContract)
+> ### 4.23 [部署合约 solidity](#buildContractInitTx)
 > - 4.23.1 创建部署合约对象
 > - 4.23.2 部署合约
-> ### 4.24 [调用合约 solidity](#invokeContract)
+> ### 4.24 [调用合约 solidity](#buildContractInvokeTx)
 > - 4.24.1 创建执行合约对象
 > - 4.24.2 执行合约
-> ### 4.25 [监听事件](#listen)
+> ### 4.25 [监听事件](#listenOn)
 
-5. ### [REQUEST类](#request)
+5. ### [REQUEST类](#requestClass)
 > ### 5.1 [指定账本](#requestLedger)
 > ### 5.2 [提交请求](#requestSubmit)
-6. ### [TRANSACTION类](#transaction)
+6. ### [TRANSACTION类](#transactionClass)
 > ### 6.1 [获得交易账号](#transactionAccount)
 > ### 6.2 [获得交易类型](#transactionType)
 > ### 6.3 [传入私钥](#transactionSecret)
@@ -164,7 +164,7 @@ var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
 var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 ```
-### <a name="remoteConnect"></a>4.2 创建连接
+### <a name="connectPromise"></a>4.2 创建连接
 #### 每个Remote对象都应该首先手动连接底层，然后才可以请求底层的数据。请求结果在回调函数callback中
 #### 方法: connect(callback)
 #### 参数: 回调函数 callback(err, result)
@@ -806,7 +806,7 @@ remote.connectPromise()
 |validated|Boolean|交易是否通过验证|
 ### <a name="requestBrokerage"></a> 4.14 获得挂单佣金设置信息
 #### 首先通过requestBrokerage方法返回一个Transaction对象，然后通过submitPromise方法提交。
-#### <a name="requestBrokerage"></a> 4.14.1 创建查询挂单佣金对象
+#### 4.14.1 创建查询挂单佣金对象
 ##### 方法: remote.requestBrokerage({});
 ##### 参数:
 |参数|类型|说明|
@@ -850,7 +850,7 @@ remote.connectPromise().then( async () => {
 ```
 ### <a name="paymentTx"></a> 4.15 支付
 #### 首先通过buildPaymentTx方法返回一个Transaction对象，addMemo添加备注为可选项，最后通过submitPromise方法提交支付信息。
-#### <a name="paymentBuildTx"></a> 4.15.1 创建支付对象
+#### <a name="buildPaymentTx"></a> 4.15.1 创建支付对象
 ##### 方法: remote.buildPaymentTx({});
 ##### 参数:
 |参数|类型|说明|
@@ -934,7 +934,7 @@ remote.connectPromise()
 |&nbsp;&nbsp;&nbsp;hash|String|交易hash|
 ### <a name="relationTx"></a> 4.16 设置关系
 #### 首先通过buildRelationTx方法返回一个Transaction对象，然后通过submitPromise方法提交支付信息。目前支持的关系类型:信任(trust)、授权(authorize)、冻结 (freeze)
-#### <a name="relationBuildTx"></a> 4.16.1 创建关系对象
+#### <a name="buildRelationTx"></a> 4.16.1 创建关系对象
 ##### 方法:remote.buildRelationTx({});
 ##### 参数
 |参数|类型|说明|
@@ -1030,7 +1030,7 @@ remote.connectPromise()
 |&nbsp;&nbsp;hash|String|交易hash|
 ### <a name="accountSetTx"></a> 4.17 设置账号属性 ------待完善
 #### 首先通过buildAccountSetTx方法返回一个Transaction对象，然后通过submitPromise方法设置账号属性。目前支持的三类:`property`、`delegate` 、`signer`。property 用于设置账号一般属性;delegate用于某账号设置委托帐户;signer用于设置签名。
-#### <a name="accountSetBuild"></a>4.17.1 创建属性对象
+#### <a name="buildAccountSetTx"></a>4.17.1 创建属性对象
 ##### 方法:remote.buildAccountSetTx({});
 ##### 参数:
 |参数|类型|说明|
@@ -1086,7 +1086,7 @@ remote.connect(function(err, result) {
      hash:
       '56969504AF776BB5EBC8830D87822E201973C4EBCD24CEA64A90D10EF740BD90' } }
 ```
-### <a name="offerCreate"></a> 4.18 挂单
+### <a name="buildOfferCreateTx"></a> 4.18 挂单
 #### 首先通过buildOfferCreateTx方法返回一个Transaction对象，然后通过submitPromise方法提交挂单。
 #### <a name="offerCreateBuild"></a> 4.18.1 创建挂单对象
 ##### 方法:remote.buildOfferCreateTx({});
@@ -1182,7 +1182,7 @@ remote.connectPromise()
 |&nbsp;&nbsp;&nbsp;TransactionType|String|交易类型:TrustSet信任;RelationDel解冻;RelationSet 授权/冻结|
 |&nbsp;&nbsp;&nbsp;TxnSignature|String|交易签名|
 |&nbsp;&nbsp;&nbsp;hash|String|交易hash|
-### <a name="offerCancel"></a> 4.19 取消挂单
+### <a name="buildOfferCancelTx"></a> 4.19 取消挂单
 #### 首先通过buildOfferCancelTx方法返回一个Transaction对象，然后通过submitPromise方法取消挂单。
 #### 4.19.1 <a name="offerCancelBuild"></a> 创建取消挂单对象
 #### 方法:remote.buildOfferCancelTx({});
@@ -1256,7 +1256,7 @@ remote.connectPromise()
 |&nbsp;&nbsp;&nbsp;TransactionType|String|交易类型:OfferCancel取消订单|
 |&nbsp;&nbsp;&nbsp;TxnSignature|String|交易签名|
 |&nbsp;&nbsp;&nbsp;hash|String|交易hash|
-### <a name="contractDeploy"></a>4.20 部署合约 lua
+### <a name="buildContractDeployTx"></a>4.20 部署合约 lua
 #### 首先通过deployContractTx方法返回一个Transaction对象，然后通过submitPromise方法部署合约。
 #### <a name="contractDeployBuild"></a>4.20.1 创建部署合约对象
 ##### 方法:remote.deployContractTx({});
@@ -1346,7 +1346,7 @@ remote.connect(function (err, result) {
 |&nbsp;&nbsp;&nbsp;TransactionType|String|交易类型:ConfigContract部署合约|
 |&nbsp;&nbsp;&nbsp;TxnSignature|String|交易签名|
 |&nbsp;&nbsp;&nbsp;hash|String|交易hash|
-### <a name="contractCall"></a> 4.21 执行合约 lua
+### <a name="buildContractCallTx"></a> 4.21 执行合约 lua
 #### 首先通过callContractTx方法返回一个Transaction对象，然后通过submitPromise方法执行合约
 #### <a name="contractCallBuild"></a> 4.21.1 创建执行合约对象
 ##### 方法:remote.callContractTx({});
@@ -1499,7 +1499,7 @@ remote.connectPromise().then( async () => {
       'A74D89B9FBA9A6D9F4158373EF9C57180186548B48CCA9C70F933083F12B5B0B' } }
 ```
 #### 返回结果说明
-### <a name="initContract"></a>4.23 部署合约 Solidity版
+### <a name="buildContractInitTx"></a>4.23 部署合约 Solidity版
 #### 首先通过initContract方法返回一个Transaction对象，然后通过setSecret传入密钥，最后通过submit方法完成合约的部署
 #### 4.23.1 创建合约部署对象
 ##### 方法:remote.initContract({});
@@ -1576,7 +1576,7 @@ remote.connectPromise()
      hash:
       'BE321F06749FA9FFEA556BB5761BE964D5C3029BF95EE6D95B21EB738EF53765' } }
 ```
-### <a name="invokeContract"></a>4.24 调用合约(Solidity版)
+### <a name="buildContractInvokeTx"></a>4.24 调用合约(Solidity版)
 #### 首先通过invokeContract方法返回一个Transaction对象，然后通过submitPromise方法完成合约的调用。 
 #### 4.24.1 创建合约调用对象
 ##### 方法:remote.invokeContract({})
@@ -1646,7 +1646,7 @@ remote.connectPromise()
      hash:
       '041F2D514FCEABE5015B3E26F47041DB7E51FA577D9331507E9B2BB8DDCD0162' } }
 ```
-### <a name="listen"></a> 4.25 监听事件
+### <a name="listenOn"></a> 4.25 监听事件
 #### Remote有两个监听事件:监听所有交易(transactions)和监听所有账本(ledger_closed)，监听结果放到回调函数中，回调中只有一个参数，为监听到的消息。
 #### 方法:remote.on('transactions',callback);
 #### 方法:remote.on('ledger_closed',callback);
@@ -1667,7 +1667,7 @@ remote.connect(function (err, result) {
     });
 });
 ```
-## <a name="request"></a>5 REQUEST类
+## <a name="requestClass"></a>5 REQUEST类
 #### Request类主管GET请求，包括获得服务器、账号、挂单、路径等信息。请求时不需要提供密 钥，且对所有用户公开。所有的请求是异步的，会提供一个回调函数。每个回调函数有两个参 数，一个是错误，另一个是结果。提供以下方法:
 * selectLedger(ledger)
 * submit(callback)
@@ -1715,7 +1715,7 @@ remote.connect(function (err, result) {
      req.submitPromise().then(console.log).catch(console.error)
 });
 ```
-## <a name="transaction"></a>6 TRANSACTION类
+## <a name="transactionClass"></a>6 TRANSACTION类
 ### Transaction类主管POST请求，包括组装交易和交易参数。请求时需要提供密钥，且交易可以 进行本地签名和服务器签名。目前支持服务器签名，本地签名支持主要的交易，还有部分参数 不支持。所有的请求是异步的，会提供一个回调函数。每个回调函数有两个参数，一个是错误， 另一个是结果。提供以下方法:
 * getAccount()
 * getTransactionType()
