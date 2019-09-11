@@ -26,7 +26,7 @@ features:
 
 ---
 
-<h2 align="center"><a href="http://swtc.daszichan.com">专为应用开发者打造</a></h2>
+<h2 align="center"><a href="https://swtclib.netlify.com">专为应用开发者打造</a></h2>
 
 <p align="center">
 	<a href="https://gitter.im/swtclib/community?utm_source=share-link&utm_medium=link&utm_campaign=share-link"><img alt="Gitter" src="https://img.shields.io/gitter/room/lospringliu/swtclib.svg" /></a>

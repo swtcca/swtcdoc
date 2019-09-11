@@ -1,4 +1,4 @@
-<h2 align="center"><a href="http://swtc.daszichan.com">专为应用开发者打造</a></h2>
+<h2 align="center"><a href="https://swtcdoc.netlify.com">专为应用开发者打造</a></h2>
 
 <p align="center">
 	<a href="https://gitter.im/swtclib/community?utm_source=share-link&utm_medium=link&utm_campaign=share-link"><img alt="Gitter" src="https://img.shields.io/gitter/room/lospringliu/swtclib.svg" /></a>
@@ -31,29 +31,30 @@
 
 <h2>程序包</h2>
 
-|程序包名称|CDN|功能描述|
-|----------|---|--------|
-|[swtc-x-lib](docs/swtcxlib/)|name: swtc_x_lib<br>[unpkg](https://unpkg.com/swtc-x-lib)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/swtc-x-lib)|等同支持井通联盟链, 基于websocket|
-|[swtc-lib](docs/swtclib/)|name: swtc_lib<br>[unpkg](https://unpkg.com/swtc-lib)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/swtc-lib)|SWTC公链库, 基于websocket|
-|[swtc-api](docs/swtcapi/)|name: swtc_api<br>[unpkg](https://unpkg.com/swtc-api)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/swtc-api)|SWTC公链库, 基于restapi|
-|[swtc-transaction](docs/swtctx/)|name: swtc_transaction<br>[unpkg](https://unpkg.com/swtc-transaction)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/swtc-transaction)|井通公链交易库, 支付/挂单/关系/合约|
-|swtc-serializer||井通公链交易序列化库, 基于钱包|
-|swtc-utils||井通公链utility库，基于钱包|
-|[swtc-wallet](docs/swtcwallet/)|name: swtc_wallet<br>[unpkg](https://unpkg.com/swtc-wallet)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/swtc-wallet)|井通公链钱包库, 支持所有联盟链|
-|swtc-factory||井通公链钱包库, 井畅接口|
-|swtc-keypairs||公钥私钥|
-|swtc-address-codec||编码解码|
-|swtc-chains||基础信息|
+| 程序包名称                       | CDN                                                                                                                                  | 功能描述                            |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------- |
+| [swtc-x-lib](docs/swtcxlib/)     | name: swtc_x_lib<br>[unpkg](https://unpkg.com/swtc-x-lib)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/swtc-x-lib)                   | 等同支持井通联盟链, 基于 websocket  |
+| [swtc-lib](docs/swtclib/)        | name: swtc_lib<br>[unpkg](https://unpkg.com/swtc-lib)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/swtc-lib)                         | SWTC 公链库, 基于 websocket         |
+| [swtc-api](docs/swtcapi/)        | name: swtc_api<br>[unpkg](https://unpkg.com/swtc-api)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/swtc-api)                         | SWTC 公链库, 基于 restapi           |
+| [swtc-transaction](docs/swtctx/) | name: swtc_transaction<br>[unpkg](https://unpkg.com/swtc-transaction)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/swtc-transaction) | 井通公链交易库, 支付/挂单/关系/合约 |
+| swtc-serializer                  |                                                                                                                                      | 井通公链交易序列化库, 基于钱包      |
+| swtc-utils                       |                                                                                                                                      | 井通公链 utility 库，基于钱包       |
+| [swtc-wallet](docs/swtcwallet/)  | name: swtc_wallet<br>[unpkg](https://unpkg.com/swtc-wallet)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/swtc-wallet)                | 井通公链钱包库, 支持所有联盟链      |
+| swtc-factory                     |                                                                                                                                      | 井通公链钱包库, 井畅接口            |
+| swtc-keypairs                    |                                                                                                                                      | 公钥私钥                            |
+| swtc-address-codec               |                                                                                                                                      | 编码解码                            |
+| swtc-chains                      |                                                                                                                                      | 基础信息                            |
 
 ## 参与
+
 1. fork and clone
 2. 安装依赖 `npm install`
 3. 运行测试 `npm run test`
-4. 编译web版本 `npm run build`
+4. 编译 web 版本 `npm run build`
 5. 列出管理的程序包 `npm run lerna -- list`
-6. 执行某个包的npm脚本 `npm run lerna -- run tslint --scope swtc-api`
+6. 执行某个包的 npm 脚本 `npm run lerna -- run tslint --scope swtc-api`
 7. 执行某个包的任意命令 `npm run lerna -- exec pwd --scope swtc-wallet`
-8. 编译某个包的web dev版本 `npm run lerna -- run build:dev --scope swtc-lib`
+8. 编译某个包的 web dev 版本 `npm run lerna -- run build:dev --scope swtc-lib`
 
 <h2 align="center">支持开源SWTCLIB 支持公链生态</h2>
 
@@ -62,6 +63,7 @@
 <p align="center"> **用户** 列出公司或者个人也是对项目的支持</p>
 
 <a name="sponsors"></a>
+
 <h3 align="center">
 	金主
 </h3>
@@ -71,6 +73,7 @@
 </p>
 
 <a name="donate"></a>
+
 <h3 align="center">
 	赞助
 </h3>
@@ -80,6 +83,7 @@
 </p>
 
 <a name="users"></a>
+
 <h3 align="center">
 	用户
 </h3>
@@ -87,4 +91,3 @@
 	CA节点 | 畅节点 | 至尚节点 | JSKY节点  <br>
 	<img align="center" src="https://raw.githubusercontent.com/swtcca/swtc-app-examples/master/images/jccdex.png" alt="井畅" height="100" />
 </p>
-
