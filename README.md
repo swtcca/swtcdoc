@@ -23,6 +23,8 @@ features:
   details: web版本直接CDN引用
 - title: 集成生态节点
   details: 支持中型应用
+- title: 未来可用
+  details: 多重签名 合约
 
 ---
 

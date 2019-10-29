@@ -4,6 +4,7 @@
 > ### 强制本地签名
 > ### 合约测试只能在特定节点运行, solidity支持到0.5.4, 需要安装 swtc-tum3 / tum3-eth-abi
 > ### 集成生态节点failover `const remote = new Remote() ; remote.connectPromise().then(console.log).catch(console.error)`
+> ### 多重签名只能在特定节点运行, 全部本地签
 
 ## [应用实例](../examples/)
 
@@ -71,6 +72,13 @@
 8. ### [底层常见错误附录](#errors)
 9. ### [solidity erc20 源码](#erc20src)
 10. ### [solidity erc721 源码](#erc721src)
+11. ### [多重签名](#multiSign)
+> ### 11.1 [查询帐号的签名列表](#requestSignerList)
+> ### 11.2 [设置帐号的签名列表](#buildSignerListTx)
+> ### 11.3 [废除帐号的主密钥](#deactivateMasterKey)
+> ### 11.4 [激活帐号的主密钥](#activateMasterKey)
+> ### 11.5 [多重签名 - tx.multiSigning, tx.multiSigned](#buildMultisignTx)
+> ### 11.6 [多重签名 - remote.buildSignFirstTx, remote.buildSignOtherTx, remote.buildMultisignedTx](#buildMultisignRemote)
 
 ## <a name="installation"></a>1 安装
 1. 安装SWTC公链库
@@ -1982,3 +1990,1063 @@ contract TokenTest {
 }
 ```
 ## 10. erc721源码
+
+## <a name="multiSign"></a> 11. 多重签名
+
+### <a name="requestSignerList"></a>11.1 查询帐号的签名列表
+#### 首先通过requestSignerList方法返回一个Request对象，通过submitPromise()方法提交列表信息
+#### 11.1.1 创建查询签名列表
+##### 方法:remote.requestSignerList({})
+##### 参数
+|参数|类型|说明|
+|----|----|---:|
+|account|String|源账号|
+##### 返回: Request对象
+#### 11.1.2 查询
+##### 方法: request.submitPromise()
+##### 返回: Promise
+#### 查询帐号的签名列表完整例子
+```javascript
+const jlib = require("swtc-lib");
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'ws://101.200.230.74:5020'})
+const a = { secret: 'snaK5evc1SddiDca1BpZbg1UBft42', address: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n' }
+const log_json = object => console.log(JSON.stringify(object, '', 2))
+
+remote.connectPromise()
+    .then( async () => {
+		let result = await remote.requestSignerList({account: a.address}).submitPromise()
+		console.log(result)
+		log_json(result.account_objects)
+		remote.disconnect()
+    })
+    .catch(console.error)
+
+```
+#### 输出
+```javascript
+{ account: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n',
+  account_objects:
+   [ { Flags: 0,
+       LedgerEntryType: 'SignerList',
+       OwnerNode: '0000000000000000',
+       PreviousTxnID:
+        '9EC422C5D2153FC0FD26884DEA440596E9AC96435E3BCE3E543208CD075B5188',
+       PreviousTxnLgrSeq: 532758,
+       SignerEntries: [Array],
+       SignerQuorum: 5,
+       index:
+        'D1A5CF852001ABB5FC6E7C7ECF527737F11EA3E2B6E4077B94EB7679CB371F50' } ],
+  ledger_current_index: 549390,
+  validated: false }
+[
+  {
+    "Flags": 0,
+    "LedgerEntryType": "SignerList",
+    "OwnerNode": "0000000000000000",
+    "PreviousTxnID": "9EC422C5D2153FC0FD26884DEA440596E9AC96435E3BCE3E543208CD075B5188",
+    "PreviousTxnLgrSeq": 532758,
+    "SignerEntries": [
+      {
+        "SignerEntry": {
+          "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+          "SignerWeight": 3
+        }
+      },
+      {
+        "SignerEntry": {
+          "Account": "jUv833RRTAZhbUyRzSsAutM9GwbprregiE",
+          "SignerWeight": 3
+        }
+      }
+    ],
+    "SignerQuorum": 5,
+    "index": "D1A5CF852001ABB5FC6E7C7ECF527737F11EA3E2B6E4077B94EB7679CB371F50"
+  }
+]
+```
+#### 返回结果说明
+|参数|类型|说明|
+|----|----|---:|
+|account|String|设置签名列表的源账号|
+|account_objects|Array|签名列表相关信息|
+|&nbsp;&nbsp;----|Object|签名列表相关信息|
+|&nbsp;&nbsp;&nbsp;&nbsp;Flags|Integer|交易标记|
+|&nbsp;&nbsp;&nbsp;&nbsp;LedgerEntryType|String|账本数据结构类型，SignerList表示签名列表类型|
+|&nbsp;&nbsp;&nbsp;&nbsp;OwnerNode|String|列表索引标记|
+|&nbsp;&nbsp;&nbsp;&nbsp;PreviousTxnID|String|上一笔交易hash|
+|&nbsp;&nbsp;&nbsp;&nbsp;PreviousTxnLgrSeq|Integer|上一笔交易所在账本号|
+|&nbsp;&nbsp;&nbsp;&nbsp;SignerEntries|Array|签名列表|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SignerEntry|Object|单个签名对象|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Account|String|签名者账号地址|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SignerWeight|Integer|该签名者在签名列表中的权重|
+|&nbsp;&nbsp;&nbsp;&nbsp;SignerQuorum|Integer|签名列表阈值|
+|&nbsp;&nbsp;&nbsp;&nbsp;index|String|签名列表id|
+|ledger_current_index|String|当前账本号|
+|validated|Boolean|当前账本中，交易是否通过验证|
+
+
+### <a name="buildSignerListTx"></a>11.2 设置帐号的签名列表
+#### 首先通过buildSignerListTx方法返回一个Transaction对象，通过submit方法提交列表信息
+#### 11.2.1 创建签名列表对象
+##### 方法:remote.buildSignerListTx({})
+##### 参数
+|参数|类型|说明|
+|----|----|---:|
+|account|String|交易账号|
+|threshold|Integer|生效阈值|
+|lists|Array|签名列表|
+|&nbsp;&nbsp;---|Object|列表对象|
+|&nbsp;&nbsp;&nbsp;&nbsp;account|String|帐号|
+|&nbsp;&nbsp;&nbsp;&nbsp;weight|String|权重|
+###### 注：不可将交易源账号设为签名列表名单内
+##### 返回:Transaction对象
+#### 11.2.2 设置签名列表 
+##### 方法:tx.submitPromise(secret);
+##### 参数: 密钥
+|参数|类型|说明|
+|----|----|---:|
+|secret|String|钱包私钥|
+##### 返回: Promise
+#### 设置帐号的签名列表完整例子
+```javascript
+const jlib = require("swtc-lib");
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'ws://101.200.230.74:5020'})
+const a = { secret: 'snaK5evc1SddiDca1BpZbg1UBft42', address: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n' }
+const a1 = { secret: 'ssmhW3gLLg8wLPzko3dx1LbuDcwCW', address: 'jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq' }
+const a2 = { secret: 'ssXLTUGS6ZFRpGRs5p94BBu6mV1vv', address: 'jUv833RRTAZhbUyRzSsAutM9GwbprregiE' }
+const log_json = object => console.log(JSON.stringify(object, '', 2))
+
+//设置签名列表
+const tx = remote.buildSignerListTx({
+    account: a.address,
+    threshold: 5,
+    lists: [
+        { account: a1.address, weight: 3 },
+        { account: a2.address, weight: 3 },
+    ]
+})
+
+remote.connectPromise()
+    .then( async () => {
+		await tx._setSequencePromise()
+		log_json(tx.tx_json)
+		console.log(`需要设置足够的燃料支持多签交易tx.setFee()`)
+		tx.setFee(30000)  // 燃料
+		log_json(tx.tx_json)
+		let result = await tx.submitPromise(a.secret)
+		console.log(result)
+		log_json(result.tx_json)
+		remote.disconnect()
+    })
+    .catch(console.error)
+```
+#### 输出
+```javascript
+{
+  "Flags": 0,
+  "Fee": 10000,
+  "SignerEntries": [
+    {
+      "SignerEntry": {
+        "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+        "SignerWeight": 3
+      }
+    },
+    {
+      "SignerEntry": {
+        "Account": "jUv833RRTAZhbUyRzSsAutM9GwbprregiE",
+        "SignerWeight": 3
+      }
+    }
+  ],
+  "TransactionType": "SignerListSet",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "SignerQuorum": 5,
+  "Sequence": 12
+}
+需要设置足够的燃料支持多签交易tx.setFee()
+{
+  "Flags": 0,
+  "Fee": 30000,
+  "SignerEntries": [
+    {
+      "SignerEntry": {
+        "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+        "SignerWeight": 3
+      }
+    },
+    {
+      "SignerEntry": {
+        "Account": "jUv833RRTAZhbUyRzSsAutM9GwbprregiE",
+        "SignerWeight": 3
+      }
+    }
+  ],
+  "TransactionType": "SignerListSet",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "SignerQuorum": 5,
+  "Sequence": 12
+}
+{ engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message:
+   'The transaction was applied. Only final in a validated ledger.',
+  tx_blob:
+   '1200CF2200000000240000000C2026000000056840000000000075307321024A02206AEFF63AF72BF6BE116073DE6D75E8D3404462CC73EC0F35207DF2722874473045022100A7F6B32CF70CCA45686B20501683D696D56FA57377A4EEA0B451E4FDB0450B7A022018268EECF64BAADA07F9A13C2E7582F544256BC2DBFB7400645BB9EB72F4814381144EFA5550AA0B6A0C06793161C0D2EDC635469AC8FBEC130003811423A7CE52916DFDE210D371CF8487CFDB790B1DCBE1EC130003811482D518A6A562B198E72BC1B8976F83D996E3CCD5E1F1',
+  tx_json:
+   { Account: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n',
+     Fee: '30000',
+     Flags: 0,
+     Sequence: 12,
+     SignerEntries: [ [Object], [Object] ],
+     SignerQuorum: 5,
+     SigningPubKey:
+      '024A02206AEFF63AF72BF6BE116073DE6D75E8D3404462CC73EC0F35207DF27228',
+     TransactionType: 'SignerListSet',
+     TxnSignature:
+      '3045022100A7F6B32CF70CCA45686B20501683D696D56FA57377A4EEA0B451E4FDB0450B7A022018268EECF64BAADA07F9A13C2E7582F544256BC2DBFB7400645BB9EB72F48143',
+     hash:
+      'F5C29AA790682CF238F397610F98910D0947334EF63BA565B30BAE8029AE634E' } }
+{
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "Fee": "30000",
+  "Flags": 0,
+  "Sequence": 12,
+  "SignerEntries": [
+    {
+      "SignerEntry": {
+        "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+        "SignerWeight": 3
+      }
+    },
+    {
+      "SignerEntry": {
+        "Account": "jUv833RRTAZhbUyRzSsAutM9GwbprregiE",
+        "SignerWeight": 3
+      }
+    }
+  ],
+  "SignerQuorum": 5,
+  "SigningPubKey": "024A02206AEFF63AF72BF6BE116073DE6D75E8D3404462CC73EC0F35207DF27228",
+  "TransactionType": "SignerListSet",
+  "TxnSignature": "3045022100A7F6B32CF70CCA45686B20501683D696D56FA57377A4EEA0B451E4FDB0450B7A022018268EECF64BAADA07F9A13C2E7582F544256BC2DBFB7400645BB9EB72F48143",
+  "hash": "F5C29AA790682CF238F397610F98910D0947334EF63BA565B30BAE8029AE634E"
+}
+```
+#### 返回结果说明
+|参数|类型|说明|
+|----|----|---:|
+|engine_result|String|请求结果|
+|engine_result_code|Array|请求结果编码|
+|engine_result_message|String|请求结果message信息|
+|tx_blob|String|16进制签名后的交易|
+|tx_json|Object|交易内容|
+|&nbsp;&nbsp;&nbsp;Account|String|交易源账号地址|
+|&nbsp;&nbsp;&nbsp;Fee|String|交易费|
+|&nbsp;&nbsp;&nbsp;Flags|Integer|交易标记|
+|&nbsp;&nbsp;&nbsp;Sequence|Integer|单子序列号|
+|&nbsp;&nbsp;&nbsp;SignerEntries|Array|签名列表条目；销毁列表时，没有该字段|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SignerEntry|Object|单个签名条目|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Account|String|签名账号的地址|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SignerWeight|String|该签名在多重签名交易中的权重|
+|&nbsp;&nbsp;&nbsp;SignerQuorum|Integer|多重签名交易通过的阈值，应大于等于零，零表示销毁签名列表|
+|&nbsp;&nbsp;&nbsp;SigningPubKey|String|签名公钥|
+|&nbsp;&nbsp;&nbsp;TransactionType|String|交易类型，设置签名列表类为SignerListSet|
+|&nbsp;&nbsp;&nbsp;TxnSignature|String|交易签名|
+|&nbsp;&nbsp;&nbsp;hash|String|交易hash|
+
+### <a name="deactivateMasterKey"></a>11.3 废除帐号的主密钥
+#### 本功能为禁止某账号做交易而设定，且只有该账号设置了签名列表才可以废除masterkey成功。首先通过buildAccountSetTx方法返回一个Transaction对象，最后通过submitPromise方法提交到底层
+#### 11.3.1 创建废除密钥交易
+##### 方法:remote.buildAccountSetTx({})
+##### 参数
+|参数|类型|说明|
+|----|----|---:|
+|account|String|被废除或激活masterkey的账号|
+|type|String|类型，这里固定为property|
+|set_flag|Integer|4表示废除|
+##### 返回:Transaction对象
+#### 11.3.2 废除
+##### 方法:tx.submitPromise(secret);
+##### 参数: 密钥
+|参数|类型|说明|
+|----|----|---:|
+|secret|String|钱包私钥|
+##### 返回: Promise
+#### 废除主密钥完整例子
+```javascript
+const jlib = require("swtc-lib");
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'ws://101.200.230.74:5020'})
+const a = { secret: 'snaK5evc1SddiDca1BpZbg1UBft42', address: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n' }
+const log_json = object => console.log(JSON.stringify(object, '', 2))
+
+//设置废除主密钥
+const tx = remote.buildAccountSetTx({
+    account: a.address,
+    type: 'property',
+    set_flag: 4
+})
+
+remote.connectPromise()
+    .then( async () => {
+		await tx._setSequencePromise()
+		log_json(tx.tx_json)
+		let result = await tx.submitPromise(a.secret)
+		console.log(result)
+		remote.disconnect()
+    })
+    .catch(console.error)
+```
+#### 输出
+```javascript
+{
+  "Flags": 0,
+  "Fee": 10000,
+  "TransactionType": "AccountSet",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "SetFlag": 4,
+  "Sequence": 13
+}
+{ engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message:
+   'The transaction was applied. Only final in a validated ledger.',
+  tx_blob:
+   '1200032200000000240000000D2021000000046840000000000027107321024A02206AEFF63AF72BF6BE116073DE6D75E8D3404462CC73EC0F35207DF2722874463044022049877787ECCEFA296A5193BBC5502D6793CE43873B2D2DB797A083F452A61C5302206DBA044629B00940A783824F0E57C2DBA3FB096317E349C784085014A26E5C4981144EFA5550AA0B6A0C06793161C0D2EDC635469AC8',
+  tx_json:
+   { Account: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n',
+     Fee: '10000',
+     Flags: 0,
+     Sequence: 13,
+     SetFlag: 4,
+     SigningPubKey:
+      '024A02206AEFF63AF72BF6BE116073DE6D75E8D3404462CC73EC0F35207DF27228',
+     TransactionType: 'AccountSet',
+     TxnSignature:
+      '3044022049877787ECCEFA296A5193BBC5502D6793CE43873B2D2DB797A083F452A61C5302206DBA044629B00940A783824F0E57C2DBA3FB096317E349C784085014A26E5C49',
+     hash:
+      '78FA2577E70DFB86F8089290B1051F2FBE8529888B293142FAD94F2707A65D7B' } }
+```
+#### 返回结果说明
+|参数|类型|说明|
+|----|----|---:|
+|engine_result|String|请求结果|
+|engine_result_code|Array|请求结果编码|
+|engine_result_message|String|请求结果message信息|
+|tx_blob|String|16进制签名后的交易|
+|tx_json|Object|交易内容|
+|&nbsp;&nbsp;&nbsp;Account|String|交易源账号地址|
+|&nbsp;&nbsp;&nbsp;Fee|String|交易费|
+|&nbsp;&nbsp;&nbsp;Flags|Integer|交易标记|
+|&nbsp;&nbsp;&nbsp;Sequence|Integer|单子序列号|
+|&nbsp;&nbsp;&nbsp;SetFlag|Integer|账号属性标记|
+|&nbsp;&nbsp;&nbsp;SigningPubKey|String|签名公钥|
+|&nbsp;&nbsp;&nbsp;TransactionType|String|交易类型，账号属性类为AccountSet|
+|&nbsp;&nbsp;&nbsp;TxnSignature|String|交易签名|
+|&nbsp;&nbsp;&nbsp;hash|String|交易hash|
+
+### <a name="activateMasterKey"></a>11.4 激活帐号的主密钥
+#### 激活通过多签列表中的账号去完成激活，如用账号a1和a2激活，详见下面例子
+#### 11.4.1 创建激活密钥交易
+##### 方法:remote.buildAccountSetTx({})
+##### 参数
+|参数|类型|说明|
+|----|----|---:|
+|account|String|被废除或激活masterkey的账号|
+|type|String|类型，这里固定为property|
+|clear_flag|Integer|4表示激活主密钥，用于多签中激活masterkey|
+##### 返回:Transaction对象
+#### 11.4.2 激活 
+##### 方法:tx.submitPromise();
+##### 参数: 无
+##### 返回: Promise
+#### 激活主密钥完整例子
+```javascript
+const jlib = require("swtc-lib");
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'ws://101.200.230.74:5020'})
+const a = { secret: 'snaK5evc1SddiDca1BpZbg1UBft42', address: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n' }
+const a1 = { secret: 'ssmhW3gLLg8wLPzko3dx1LbuDcwCW', address: 'jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq' }
+const a2 = { secret: 'ssXLTUGS6ZFRpGRs5p94BBu6mV1vv', address: 'jUv833RRTAZhbUyRzSsAutM9GwbprregiE' }
+const log_json = object => console.log(JSON.stringify(object, '', 2))
+
+//设置激活主密钥
+const tx = remote.buildAccountSetTx({
+    account: a.address,
+    type: 'property',
+    clear_flag: 4
+})
+
+remote.connectPromise()
+    .then( async () => {
+		// 设置sequence
+		await tx._setSequencePromise()
+		log_json(tx.tx_json)
+		console.log(`需要设置足够的燃料支持多签交易tx.setFee()`)
+		tx.setFee(20000)  // 燃料
+		log_json(tx.tx_json)
+        tx.multiSigning(a1)
+        tx.multiSigning(a2)
+		log_json(tx.tx_json)
+        tx.multiSigned()
+		log_json(tx.tx_json)
+		let result = await tx.submitPromise() // multisign submit does not need any secret
+		console.log(result)
+		log_json(result.tx_json)
+		remote.disconnect()
+    })
+    .catch(console.error)
+```
+#### 输出
+```javascript
+{
+  "Flags": 0,
+  "Fee": 10000,
+  "TransactionType": "AccountSet",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "ClearFlag": 4,
+  "Sequence": 14
+}
+需要设置足够的燃料支持多签交易tx.setFee()
+{
+  "Flags": 0,
+  "Fee": 20000,
+  "TransactionType": "AccountSet",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "ClearFlag": 4,
+  "Sequence": 14
+}
+{
+  "Flags": 0,
+  "Fee": 20000,
+  "TransactionType": "AccountSet",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "ClearFlag": 4,
+  "Sequence": 14,
+  "SigningPubKey": "",
+  "Signers": [
+    {
+      "Signer": {
+        "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+        "SigningPubKey": "028749EB830410A57E89EC765DF551F7006CA19CFEBF4C43EFD87CDDA52976D2FF",
+        "TxnSignature": "3044022050F3D210088FEE4F65410A5C1EC18A44C2E0F0F63B664650EE521E601BF390DE02200F0C6163676DC05021886B63BF2186DF47C0B3EB2D66DDEA17CAEF92D6EAAD89"
+      }
+    },
+    {
+      "Signer": {
+        "Account": "jUv833RRTAZhbUyRzSsAutM9GwbprregiE",
+        "SigningPubKey": "022EB4FEDEAA5EC1584B673A0B2C4425D0A98A4909EB39C10EC1C40631B0FB9C26",
+        "TxnSignature": "30440220659DAC178A20CF1CE2A688CBC183CF68E60FF508AA643A129221DBE745E25BB702203155117E8B72A1A3F6DFFC053313900AE6306165E70C83D0AD7E3B9FCBBC0B4B"
+      }
+    }
+  ]
+}
+{
+  "Flags": 0,
+  "Fee": 20000,
+  "TransactionType": "AccountSet",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "ClearFlag": 4,
+  "Sequence": 14,
+  "SigningPubKey": "",
+  "Signers": [
+    {
+      "Signer": {
+        "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+        "SigningPubKey": "028749EB830410A57E89EC765DF551F7006CA19CFEBF4C43EFD87CDDA52976D2FF",
+        "TxnSignature": "3044022050F3D210088FEE4F65410A5C1EC18A44C2E0F0F63B664650EE521E601BF390DE02200F0C6163676DC05021886B63BF2186DF47C0B3EB2D66DDEA17CAEF92D6EAAD89"
+      }
+    },
+    {
+      "Signer": {
+        "Account": "jUv833RRTAZhbUyRzSsAutM9GwbprregiE",
+        "SigningPubKey": "022EB4FEDEAA5EC1584B673A0B2C4425D0A98A4909EB39C10EC1C40631B0FB9C26",
+        "TxnSignature": "30440220659DAC178A20CF1CE2A688CBC183CF68E60FF508AA643A129221DBE745E25BB702203155117E8B72A1A3F6DFFC053313900AE6306165E70C83D0AD7E3B9FCBBC0B4B"
+      }
+    }
+  ]
+}
+{ engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message:
+   'The transaction was applied. Only final in a validated ledger.',
+  tx_blob:
+   '1200032200000000240000000E202200000004684000000000004E20730081144EFA5550AA0B6A0C06793161C0D2EDC635469AC8FCED7321028749EB830410A57E89EC765DF551F7006CA19CFEBF4C43EFD87CDDA52976D2FF74463044022050F3D210088FEE4F65410A5C1EC18A44C2E0F0F63B664650EE521E601BF390DE02200F0C6163676DC05021886B63BF2186DF47C0B3EB2D66DDEA17CAEF92D6EAAD89811423A7CE52916DFDE210D371CF8487CFDB790B1DCBE1ED7321022EB4FEDEAA5EC1584B673A0B2C4425D0A98A4909EB39C10EC1C40631B0FB9C26744630440220659DAC178A20CF1CE2A688CBC183CF68E60FF508AA643A129221DBE745E25BB702203155117E8B72A1A3F6DFFC053313900AE6306165E70C83D0AD7E3B9FCBBC0B4B811482D518A6A562B198E72BC1B8976F83D996E3CCD5E1F1',
+  tx_json:
+   { Account: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n',
+     ClearFlag: 4,
+     Fee: '20000',
+     Flags: 0,
+     Sequence: 14,
+     Signers: [ [Object], [Object] ],
+     SigningPubKey: '',
+     TransactionType: 'AccountSet',
+     hash:
+      '9AB2652E971EAE3CF0267165B3026EAE56FE4147D8F078BBC69A2C5B9D8567EB' } }
+{
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "ClearFlag": 4,
+  "Fee": "20000",
+  "Flags": 0,
+  "Sequence": 14,
+  "Signers": [
+    {
+      "Signer": {
+        "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+        "SigningPubKey": "028749EB830410A57E89EC765DF551F7006CA19CFEBF4C43EFD87CDDA52976D2FF",
+        "TxnSignature": "3044022050F3D210088FEE4F65410A5C1EC18A44C2E0F0F63B664650EE521E601BF390DE02200F0C6163676DC05021886B63BF2186DF47C0B3EB2D66DDEA17CAEF92D6EAAD89"
+      }
+    },
+    {
+      "Signer": {
+        "Account": "jUv833RRTAZhbUyRzSsAutM9GwbprregiE",
+        "SigningPubKey": "022EB4FEDEAA5EC1584B673A0B2C4425D0A98A4909EB39C10EC1C40631B0FB9C26",
+        "TxnSignature": "30440220659DAC178A20CF1CE2A688CBC183CF68E60FF508AA643A129221DBE745E25BB702203155117E8B72A1A3F6DFFC053313900AE6306165E70C83D0AD7E3B9FCBBC0B4B"
+      }
+    }
+  ],
+  "SigningPubKey": "",
+  "TransactionType": "AccountSet",
+  "hash": "9AB2652E971EAE3CF0267165B3026EAE56FE4147D8F078BBC69A2C5B9D8567EB"
+}
+
+```
+#### 返回结果说明
+|参数|类型|说明|
+|----|----|---:|
+|engine_result|String|请求结果|
+|engine_result_code|Array|请求结果编码|
+|engine_result_message|String|请求结果message信息|
+|tx_blob|String|16进制签名后的交易|
+|tx_json|Object|交易内容|
+|&nbsp;&nbsp;&nbsp;Account|String|交易源账号地址|
+|&nbsp;&nbsp;&nbsp;ClearFlag|Integer|账号属性标记|
+|&nbsp;&nbsp;&nbsp;Fee|String|交易费|
+|&nbsp;&nbsp;&nbsp;Flags|Integer|交易标记|
+|&nbsp;&nbsp;&nbsp;Sequence|Integer|单子序列号|
+|&nbsp;&nbsp;&nbsp;Signers|Array|签名列表条目；销毁列表时，没有该字段|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Signer|Object|单个签名条目|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Account|String|给该交易签名的账号地址|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SigningPubKey|String|给该交易签名的账号公钥|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TxnSignature|String|Account账号给该交易的交易签名|
+|&nbsp;&nbsp;&nbsp;SigningPubKey|String|签名公钥|
+|&nbsp;&nbsp;&nbsp;TransactionType|String|交易类型，账号属性类为AccountSet|
+|&nbsp;&nbsp;&nbsp;hash|String|交易hash|
+
+
+### <a name="buildMultisignTx"></a>11.5 多重签名 - tx.multiSigning, tx.multiSigned
+#### 通过Transaction多签， 创建正常交易，然后依次进行多签(multiSigning)， 最后确认(multiSigned)提交(tx.submitPromise)
+#### 11.5.1 创建正常交易
+##### 方法:remote.buildPaymentTx({})
+##### 返回:Transaction对象
+#### 11.5.2 多重签名 
+##### 方法:tx.multiSigning() ... tx.multiSigned()
+##### 参数: 
+##### 返回: tx
+#### 11.5.3 交易
+##### 方法:tx.submitPromise()
+##### 返回: promise
+#### 多签支付完整例子
+```javascript
+const jlib = require("swtc-lib");
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'ws://101.200.230.74:5020'})
+const a = { secret: 'snaK5evc1SddiDca1BpZbg1UBft42', address: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n' }
+const a1 = { secret: 'ssmhW3gLLg8wLPzko3dx1LbuDcwCW', address: 'jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq' }
+const a2 = { secret: 'ssXLTUGS6ZFRpGRs5p94BBu6mV1vv', address: 'jUv833RRTAZhbUyRzSsAutM9GwbprregiE' }
+
+let to = 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz'
+const log_json = object => console.log(JSON.stringify(object, '', 2))
+
+// 创建支付交易
+let tx = remote.buildPaymentTx({ account: a.address, to, amount: remote.makeAmount(1) })
+tx.addMemo('multisigned payment test')
+
+remote.connectPromise()
+    .then( async () => {
+		// 设置sequence
+		await tx._setSequencePromise()
+		console.log(`需要设置足够的燃料支持多签交易tx.setFee()`)
+		tx.setFee(20000)  // 燃料
+		log_json(tx.tx_json)
+        tx = tx.multiSigning(a1)
+		log_json(tx.tx_json)
+		// tx.tx_json 需要依次传递给不同的多签方
+		let tx_json = tx.tx_json
+		// 然后重组成tx
+		let tx2 = remote.buildMultisignedTx(tx_json)
+        tx2.multiSigning(a2)
+		log_json(tx2.tx_json)
+        tx2.multiSigned()
+		log_json(tx2.tx_json)
+		let result = await tx2.submitPromise() // multisign submit does not need any secret
+		console.log(result)
+		log_json(result.tx_json)
+		remote.disconnect()
+    })
+    .catch(console.error)
+```
+#### 输出
+```javascript
+需要设置足够的燃料支持多签交易tx.setFee()
+{
+  "Flags": 0,
+  "Fee": 20000,
+  "TransactionType": "Payment",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "Amount": "1000000",
+  "Destination": "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+  "Memos": [
+    {
+      "Memo": {
+        "MemoData": "6d756c74697369676e6564207061796d656e742074657374"
+      }
+    }
+  ],
+  "Sequence": 16
+}
+{
+  "Flags": 0,
+  "Fee": 20000,
+  "TransactionType": "Payment",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "Amount": "1000000",
+  "Destination": "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+  "Memos": [
+    {
+      "Memo": {
+        "MemoData": "6d756c74697369676e6564207061796d656e742074657374"
+      }
+    }
+  ],
+  "Sequence": 16,
+  "SigningPubKey": "",
+  "Signers": [
+    {
+      "Signer": {
+        "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+        "SigningPubKey": "028749EB830410A57E89EC765DF551F7006CA19CFEBF4C43EFD87CDDA52976D2FF",
+        "TxnSignature": "3045022100A473BCCED9D0F5DA32376E65C94099DA6BE44CA0CD51F70F5574ABF42B3574EA02204636AD6C89041C219B754CF37BA6C2EF74A300188F788CF18CAD2E6B849E326C"
+      }
+    }
+  ]
+}
+{
+  "Flags": 0,
+  "Fee": 20000,
+  "TransactionType": "Payment",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "Amount": "1000000",
+  "Destination": "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+  "Memos": [
+    {
+      "Memo": {
+        "MemoData": "6d756c74697369676e6564207061796d656e742074657374"
+      }
+    }
+  ],
+  "Sequence": 16,
+  "SigningPubKey": "",
+  "Signers": [
+    {
+      "Signer": {
+        "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+        "SigningPubKey": "028749EB830410A57E89EC765DF551F7006CA19CFEBF4C43EFD87CDDA52976D2FF",
+        "TxnSignature": "3045022100A473BCCED9D0F5DA32376E65C94099DA6BE44CA0CD51F70F5574ABF42B3574EA02204636AD6C89041C219B754CF37BA6C2EF74A300188F788CF18CAD2E6B849E326C"
+      }
+    },
+    {
+      "Signer": {
+        "Account": "jUv833RRTAZhbUyRzSsAutM9GwbprregiE",
+        "SigningPubKey": "022EB4FEDEAA5EC1584B673A0B2C4425D0A98A4909EB39C10EC1C40631B0FB9C26",
+        "TxnSignature": "304402202BEDFD9F1EA71A1C28096638B5417388B246890381D555501AE674F6309CFBDF0220638F076520A4B7D6D5557F3F708CCD700805152AEAE1C5571CA04AE4709D40C2"
+      }
+    }
+  ]
+}
+{
+  "Flags": 0,
+  "Fee": 20000,
+  "TransactionType": "Payment",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "Amount": "1000000",
+  "Destination": "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+  "Memos": [
+    {
+      "Memo": {
+        "MemoData": "6d756c74697369676e6564207061796d656e742074657374"
+      }
+    }
+  ],
+  "Sequence": 16,
+  "SigningPubKey": "",
+  "Signers": [
+    {
+      "Signer": {
+        "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+        "SigningPubKey": "028749EB830410A57E89EC765DF551F7006CA19CFEBF4C43EFD87CDDA52976D2FF",
+        "TxnSignature": "3045022100A473BCCED9D0F5DA32376E65C94099DA6BE44CA0CD51F70F5574ABF42B3574EA02204636AD6C89041C219B754CF37BA6C2EF74A300188F788CF18CAD2E6B849E326C"
+      }
+    },
+    {
+      "Signer": {
+        "Account": "jUv833RRTAZhbUyRzSsAutM9GwbprregiE",
+        "SigningPubKey": "022EB4FEDEAA5EC1584B673A0B2C4425D0A98A4909EB39C10EC1C40631B0FB9C26",
+        "TxnSignature": "304402202BEDFD9F1EA71A1C28096638B5417388B246890381D555501AE674F6309CFBDF0220638F076520A4B7D6D5557F3F708CCD700805152AEAE1C5571CA04AE4709D40C2"
+      }
+    }
+  ]
+}
+{ engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message:
+   'The transaction was applied. Only final in a validated ledger.',
+  tx_blob:
+   '120000220000000024000000106140000000000F4240684000000000004E20730081144EFA5550AA0B6A0C06793161C0D2EDC635469AC883141359AA928F4D98FDB3D93E8B690C80D37DED11C3F9EA7D186D756C74697369676E6564207061796D656E742074657374E1F1FCED7321028749EB830410A57E89EC765DF551F7006CA19CFEBF4C43EFD87CDDA52976D2FF74473045022100A473BCCED9D0F5DA32376E65C94099DA6BE44CA0CD51F70F5574ABF42B3574EA02204636AD6C89041C219B754CF37BA6C2EF74A300188F788CF18CAD2E6B849E326C811423A7CE52916DFDE210D371CF8487CFDB790B1DCBE1ED7321022EB4FEDEAA5EC1584B673A0B2C4425D0A98A4909EB39C10EC1C40631B0FB9C267446304402202BEDFD9F1EA71A1C28096638B5417388B246890381D555501AE674F6309CFBDF0220638F076520A4B7D6D5557F3F708CCD700805152AEAE1C5571CA04AE4709D40C2811482D518A6A562B198E72BC1B8976F83D996E3CCD5E1F1',
+  tx_json:
+   { Account: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n',
+     Amount: '1000000',
+     Destination: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+     Fee: '20000',
+     Flags: 0,
+     Memos: [ [Object] ],
+     Sequence: 16,
+     Signers: [ [Object], [Object] ],
+     SigningPubKey: '',
+     TransactionType: 'Payment',
+     hash:
+      'CD4FD2CB9FDB5003FE8115140D62C7671461C281A516B15275561BA8959412A9' } }
+{
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "Amount": "1000000",
+  "Destination": "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+  "Fee": "20000",
+  "Flags": 0,
+  "Memos": [
+    {
+      "Memo": {
+        "MemoData": "6D756C74697369676E6564207061796D656E742074657374"
+      }
+    }
+  ],
+  "Sequence": 16,
+  "Signers": [
+    {
+      "Signer": {
+        "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+        "SigningPubKey": "028749EB830410A57E89EC765DF551F7006CA19CFEBF4C43EFD87CDDA52976D2FF",
+        "TxnSignature": "3045022100A473BCCED9D0F5DA32376E65C94099DA6BE44CA0CD51F70F5574ABF42B3574EA02204636AD6C89041C219B754CF37BA6C2EF74A300188F788CF18CAD2E6B849E326C"
+      }
+    },
+    {
+      "Signer": {
+        "Account": "jUv833RRTAZhbUyRzSsAutM9GwbprregiE",
+        "SigningPubKey": "022EB4FEDEAA5EC1584B673A0B2C4425D0A98A4909EB39C10EC1C40631B0FB9C26",
+        "TxnSignature": "304402202BEDFD9F1EA71A1C28096638B5417388B246890381D555501AE674F6309CFBDF0220638F076520A4B7D6D5557F3F708CCD700805152AEAE1C5571CA04AE4709D40C2"
+      }
+    }
+  ],
+  "SigningPubKey": "",
+  "TransactionType": "Payment",
+  "hash": "CD4FD2CB9FDB5003FE8115140D62C7671461C281A516B15275561BA8959412A9"
+}
+```
+#### 返回结果说明
+|参数|类型|说明|
+|----|----|---:|
+|engine_result|String|请求结果|
+|engine_result_code|Array|请求结果编码|
+|engine_result_message|String|请求结果message信息|
+|tx_blob|String|16进制签名后的交易|
+|tx_json|Object|交易内容|
+|&nbsp;&nbsp;&nbsp;Account|String|交易源账号地址|
+|&nbsp;&nbsp;&nbsp;Fee|String|交易费|
+|&nbsp;&nbsp;&nbsp;Flags|Integer|交易标记|
+|&nbsp;&nbsp;&nbsp;Sequence|Integer|单子序列号|
+|&nbsp;&nbsp;&nbsp;--|--|相关交易对应的其他字段，如Payment类型有Amount、Destination字段，这里不一一列举|
+|&nbsp;&nbsp;&nbsp;Signers|Array|签名列表条目；销毁列表时，没有该字段|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Signer|Object|单个签名条目|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Account|String|给该交易签名的账号地址|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SigningPubKey|String|给该交易签名的账号公钥|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TxnSignature|String|Account账号给该交易的交易签名|
+|&nbsp;&nbsp;&nbsp;SigningPubKey|String|交易签名公钥，必须为空字符串|
+|&nbsp;&nbsp;&nbsp;TransactionType|String|交易类型|
+|&nbsp;&nbsp;&nbsp;hash|String|交易hash，该hash可在链上查到|
+
+
+### <a name="buildMultisignRemote"></a>11.6 多重签名 - remote.buildSignFirstTx, remote.buildSignOtherTx, remote.buildMultisignedTx
+#### 通过Transaction多签， 创建正常交易，然后依次进行多签(multiSigning)， 最后确认(multiSigned)提交(tx.submitPromise)
+#### 11.6.1 创建正常交易
+##### 方法:remote.buildPaymentTx({})
+##### 返回:Transaction对象
+#### 11.6.2 多重签名 
+##### 方法:remote.buildSignFirstTx({}) ... remote.buildSignOtherTx({}), remote.buildMultisignedTx(tx_json), tx.multiSigned()
+##### 参数: 
+##### 返回: tx
+#### 11.6.3 交易
+##### 方法:tx.submitPromise()
+##### 返回: promise
+#### 多签支付完整例子
+```javascript
+const jlib = require("swtc-lib");
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'ws://101.200.230.74:5020'})
+const a = { secret: 'snaK5evc1SddiDca1BpZbg1UBft42', address: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n' }
+const a1 = { secret: 'ssmhW3gLLg8wLPzko3dx1LbuDcwCW', address: 'jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq' }
+const a2 = { secret: 'ssXLTUGS6ZFRpGRs5p94BBu6mV1vv', address: 'jUv833RRTAZhbUyRzSsAutM9GwbprregiE' }
+
+let to = 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz'
+const log_json = object => console.log(JSON.stringify(object, '', 2))
+
+// 创建支付交易
+let tx = remote.buildPaymentTx({ account: a.address, to, amount: remote.makeAmount(1) })
+tx.addMemo('multisigned payment test')
+
+remote.connectPromise()
+    .then( async () => {
+		// 设置sequence
+		await tx._setSequencePromise()
+		console.log(`需要设置足够的燃料支持多签交易tx.setFee()`)
+		tx.setFee(20000)  // 燃料
+		log_json(tx.tx_json)
+        tx = remote.buildSignFirstTx({tx, account: a1.address, secret: a1.secret})
+		log_json(tx.tx_json)
+		// tx.tx_json 需要依次传递给不同的多签方
+		let tx_json = tx.tx_json
+		// 然后重组成tx
+		let tx2 = remote.buildSignOtherTx({tx_json, account: a2.address, secret: a2.secret})
+		log_json(tx2.tx_json)
+		let tx3 = remote.buildMultisignedTx(tx2.tx_json)
+		log_json(tx3.tx_json)
+        tx3.multiSigned()
+		log_json(tx3.tx_json)
+		let result = await tx3.submitPromise() // multisign submit does not need any secret
+		console.log(result)
+		log_json(result.tx_json)
+		remote.disconnect()
+    })
+    .catch(console.error)
+```
+#### 输出
+```javascript
+需要设置足够的燃料支持多签交易tx.setFee()
+{
+  "Flags": 0,
+  "Fee": 20000,
+  "TransactionType": "Payment",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "Amount": "1000000",
+  "Destination": "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+  "Memos": [
+    {
+      "Memo": {
+        "MemoData": "6d756c74697369676e6564207061796d656e742074657374"
+      }
+    }
+  ],
+  "Sequence": 17
+}
+{
+  "Flags": 0,
+  "Fee": 20000,
+  "TransactionType": "Payment",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "Amount": "1000000",
+  "Destination": "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+  "Memos": [
+    {
+      "Memo": {
+        "MemoData": "6d756c74697369676e6564207061796d656e742074657374"
+      }
+    }
+  ],
+  "Sequence": 17,
+  "SigningPubKey": "",
+  "Signers": [
+    {
+      "Signer": {
+        "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+        "SigningPubKey": "028749EB830410A57E89EC765DF551F7006CA19CFEBF4C43EFD87CDDA52976D2FF",
+        "TxnSignature": "3044022072214F5AD5C48F17701FD3A21689F196894138B2770D0298AC329D851D77B799022055EB9AAF016F55CE8F79BD0DA4063494F802BE3752EEA430678DFADCAF67EA96"
+      }
+    }
+  ]
+}
+{
+  "Flags": 0,
+  "Fee": 20000,
+  "TransactionType": "Payment",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "Amount": "1000000",
+  "Destination": "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+  "Memos": [
+    {
+      "Memo": {
+        "MemoData": "6d756c74697369676e6564207061796d656e742074657374"
+      }
+    }
+  ],
+  "Sequence": 17,
+  "SigningPubKey": "",
+  "Signers": [
+    {
+      "Signer": {
+        "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+        "SigningPubKey": "028749EB830410A57E89EC765DF551F7006CA19CFEBF4C43EFD87CDDA52976D2FF",
+        "TxnSignature": "3044022072214F5AD5C48F17701FD3A21689F196894138B2770D0298AC329D851D77B799022055EB9AAF016F55CE8F79BD0DA4063494F802BE3752EEA430678DFADCAF67EA96"
+      }
+    },
+    {
+      "Signer": {
+        "Account": "jUv833RRTAZhbUyRzSsAutM9GwbprregiE",
+        "SigningPubKey": "022EB4FEDEAA5EC1584B673A0B2C4425D0A98A4909EB39C10EC1C40631B0FB9C26",
+        "TxnSignature": "3045022100CC2823272E799F3724165154816F5B960B3FC09AB79F87059D2D7CEE256C194002201007958B1DF0D506FEDD1A5CFB00DB26735AD2C18B8C8EEC4481B4DD73A86E89"
+      }
+    }
+  ]
+}
+{
+  "Flags": 0,
+  "Fee": 20000,
+  "TransactionType": "Payment",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "Amount": "1000000",
+  "Destination": "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+  "Memos": [
+    {
+      "Memo": {
+        "MemoData": "6d756c74697369676e6564207061796d656e742074657374"
+      }
+    }
+  ],
+  "Sequence": 17,
+  "SigningPubKey": "",
+  "Signers": [
+    {
+      "Signer": {
+        "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+        "SigningPubKey": "028749EB830410A57E89EC765DF551F7006CA19CFEBF4C43EFD87CDDA52976D2FF",
+        "TxnSignature": "3044022072214F5AD5C48F17701FD3A21689F196894138B2770D0298AC329D851D77B799022055EB9AAF016F55CE8F79BD0DA4063494F802BE3752EEA430678DFADCAF67EA96"
+      }
+    },
+    {
+      "Signer": {
+        "Account": "jUv833RRTAZhbUyRzSsAutM9GwbprregiE",
+        "SigningPubKey": "022EB4FEDEAA5EC1584B673A0B2C4425D0A98A4909EB39C10EC1C40631B0FB9C26",
+        "TxnSignature": "3045022100CC2823272E799F3724165154816F5B960B3FC09AB79F87059D2D7CEE256C194002201007958B1DF0D506FEDD1A5CFB00DB26735AD2C18B8C8EEC4481B4DD73A86E89"
+      }
+    }
+  ]
+}
+{
+  "Flags": 0,
+  "Fee": 20000,
+  "TransactionType": "Payment",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "Amount": "1000000",
+  "Destination": "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+  "Memos": [
+    {
+      "Memo": {
+        "MemoData": "6d756c74697369676e6564207061796d656e742074657374"
+      }
+    }
+  ],
+  "Sequence": 17,
+  "SigningPubKey": "",
+  "Signers": [
+    {
+      "Signer": {
+        "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+        "SigningPubKey": "028749EB830410A57E89EC765DF551F7006CA19CFEBF4C43EFD87CDDA52976D2FF",
+        "TxnSignature": "3044022072214F5AD5C48F17701FD3A21689F196894138B2770D0298AC329D851D77B799022055EB9AAF016F55CE8F79BD0DA4063494F802BE3752EEA430678DFADCAF67EA96"
+      }
+    },
+    {
+      "Signer": {
+        "Account": "jUv833RRTAZhbUyRzSsAutM9GwbprregiE",
+        "SigningPubKey": "022EB4FEDEAA5EC1584B673A0B2C4425D0A98A4909EB39C10EC1C40631B0FB9C26",
+        "TxnSignature": "3045022100CC2823272E799F3724165154816F5B960B3FC09AB79F87059D2D7CEE256C194002201007958B1DF0D506FEDD1A5CFB00DB26735AD2C18B8C8EEC4481B4DD73A86E89"
+      }
+    }
+  ]
+}
+{ engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message:
+   'The transaction was applied. Only final in a validated ledger.',
+  tx_blob:
+   '120000220000000024000000116140000000000F4240684000000000004E20730081144EFA5550AA0B6A0C06793161C0D2EDC635469AC883141359AA928F4D98FDB3D93E8B690C80D37DED11C3F9EA7D186D756C74697369676E6564207061796D656E742074657374E1F1FCED7321028749EB830410A57E89EC765DF551F7006CA19CFEBF4C43EFD87CDDA52976D2FF74463044022072214F5AD5C48F17701FD3A21689F196894138B2770D0298AC329D851D77B799022055EB9AAF016F55CE8F79BD0DA4063494F802BE3752EEA430678DFADCAF67EA96811423A7CE52916DFDE210D371CF8487CFDB790B1DCBE1ED7321022EB4FEDEAA5EC1584B673A0B2C4425D0A98A4909EB39C10EC1C40631B0FB9C2674473045022100CC2823272E799F3724165154816F5B960B3FC09AB79F87059D2D7CEE256C194002201007958B1DF0D506FEDD1A5CFB00DB26735AD2C18B8C8EEC4481B4DD73A86E89811482D518A6A562B198E72BC1B8976F83D996E3CCD5E1F1',
+  tx_json:
+   { Account: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n',
+     Amount: '1000000',
+     Destination: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+     Fee: '20000',
+     Flags: 0,
+     Memos: [ [Object] ],
+     Sequence: 17,
+     Signers: [ [Object], [Object] ],
+     SigningPubKey: '',
+     TransactionType: 'Payment',
+     hash:
+      '486AA83D5B487BC8111688A67DC62909B8E32ED49048191DF2828E232724CA2B' } }
+{
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "Amount": "1000000",
+  "Destination": "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+  "Fee": "20000",
+  "Flags": 0,
+  "Memos": [
+    {
+      "Memo": {
+        "MemoData": "6D756C74697369676E6564207061796D656E742074657374"
+      }
+    }
+  ],
+  "Sequence": 17,
+  "Signers": [
+    {
+      "Signer": {
+        "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+        "SigningPubKey": "028749EB830410A57E89EC765DF551F7006CA19CFEBF4C43EFD87CDDA52976D2FF",
+        "TxnSignature": "3044022072214F5AD5C48F17701FD3A21689F196894138B2770D0298AC329D851D77B799022055EB9AAF016F55CE8F79BD0DA4063494F802BE3752EEA430678DFADCAF67EA96"
+      }
+    },
+    {
+      "Signer": {
+        "Account": "jUv833RRTAZhbUyRzSsAutM9GwbprregiE",
+        "SigningPubKey": "022EB4FEDEAA5EC1584B673A0B2C4425D0A98A4909EB39C10EC1C40631B0FB9C26",
+        "TxnSignature": "3045022100CC2823272E799F3724165154816F5B960B3FC09AB79F87059D2D7CEE256C194002201007958B1DF0D506FEDD1A5CFB00DB26735AD2C18B8C8EEC4481B4DD73A86E89"
+      }
+    }
+  ],
+  "SigningPubKey": "",
+  "TransactionType": "Payment",
+  "hash": "486AA83D5B487BC8111688A67DC62909B8E32E
+}
+```
+#### 返回结果说明
+|参数|类型|说明|
+|----|----|---:|
+|engine_result|String|请求结果|
+|engine_result_code|Array|请求结果编码|
+|engine_result_message|String|请求结果message信息|
+|tx_blob|String|16进制签名后的交易|
+|tx_json|Object|交易内容|
+|&nbsp;&nbsp;&nbsp;Account|String|交易源账号地址|
+|&nbsp;&nbsp;&nbsp;Fee|String|交易费|
+|&nbsp;&nbsp;&nbsp;Flags|Integer|交易标记|
+|&nbsp;&nbsp;&nbsp;Sequence|Integer|单子序列号|
+|&nbsp;&nbsp;&nbsp;--|--|相关交易对应的其他字段，如Payment类型有Amount、Destination字段，这里不一一列举|
+|&nbsp;&nbsp;&nbsp;Signers|Array|签名列表条目；销毁列表时，没有该字段|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Signer|Object|单个签名条目|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Account|String|给该交易签名的账号地址|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SigningPubKey|String|给该交易签名的账号公钥|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TxnSignature|String|Account账号给该交易的交易签名|
+|&nbsp;&nbsp;&nbsp;SigningPubKey|String|交易签名公钥，必须为空字符串|
+|&nbsp;&nbsp;&nbsp;TransactionType|String|交易类型|
+|&nbsp;&nbsp;&nbsp;hash|String|交易hash，该hash可在链上查到|
+
