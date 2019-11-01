@@ -119,8 +119,8 @@ const remoteB = new RemoteB({server: 'ws://123.207.226.229:5020'})
 
 ## 赞助方
 ### 井畅
-![jccdex](https://raw.githubusercontent.com/swtcca/swtc-app-examples/master/images/jccdex.png)
+![jccdex](../../images/jccdex.png)
 ### SWTC基金会
-![swtc](https://raw.githubusercontent.com/swtcca/swtc-app-examples/master/images/swtcfdt.png)
+![swtc](../../images/swtcfdt.png)
 ### 商链
-![bizain](https://raw.githubusercontent.com/swtcca/swtc-app-examples/master/images/bizain.png)
+![bizain](../../images/bizain.png)

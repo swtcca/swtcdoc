@@ -89,10 +89,10 @@ $ npm list | grep -i swtc
 
 ## 方法汇总
 ### Wallet
-![Wallet](https://raw.githubusercontent.com/swtcca/swtc-app-examples/master/images/m-wallet.png)
+![Wallet](../../images/m-wallet.png)
 ### Transaction
-![Transaction](https://raw.githubusercontent.com/swtcca/swtc-app-examples/master/images/m-transaction.png)
+![Transaction](../../images/m-transaction.png)
 ### Remote
-![Remote](https://raw.githubusercontent.com/swtcca/swtc-app-examples/master/images/m-remote.png)
+![Remote](../../images/m-remote.png)
 ### ApiRemote
-![ApiRemote](https://raw.githubusercontent.com/swtcca/swtc-app-examples/master/images/m-apiremote.png)
+![ApiRemote](../../images/m-apiremote.png)

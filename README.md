@@ -86,8 +86,8 @@ features:
 	金主
 </h3>
 <p align="center">
-	<img align="center" src="https://raw.githubusercontent.com/swtcca/swtc-app-examples/master/images/swtcfdt.png" alt="SWTC基金会" height="100" />
-	<img align="center" src="https://raw.githubusercontent.com/swtcca/swtc-app-examples/master/images/bizain.png" alt="商链" height="100" />
+	<img align="center" src="./images/swtcfdt.png" alt="SWTC基金会" height="100" />
+	<img align="center" src="./images/bizain.png" alt="商链" height="100" />
 </p>
 
 <a name="donate"></a>
@@ -96,7 +96,7 @@ features:
 </h3>
 <p align="center">
 	<img valign="middle" src="https://img.shields.io/badge/swtc-donate-blue.svg" alt="swtc-donate" /> jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG
-	<br><img align="center" src="https://raw.githubusercontent.com/swtcca/swtc-app-examples/master/images/donate.png" alt="捐助" />
+	<br><img align="center" src="./images/donate.png" alt="捐助" />
 </p>
 
 <a name="users"></a>
@@ -105,6 +105,6 @@ features:
 </h3>
 <p align="center">
 	CA节点 | 畅节点 | 至尚节点 | JSKY节点 <br>
-	<img align="center" src="https://raw.githubusercontent.com/swtcca/swtc-app-examples/master/images/jccdex.png" alt="井畅" height="100" />
+	<img align="center" src="./images/jccdex.png" alt="井畅" height="100" />
 </p>
 
