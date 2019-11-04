@@ -1790,18 +1790,15 @@ tx.setSecret('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C');;
 #### 返回:Transaction对象
 #### 例子:
 ```javascript
-var jlib = require('jingtum-lib');
+var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
 var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 var tx = remote.buildPaymentTx({
     account: 'jB7rxgh43ncbTX4WeMoeadiGMfmfqY2xLZ',
     to: 'jDUjqoDZLhzx4DCf6pvSivjkjgtRESY62c',
-    amount: {
-        "value": 0.5,
-        "currency": "SWT",
-        "issuer": ""
-    }
-}); tx.addMemo('给jDUjqoDZLhzx4DCf6pvSivjkjgtRESY62c支付0.5swt.');
+    amount: remote.makeAmount(1)
+})
+tx.addMemo('给jDUjqoDZLhzx4DCf6pvSivjkjgtRESY62c支付0.5swt.');
 ```
 ### <a name="transactionSubmit"></a> 6.5 提交请求
 #### 方法:submit(callback);
@@ -1810,21 +1807,17 @@ var tx = remote.buildPaymentTx({
 #### 参数:密钥, 留言
 #### 例子:
 ```javascript
-var jlib = require('jingtum-lib');
+var jlib = require('swtc-lib');
 var Remote = jlib.Remote;
 var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
-remote.connect(function (err, result) {
-if (err) {
-        return console.log('err:', err);
-}
-    var req = remote.requestAccountInfo({account: 'jB7rxgh43ncbTX4WeMoeadiGMfmfqY2xLZ'});
-     req.submit(function(err, result) {
-        if(err) {console.log('err:',err);}
-        else if(result){
-            console.log('res:', result);
-        }
-    });
-});
+remote.connectPromise()
+	.then(async () => {
+    	var req = remote.requestAccountInfo({account: 'jB7rxgh43ncbTX4WeMoeadiGMfmfqY2xLZ'});
+        let result = await req.submitPromise()
+		console.log(result)
+      })
+	.catch(console.error)
+
 ```
 ## <a name="errors"></a>7 底层常见错误附录
 |错误名称|说明|
