@@ -813,14 +813,14 @@ remote.connectPromise()
 |quality|String|价格或价格的倒数|
 |validated|Boolean|交易是否通过验证|
 ### <a name="requestBrokerage"></a> 4.14 获得挂单佣金设置信息
-#### 首先通过requestBrokerage方法返回一个Transaction对象，然后通过submitPromise方法提交。
+#### 首先通过requestBrokerage方法返回一个Request对象，然后通过submitPromise方法提交。
 #### 4.14.1 创建查询挂单佣金对象
 ##### 方法: remote.requestBrokerage({});
 ##### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |account|String|井通钱包地址|
-##### 返回:Transaction对象
+##### 返回:Request对象
 #### <a name="brokerageSubmit"></a> 4.14.2 提交查询
 ##### 方法:tx.submitPromise(secret)
 ##### 参数:
