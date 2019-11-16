@@ -822,7 +822,7 @@ remote.connectPromise()
 |account|String|井通钱包地址|
 ##### 返回:Request对象
 #### <a name="brokerageSubmit"></a> 4.14.2 提交查询
-##### 方法:request.submitPromise(secret)
+##### 方法:request.submitPromise()
 ##### 参数: 无
 ##### 返回: Promise
 #### 查询佣金完整例子
