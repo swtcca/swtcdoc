@@ -14,6 +14,7 @@ module.exports = {
       { text: "练习", link: "https://swtclearn.netlify.com" },
       { text: "实例", link: "/docs/examples/" },
       { text: "lib文档", link: "/docs/swtclib/" },
+      { text: "proxy文档", link: "/docs/swtcproxy/" },
       { text: "api文档", link: "/docs/api/" },
       { text: "增强", link: "/docs/swtc/" },
       { text: "联盟链扩展", link: "/docs/swtcxlib/" },

@@ -23,6 +23,8 @@ features:
   details: web版本直接CDN引用
 - title: 集成生态节点
   details: 支持中型应用
+- title: 代理实现
+  details: 标准 REST API
 - title: 未来可用
   details: 多重签名 合约
 
@@ -63,6 +65,7 @@ features:
 
 |程序包名称|CDN|功能描述|
 |----------|---|--------|
+|[swtc-proxy](docs/swtcproxy/)||节点代理, 提供标准API接口|
 |[swtc-x-lib](docs/swtcxlib/)|name: swtc_x_lib<br>[unpkg](https://unpkg.com/swtc-x-lib)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/swtc-x-lib)|等同支持井通联盟链, 基于websocket|
 |[swtc-lib](docs/swtclib/)|name: swtc_lib<br>[unpkg](https://unpkg.com/swtc-lib)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/swtc-lib)|SWTC公链库, 基于websocket|
 |[swtc-api](docs/swtcapi/)|name: swtc_api<br>[unpkg](https://unpkg.com/swtc-api)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/swtc-api)|SWTC公链库, 基于restapi|

@@ -6,6 +6,8 @@
 > ### swtc-api 对jingtum-api 作出包装， 消除不安全操作 并且提供类似swtc-lib的接口支持jingtum-api缺失的操作
 > ### 强制本地签名
 > ### 合约测试只能在特定节点运行, solidity支持到0.5.4, 需要安装 swtc-tum3 / tum3-eth-abi
+> ### 同时支持`jingtum-api` 和 `swtc-proxy`
+> ### 目前文档输出为 `jingtum-api`, 新版本将以`swtc-proxy`输出为例
 
 ## 目录
 1. ### [安装](#installation)
@@ -72,8 +74,9 @@ npm install --save swtc-api
 ```
 
 ## <a name="structure"></a>2 项目说明
-> ### swtc-api库操作jingtum-api提供的restapi, 但是实现了本地签名， 避免密钥传输到网络上
-> ### swtc-api提供比jingtum-api更多的操作
+> ### swtc-api库操作`jingtum-api`提供的restapi, 但是实现了本地签名， 避免密钥传输到网络上
+> ### swtc-api库操作`swtc-proxy`提供的restapi
+> ### swtc-api提供比`jingtum-api` 和 `swtc-proxy` 更多的操作
 
 ## <a name="wallet"></a>3 创建钱包
 > ### 首先引入swtc-api库的Wallet对象，然后使用以下两种方法创建钱包
@@ -112,13 +115,17 @@ console.log(w2);
 ## <a name="remote"></a>4 REMOTE类
 ### Remote是跟jingtum-api的restapi交互的类，它包装所有jingtum-api提供的方法, 还提供额外的类似swtc-lib的接口
 * Remote(options)
+* getServerInfo() `proxy`
+* getAccountInfo(address) `proxy`
+* getAccountSignerList(address) `proxy`
+* getAccountRelations(address)
 * getAccountBalances(address)
 * getAccountPayment(address, hash)
 * getAccountPayments(address)
-* postAccountPayments(address, options) 不安全
+* ~~postAccountPayments(address, options) 不安全~~
 * getAccountOrder(address, hash)
 * getAccountOrders(address)
-* postAccountOrders(address, options) 不安全
+* ~~postAccountOrders(address, options) 不安全~~
 * getAccountTransaction(address, hash)
 * getAccountTransactions(address)
 * getTransaction(hash)
@@ -127,8 +134,8 @@ console.log(w2);
 * getOrderBooks(base, counter)
 * getOrderBooksBids(base, counter)
 * getOrderBooksAsks(base, counter)
-* postAccountContractDeploy(address, options) 不安全
-* postAccountContractCall(address, options) 不安全
+* ~~postAccountContractDeploy(address, options) 不安全~~
+* ~~postAccountContractCall(address, options) 不安全~~
 * buildPaymentTx(options)
 * buildRelationTx(options)
 * buildAccountSetTx(options)
@@ -145,6 +152,12 @@ console.log(w2);
 * txSubmitPromise()
 * tx.signPromise()
 * tx.submitPromise()
+* txBuildSignFirstTx() `proxy`
+* txBuildSignOtherTx() `proxy`
+* txBuildMultisignedTx() `proxy`
+* tx.multiSigning() `proxy`
+* tx.multiSigned() `proxy`
+* buildSignerListTx(options) `proxy`
 
 ### <a name="remoteCreate"></a>4.1 创建Remote对象
 #### 方法:new Remote(options);
@@ -159,6 +172,7 @@ console.log(w2);
 var japi = require('swtc-api');
 var Remote = japi.Remote;
 var remote = new Remote({server: 'https://tapi.jingtum.com', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote_proxy = new Remote({server: 'https://swtcproxy.swtclib.ca:5080'})
 ```
 ### <a name="getAccountBalances"></a> 4.2 获得账号余额
 #### 方法:remote.getAccountBalances(address);
