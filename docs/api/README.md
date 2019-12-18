@@ -1,15 +1,19 @@
 # SWTC-API
 
-## [jingtum-api官方文档](http://developer.jingtum.com/api2_doc.html)
+## 后端支持
+### [swtc-proxy文档](../swtcproxy)
+### [jingtum-api官方文档](http://developer.jingtum.com/api2_doc.html)
 
-## swtc-api接口说明
-> ### swtc-api 对jingtum-api 作出包装， 消除不安全操作 并且提供类似swtc-lib的接口支持jingtum-api缺失的操作
+## swtc-api说明
+> ### 对jingtum-api 作出包装， 消除不安全操作 并且提供类似swtc-lib的接口支持jingtum-api缺失的操作
 > ### 强制本地签名
 > ### 合约测试只能在特定节点运行, solidity支持到0.5.4, 需要安装 swtc-tum3 / tum3-eth-abi
 > ### 同时支持`jingtum-api` 和 `swtc-proxy`
-> ### 目前文档输出为 `jingtum-api`, 新版本将以`swtc-proxy`输出为例
+> ### 目前文档输出为 `swtc-proxy`, [老版本](https://github.com/swtcca/swtcdoc/blob/api4jingtum/docs/api/README.md)以`jingtum-api`输出为例
+> ### 操作以`swtc-proxy`支持为主， 部分功能在`jingtum-api`不支持
 
 ## 目录
+0. ### [后端](#backend)
 1. ### [安装](#installation)
 2. ### [项目说明](#structure)
 3. ### [创建钱包](#wallet)
@@ -23,11 +27,11 @@
 > ### 4.7 [获得账号交易信息](#getAccountTransaction)
 > ### 4.8 [获得账号交易记录](#getAccountTransactions)
 > ### 4.9 [获得货币对的挂单列表](#getOrderBooks)
-> ### 4.10 [获得货币对的买单列表](#getOrderBooksBids)
-> ### 4.11 [获得货币对的卖单列表](#getOrderBooksAsks)
-> ### 4.12 [获得交易信息](#getTransaction)
-> ### 4.13 [获得最新账本号](#getLedger)
-> ### 4.14 [获得某一特定账本号](#getLedgerDetail)
+> ### 4.10 [获得货币对的买单/卖单列表](#getOrderBooksBids)
+> ### 4.11 [获得交易信息](#getTransaction)
+> ### 4.12 [获得最新账本号](#getLedger)
+> ### 4.13 [获得某一特定账本号](#getLedgerDetail)
+> ### 4.14 [获得挂单佣金信息](#getAccountBrokerage)
 > ### 4.15 [支付](#paymentTx)
 > - 4.15.1 创建支付对象
 > - 4.15.2 提交支付
@@ -66,8 +70,25 @@
 8. ### [底层常见错误附录](#errors)
 9. ### [solidity erc20 源码](#erc20src)
 10. ### [solidity erc721 源码](#erc721src)
+11. ### [多重签名](#multiSign)
+> ### 11.1 [查询帐号的签名列表](#getAccountSignerList)
+> ### 11.2 [设置帐号的签名列表](#buildSignerListTx)
+> ### 11.3 [废除帐号的主密钥](#deactivateMasterKey)
+> ### 11.4 [激活帐号的主密钥](#activateMasterKey)
+> ### 11.5 [多重签名 - tx.multiSigning, tx.multiSigned](#buildMultisignTx)
+> ### 11.6 [多重签名 - remote.buildSignFirstTx, remote.buildSignOtherTx, remote.buildMultisignedTx](#buildMultisignRemote)
 
-## <a name="installation"></a>1 安装
+### <a name="backend"></a>0 后端选择/准备
+#### swtc-proxy, 推荐
+> ### 公链 http://swtcproxy.swtclib.ca:5080
+> ### 多签 http://swtcproxy.swtclib.ca:5082
+> ### ~~公链 http://swtc-api.swtc.top:5080~~
+> ### ~~测试链 http://swtc-tapi.swtc.top:5080~~
+####  jingtum-api, 本身允许不安全操作，注意
+> ### 公链 https://api.jingtum.com
+> ### 测试链 https://tapi.jingtum.com 
+
+### <a name="installation"></a>1 安装
 1. 安装库
 ```bash
 npm install --save swtc-api
@@ -76,7 +97,7 @@ npm install --save swtc-api
 ## <a name="structure"></a>2 项目说明
 > ### swtc-api库操作`jingtum-api`提供的restapi, 但是实现了本地签名， 避免密钥传输到网络上
 > ### swtc-api库操作`swtc-proxy`提供的restapi
-> ### swtc-api提供比`jingtum-api` 和 `swtc-proxy` 更多的操作
+> ### swtc-api提供比`jingtum-api` 和 `swtc-proxy` 更多的操作, 有完整的接口
 
 ## <a name="wallet"></a>3 创建钱包
 > ### 首先引入swtc-api库的Wallet对象，然后使用以下两种方法创建钱包
@@ -115,6 +136,7 @@ console.log(w2);
 ## <a name="remote"></a>4 REMOTE类
 ### Remote是跟jingtum-api的restapi交互的类，它包装所有jingtum-api提供的方法, 还提供额外的类似swtc-lib的接口
 * Remote(options)
+* getAccountSequence()
 * getServerInfo() `proxy`
 * getAccountInfo(address) `proxy`
 * getAccountSignerList(address) `proxy`
@@ -122,10 +144,8 @@ console.log(w2);
 * getAccountBalances(address)
 * getAccountPayment(address, hash)
 * getAccountPayments(address)
-* ~~postAccountPayments(address, options) 不安全~~
 * getAccountOrder(address, hash)
 * getAccountOrders(address)
-* ~~postAccountOrders(address, options) 不安全~~
 * getAccountTransaction(address, hash)
 * getAccountTransactions(address)
 * getTransaction(hash)
@@ -134,8 +154,6 @@ console.log(w2);
 * getOrderBooks(base, counter)
 * getOrderBooksBids(base, counter)
 * getOrderBooksAsks(base, counter)
-* ~~postAccountContractDeploy(address, options) 不安全~~
-* ~~postAccountContractCall(address, options) 不安全~~
 * buildPaymentTx(options)
 * buildRelationTx(options)
 * buildAccountSetTx(options)
@@ -152,12 +170,12 @@ console.log(w2);
 * txSubmitPromise()
 * tx.signPromise()
 * tx.submitPromise()
-* txBuildSignFirstTx() `proxy`
-* txBuildSignOtherTx() `proxy`
-* txBuildMultisignedTx() `proxy`
-* tx.multiSigning() `proxy`
-* tx.multiSigned() `proxy`
-* buildSignerListTx(options) `proxy`
+* txBuildSignFirstTx()
+* txBuildSignOtherTx()
+* txBuildMultisignedTx()
+* tx.multiSigning()
+* tx.multiSigned()
+* buildSignerListTx(options)
 
 ### <a name="remoteCreate"></a>4.1 创建Remote对象
 #### 方法:new Remote(options);
@@ -171,7 +189,6 @@ console.log(w2);
 ```javascript
 var japi = require('swtc-api');
 var Remote = japi.Remote;
-var remote = new Remote({server: 'https://tapi.jingtum.com', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 var remote_proxy = new Remote({server: 'https://swtcproxy.swtclib.ca:5080'})
 ```
 ### <a name="getAccountBalances"></a> 4.2 获得账号余额
@@ -190,28 +207,27 @@ var remote_proxy = new Remote({server: 'https://swtcproxy.swtclib.ca:5080'})
 ```javascript
 var japi = require('swtc-api');
 var Remote = japi.Remote;
-var remote = new Remote({server: 'https://tapi.jingtum.com', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'https://swtcproxy.swtclib.ca:5080'});
 remote.getAccountBalances('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz').then(console.log).catch(console.error)
 ```
 #### 返回结果
 ```javascript
-> { success: true,
-  status_code: '0',
-  balances:
-   [ { value: '10499.851252',
-       currency: 'SWT',
-       issuer: '',
-       freezed: '51' },
-     { value: '95.955000182',
-       currency: 'CNY',
-       issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS',
-       freezed: '2.000000' } ],
-  sequence: 976 }
+> {
+  balances: [
+    { value: 25.98, currency: 'SWT', issuer: '', freezed: 25 },
+    {
+      value: '87',
+      currency: 'JSLASH',
+      issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
+      freezed: 0
+    }
+  ],
+  sequence: 3
+}
 ```
 #### 返回结果说明
 |参数|类型|说明|
 |----|----|---:|
-|success|Boolean|请求结果|
 |balances|Array|余额数组|
 |&nbsp;&nbsp;&nbsp;value|String|余额|
 |&nbsp;&nbsp;&nbsp;currency|String|货币名称，三个字母或20字节的货币|
@@ -230,28 +246,32 @@ remote.getAccountBalances('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz').then(console.log
 ```javascript
 var japi = require('swtc-api');
 var Remote = japi.Remote;
-var remote = new Remote({server: 'https://tapi.jingtum.com', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
-remote.getAccountPayment('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', 'F500406922F8C0D71939EF3CA6232EA50C97C0B5BBC3777843EA0219C7EB22F1').then(console.log).catch(console.error)
+var remote = new Remote({server: 'https://swtcproxy.swtclib.ca:5080'});
+remote.getAccountPayment('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', '84CCE378A2882D417AC311CA027FC1EAD21E5486B7C7E6FBFE71187FF28E0F65').then(console.log).catch(console.error)
 ```
 #### 返回结果
 ```javascript
-> { success: true,
-  status_code: '0',
-  date: 1559225370,
-  hash:
-   'F500406922F8C0D71939EF3CA6232EA50C97C0B5BBC3777843EA0219C7EB22F1',
+> {
+  date: 1576697180,
+  hash: '84CCE378A2882D417AC311CA027FC1EAD21E5486B7C7E6FBFE71187FF28E0F65',
   type: 'sent',
   fee: '0.01',
   result: 'tesSUCCESS',
-  memos: [ 'hello memo' ],
-  counterparty: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
-  amount: { value: '1.999999', currency: 'SWT', issuer: '' },
-  effects: [] }
+  memos: [ { MemoData: 'test payment' } ],
+  counterparty: 'j3vyFAMQW2Ls48eoFCTsMXFq2KNWVUskSx',
+  amount: {
+    currency: 'JSLASH',
+    issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
+    value: '1'
+  },
+  effects: [],
+  balances: { JSLASH: 85, SWT: 30.96 },
+  balancesPrev: { JSLASH: 86, SWT: 30.97 }
+}
 ```
 #### 返回结果说明
 |参数|类型|说明|
 |----|----|---:|
-|success|Boolean|请求结果|
 |date|Integer|支付时间，UNIXTIME时间|
 |hash|String|支付hash|
 |type|String|支付类型，sent或received|
@@ -272,40 +292,48 @@ remote.getAccountPayment('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', 'F500406922F8C0D7
 ```javascript
 var japi = require('swtc-api');
 var Remote = japi.Remote;
-var remote = new Remote({server: 'https://tapi.jingtum.com', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'https://swtcproxy.swtclib.ca:5080'});
 remote.getAccountPayments('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz').then(console.log).catch(console.error)
 ```
 #### 返回结果
 ```javascript
-> { success: true,
-  status_code: '0',
-  marker: { ledger: 3345651, seq: 0 },
-  payments:
-   [ { date: 1559225370,
-       hash:
-        'F500406922F8C0D71939EF3CA6232EA50C97C0B5BBC3777843EA0219C7EB22F1',
-       type: 'sent',
-       fee: '0.01',
-       result: 'tesSUCCESS',
-       memos: [Array],
-       counterparty: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
-       amount: [Object],
-       effects: [] },
-     { date: 1559225350,
-       hash:
-        '624D13BC5B9E6EC1D470E9D53687445D50D60FD7728B2B5ADBA4D824891DC8E7',
-       type: 'sent',
-       fee: '0.01',
-       result: 'tesSUCCESS',
-       memos: [],
-       counterparty: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
-       amount: [Object],
-       effects: [] } ] }
+> {
+  account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+  ledger_index_max: 14685226,
+  ledger_index_min: 14335743,
+  payments: [
+    {
+      date: 1576697180,
+      hash: '84CCE378A2882D417AC311CA027FC1EAD21E5486B7C7E6FBFE71187FF28E0F65',
+      type: 'sent',
+      fee: '0.01',
+      result: 'tesSUCCESS',
+      memos: [Array],
+      counterparty: 'j3vyFAMQW2Ls48eoFCTsMXFq2KNWVUskSx',
+      amount: [Object],
+      effects: [],
+      balances: [Object],
+      balancesPrev: [Object]
+    },
+    {
+      date: 1576696930,
+      hash: 'F42226C6A483D14ED14D34945E366917EE508CC04BE00CFF50E200440E6B0AD9',
+      type: 'sent',
+      fee: '0.01',
+      result: 'tesSUCCESS',
+      memos: [],
+      counterparty: 'j3vyFAMQW2Ls48eoFCTsMXFq2KNWVUskSx',
+      amount: [Object],
+      effects: [],
+      balances: [Object],
+      balancesPrev: [Object]
+    }
+  ]
+}
 ```
 #### 返回结果说明
 |参数|类型|说明|
 |----|----|---:|
-|success|Boolean|请求结果|
 |payments|Array|支付历史, 同交易记录中的信息|
 ### <a name="getAccountOrder"></a> 4.5 获得账号挂单信息
 #### 方法:remote.getAccountOrder(address, hash);
@@ -319,39 +347,40 @@ remote.getAccountPayments('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz').then(console.log
 ```javascript
 var japi = require('swtc-api');
 var Remote = japi.Remote;
-var remote = new Remote({server: 'https://tapi.jingtum.com', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
-remote.getAccountOrder('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', 'AC1A4249608B7E5096557A922861600273ACDD4A7AE9BAFE7A585567BD87DCD2').then(console.log).catch(console.error)
+var remote = new Remote({server: 'https://swtcproxy.swtclib.ca:5080'});
+remote.getAccountOrder('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', '8D6DC86FF64DFE83AFB9B5B0E43B7BCA05B9FAB88C5F73D540814FE1DE195CAA').then(console.log).catch(console.error)
 ```
 #### 返回结果
 ```javascript
-> { success: true,
-  status_code: '0',
-  hash:
-   'AC1A4249608B7E5096557A922861600273ACDD4A7AE9BAFE7A585567BD87DCD2',
+> {
+  date: 1576697880,
+  hash: '8D6DC86FF64DFE83AFB9B5B0E43B7BCA05B9FAB88C5F73D540814FE1DE195CAA',
+  type: 'offernew',
   fee: '0.01',
-  action: 'sell',
-  order:
-   { account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
-     pair: 'CNY:jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS/SWT',
-     amount: '0.009',
-     price: '111.11111111111111111111',
-     type: 'sell',
-     sequence: 966 } }
+  result: 'tesSUCCESS',
+  memos: [ { MemoData: 'memo offer create' } ],
+  offertype: 'sell',
+  gets: {
+    currency: 'JSLASH',
+    issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
+    value: '1'
+  },
+  pays: { value: '1', currency: 'SWT', issuer: '' },
+  seq: 5,
+  effects: [
+    {
+      effect: 'offer_created',
+      gets: [Object],
+      pays: [Object],
+      type: 'sell',
+      seq: 5,
+      price: '1'
+    }
+  ],
+  balances: { SWT: 30.95 },
+  balancesPrev: { SWT: 30.96 }
+}
 ```
-#### 返回结果说明
-|参数|类型|说明|
-|----|----|---:|
-|success|Boolean|请求结果|
-|hash|String|交易Hash|
-|fee|String|交易费用，井通计价|
-|action|String|交易的动作类型|
-|order|Object|交易单子信息|
-|&nbsp;&nbsp;&nbsp;account|String|交易帐号|
-|&nbsp;&nbsp;&nbsp;pair|String|交易的货币对|
-|&nbsp;&nbsp;&nbsp;amount|String|挂单的数量|
-|&nbsp;&nbsp;&nbsp;price|String|挂单的价格|
-|&nbsp;&nbsp;&nbsp;type|Integer|交易类型，sell或buy|
-|&nbsp;&nbsp;&nbsp;sequence|Integer|交易序列号|
 ### <a name="getAccountOrders"></a> 4.6 获得账号挂单列表
 #### 方法:remote.getAccountOrders(address);
 #### 参数:
@@ -363,51 +392,27 @@ remote.getAccountOrder('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', 'AC1A4249608B7E5096
 ```javascript
 var japi = require('swtc-api');
 var Remote = japi.Remote;
-var remote = new Remote({server: 'https://tapi.jingtum.com', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'https://swtcproxy.swtclib.ca:5080'});
 remote.getAccountOrders('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz').then(console.log).catch(console.error)
 ```
 #### 返回结果
 ```javascript
-> { success: true,
-  status_code: '0',
-  orders:
-   [ { type: 'buy',
-       pair: 'CNY:jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS/SWT',
-       amount: '0.007',
-       price: '142.85714285714285714286',
-       sequence: 190 },
-     { type: 'buy',
-       pair: 'CNY:jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS/SWT',
-       amount: '0.007',
-       price: '142.85714285714285714286',
-       sequence: 191 },
-     { type: 'buy',
-       pair: 'CNY:jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS/SWT',
-       amount: '0.007',
-       price: '142.85714285714285714286',
-       sequence: 192 },
-     { type: 'sell',
-       pair: 'SWT/CNY:jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS',
-       amount: '1.000000',
-       price: '0.01',
-       sequence: 380 },
-     { type: 'sell',
-       pair: 'SWT/CNY:jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS',
-       amount: '1.000000',
-       price: '0.01',
-       sequence: 394 },
-     { type: 'sell',
-       pair: 'SWT/CNY:jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS',
-       amount: '1.000000',
-       price: '0.01',
-       sequence: 531 } ] }
+> {
+  account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+  ledger_hash: '8824A222275B2E0545CDFEBBC95821F9E25C3A32320C07B1651F2C7BA0727DFD',
+  ledger_index: 14685287,
+  offers: [
+    {
+      flags: 131072,
+      seq: 5,
+      taker_gets: [Object],
+      taker_pays: '1000000'
+    }
+  ],
+  validated: true
+}
 ```
-#### 返回结果说明
-|参数|类型|说明|
-|----|----|---:|
-|success|Boolean|请求结果|
-|orders|Array|挂单列表, 同挂单中的信息|
-### <a name="getAccountTransaction"></a> 4.7 获得账号交易信息
+### <a name="getAccountTransaction"></a> 4.7 获得账号事务信息
 #### 方法:remote.getAccountTransaction(address, hash);
 #### 参数:
 |参数|类型|说明|
@@ -419,39 +424,29 @@ remote.getAccountOrders('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz').then(console.log).
 ```javascript
 var japi = require('swtc-api');
 var Remote = japi.Remote;
-var remote = new Remote({server: 'https://tapi.jingtum.com', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
-remote.getAccountTransaction('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', 'F500406922F8C0D71939EF3CA6232EA50C97C0B5BBC3777843EA0219C7EB22F1').then(console.log).catch(console.error)
+var remote = new Remote({server: 'https://swtcproxy.swtclib.ca:5080'});
+remote.getAccountTransaction('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', 'F42226C6A483D14ED14D34945E366917EE508CC04BE00CFF50E200440E6B0AD9').then(console.log).catch(console.error)
 ```
 #### 返回结果
 ```javascript
-> { success: true,
-  status_code: '0',
-  transaction:
-   { date: 1559225370,
-     hash:
-      'F500406922F8C0D71939EF3CA6232EA50C97C0B5BBC3777843EA0219C7EB22F1',
-     type: 'sent',
-     fee: '0.01',
-     result: 'tesSUCCESS',
-     memos: [ 'hello memo' ],
-     counterparty: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
-     amount: { value: '1.999999', currency: 'SWT', issuer: '' },
-     effects: [],
-     ledger: 3345654 } }
+> {
+  date: 1576696930,
+  hash: 'F42226C6A483D14ED14D34945E366917EE508CC04BE00CFF50E200440E6B0AD9',
+  type: 'sent',
+  fee: '0.01',
+  result: 'tesSUCCESS',
+  memos: [],
+  counterparty: 'j3vyFAMQW2Ls48eoFCTsMXFq2KNWVUskSx',
+  amount: {
+    currency: 'JSLASH',
+    issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
+    value: '1'
+  },
+  effects: [],
+  balances: { JSLASH: 86, SWT: 30.97 },
+  balancesPrev: { JSLASH: 87, SWT: 30.98 }
+}
 ```
-#### 返回结果说明
-|参数|类型|说明|
-|----|----|---:|
-|success|Boolean|请求结果|
-|transaction|Object|具体的交易信息|
-|&nbsp;&nbsp;&nbsp;date|Integer|交易时间，UNIXTIME|
-|&nbsp;&nbsp;&nbsp;hash|Object|交易hash|
-|&nbsp;&nbsp;&nbsp;type|Object|交易类型|
-|&nbsp;&nbsp;&nbsp;fee|Object|交易费用，井通计价|
-|&nbsp;&nbsp;&nbsp;result|Object|交易结果|
-|&nbsp;&nbsp;&nbsp;counterparty|Object|交易对家|
-|&nbsp;&nbsp;&nbsp;amount|Object|交易金额|
-|&nbsp;&nbsp;&nbsp;effects|Object|[交易效果](#transactionEffects)|
 ### <a name="getAccountTransactions"></a> 4.8 获得账号交易记录
 #### 方法:remote.getAccountTransactions(address);
 #### 参数:
@@ -463,75 +458,76 @@ remote.getAccountTransaction('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', 'F500406922F8
 ```javascript
 var japi = require('swtc-api');
 var Remote = japi.Remote;
-var remote = new Remote({server: 'https://tapi.jingtum.com', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
-remote.getAccountTransactions('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', {results_per_page: 4}).then(console.log).catch(console.error)
+var remote = new Remote({server: 'https://swtcproxy.swtclib.ca:5080'});
+remote.getAccountTransactions('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', {limit: 4}).then(console.log).catch(console.error)
 ```
 #### 返回结果
 ```javascript
-> { success: true,
-  status_code: '0',
-  marker: { ledger: 3345647, seq: 0 },
-  transactions:
-   [ { date: 1559225370,
-       hash:
-        'F500406922F8C0D71939EF3CA6232EA50C97C0B5BBC3777843EA0219C7EB22F1',
-       type: 'sent',
-       fee: '0.01',
-       result: 'tesSUCCESS',
-       memos: [Array],
-       counterparty: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
-       amount: [Object],
-       effects: [] },
-     { date: 1559225350,
-       hash:
-        '624D13BC5B9E6EC1D470E9D53687445D50D60FD7728B2B5ADBA4D824891DC8E7',
-       type: 'sent',
-       fee: '0.01',
-       result: 'tesSUCCESS',
-       memos: [],
-       counterparty: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
-       amount: [Object],
-       effects: [] },
-     { date: 1559225340,
-       hash:
-        '50B45492428ABFA037F57F24717DB590DD626E53F8FB7FDB037322297C5380AE',
-       type: 'sent',
-       fee: '0.01',
-       result: 'tesSUCCESS',
-       memos: [],
-       counterparty: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
-       amount: [Object],
-       effects: [] },
-     { date: 1559225310,
-       hash:
-        '1E2B5F1B2843BFB8442FD1B1DB92F2BFF740E2FFC6892738704E4589730F8D13',
-       type: 'sent',
-       fee: '0.01',
-       result: 'tesSUCCESS',
-       memos: [Array],
-       counterparty: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
-       amount: [Object],
-       effects: [] } ] }
-
+> {
+  account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+  ledger_index_max: 14685341,
+  ledger_index_min: 14335272,
+  limit: 4,
+  marker: { ledger: 14548229, seq: 2 },
+  transactions: [
+    {
+      date: 1576697880,
+      hash: '8D6DC86FF64DFE83AFB9B5B0E43B7BCA05B9FAB88C5F73D540814FE1DE195CAA',
+      type: 'offernew',
+      fee: '0.01',
+      result: 'tesSUCCESS',
+      memos: [Array],
+      offertype: 'sell',
+      gets: [Object],
+      pays: [Object],
+      seq: 5,
+      effects: [Array],
+      balances: [Object],
+      balancesPrev: [Object]
+    },
+    {
+      date: 1576697180,
+      hash: '84CCE378A2882D417AC311CA027FC1EAD21E5486B7C7E6FBFE71187FF28E0F65',
+      type: 'sent',
+      fee: '0.01',
+      result: 'tesSUCCESS',
+      memos: [Array],
+      counterparty: 'j3vyFAMQW2Ls48eoFCTsMXFq2KNWVUskSx',
+      amount: [Object],
+      effects: [],
+      balances: [Object],
+      balancesPrev: [Object]
+    },
+    {
+      date: 1576696930,
+      hash: 'F42226C6A483D14ED14D34945E366917EE508CC04BE00CFF50E200440E6B0AD9',
+      type: 'sent',
+      fee: '0.01',
+      result: 'tesSUCCESS',
+      memos: [],
+      counterparty: 'j3vyFAMQW2Ls48eoFCTsMXFq2KNWVUskSx',
+      amount: [Object],
+      effects: [],
+      balances: [Object],
+      balancesPrev: [Object]
+    },
+    {
+      date: 1576696810,
+      hash: 'FA45FD2FD57BF051EF19C967DFC17CD2721E29BF432B0E10CBE0AF0510A9F032',
+      type: 'received',
+      fee: '0.01',
+      result: 'tesSUCCESS',
+      memos: [],
+      counterparty: 'j3vyFAMQW2Ls48eoFCTsMXFq2KNWVUskSx',
+      amount: [Object],
+      effects: [],
+      balances: [Object],
+      balancesPrev: [Object]
+    }
+  ]
+}
 ```
 #### 返回结果说明
-|参数|类型|说明|
-|----|----|---:|
-|success|Boolean|调用结果|
-|marker|Object|交易记录标记|
-|transactions|Array|具体的交易信息数组|
-|&nbsp;&nbsp;&nbsp;date|Integer|交易时间，UNIXTIME|
-|&nbsp;&nbsp;&nbsp;hash|String|交易hash|
-|&nbsp;&nbsp;&nbsp;type|String|交易类型|
-|&nbsp;&nbsp;&nbsp;fee|String|交易费用，井通计价|
-|&nbsp;&nbsp;&nbsp;result|String|交易结果|
-|&nbsp;&nbsp;&nbsp;memos|String|交易备注|
-|&nbsp;&nbsp;&nbsp;counterparty|String|交易对家，支付交易才有|
-|&nbsp;&nbsp;&nbsp;amount|String|交易金额/挂单数量，支付交易或者挂单交易才有|
-|&nbsp;&nbsp;&nbsp;offertype|String|挂单类型，sell或者buy，挂单交易才有|
-|&nbsp;&nbsp;&nbsp;pair|String|交易的货币对，挂单交易才有|
-|&nbsp;&nbsp;&nbsp;price|String|挂单的价格，挂单交易才有|
-|&nbsp;&nbsp;&nbsp;effects|Object|[交易效果](#transactionEffects)|
 ### <a name="getOrderBooks"></a> 4.9 获得货币对的挂单列表
 #### 方法:remote.getOrderBooks(base, counter);
 #### 参数:
@@ -542,208 +538,85 @@ remote.getAccountTransactions('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', {results_per
 #### [可选参数:](#optionalParameters)
 |参数|类型|说明|
 |----|----|---:|
-|results_per_page|Integer|返回的每页数据量，默认每页买卖单各10项|
-|page|Integer|页码，默认从第一页开始|
+|marker|object|位置标记|
 #### 返回: Promise - json
 #### 例子
 ```javascript
 var japi = require('swtc-api');
 var Remote = japi.Remote;
-var remote = new Remote({server: 'https://tapi.jingtum.com', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'https://swtcproxy.swtclib.ca:5080'});
 remote.getOrderBooks('SWT', 'CNY+' + remote._issuer).then(console.log).catch(console.error)
 ```
 #### 返回结果
-```javascript
-> { success: true,
-  status_code: '0',
-  pair: 'SWT/CNY+jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS',
-  bids: [],
-  asks:
-   [ { price: 0.00699,
-       order_maker: 'jH6L8EzkgwMKWRmLVC4oLchqft4oNqUUj',
-       sequence: 4,
-       passive: false,
-       sell: true,
-       funded: 0.428572 },
-     { price: 0.01,
-       order_maker: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
-       sequence: 380,
-       passive: false,
-       sell: true,
-       funded: 1 },
-     { price: 0.01,
-       order_maker: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
-       sequence: 394,
-       passive: false,
-       sell: true,
-       funded: 1 },
-     { price: 0.01,
-       order_maker: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
-       sequence: 531,
-       passive: false,
-       sell: true,
-       funded: 1 },
-     { price: 0.0124,
-       order_maker: 'jQNdYXxgNHY49oxDL8mrjr7J6k7tdNy1kM',
-       sequence: 6,
-       passive: false,
-       sell: true,
-       funded: 100 },
-     { price: 0.3,
-       order_maker: 'jH6L8EzkgwMKWRmLVC4oLchqft4oNqUUj',
-       sequence: 1,
-       passive: false,
-       sell: true,
-       funded: 5 } ] }
+```
+> {
+  ledger_current_index: 14685409,
+  offers: [
+    {
+      Account: 'jPZuCxWTL28vnfb86vHrLvgTnwiBEgaVrE',
+      BookDirectory: '51603377F758E3C8FA007C77312DDA06A737A1395CD5FC435D0972DE6F6C8572',
+      BookNode: '0000000000000000',
+      Flags: 0,
+      LedgerEntryType: 'Offer',
+      OwnerNode: '0000000000000001',
+      PreviousTxnID: '7C79CF7AE14DA02488A925488BA94F095F8E9C7DC9386FB93D4837DAA5A6CACB',
+      PreviousTxnLgrSeq: 14685379,
+      Sequence: 1452,
+      TakerGets: [Object],
+      TakerPays: '740000000000',
+      index: '428D120A4DFB65A9D23AD2DD0EF712FF24C67BEC885C4B68D324EE6435FCA9C0',
+      owner_funds: '23868.88806657596',
+      quality: '265957446.8085106'
+    },
+    {
+      Account: 'jJPQhnoGdm9bD1Ngcgk7k2kRUsJypGoUEw',
+      BookDirectory: '51603377F758E3C8FA007C77312DDA06A737A1395CD5FC435D0972DE6F6C8572',
+      BookNode: '0000000000000000',
+      FeeCurrency: 'SWT',
+      Flags: 0,
+      LedgerEntryType: 'Offer',
+      OfferFeeRateDen: '00000000000003E8',
+      OfferFeeRateNum: '0000000000000002',
+      OwnerNode: '0000000000000000',
+      Platform: 'jDXCeSHSpZ9LiX6ihckWaYDeDt5hFrdTto',
+      PreviousTxnID: '33358081F0331D1440C54DD166BCD86B5816C16E5F088DEEA05F8FB72ED2C1CF',
+      PreviousTxnLgrSeq: 14684636,
+      Sequence: 3080,
+      TakerGets: [Object],
+      TakerPays: '1757250000000',
+      index: '9EB2FD56627E76CCD2DBD2921F2B8C7362BB6B675210F23F971CB3512820F762',
+      owner_funds: '6607.26151815719',
+      quality: '265957446.8085106'
+    },
+    {
+      Account: 'jw2jAYv2VifjYVCCjv5qDah9hknMKMtg9e',
+      BookDirectory: '51603377F758E3C8FA007C77312DDA06A737A1395CD5FC435D0A01F4F7D16890',
+      BookNode: '0000000000000000',
+      FeeCurrency: 'SWT',
+      Flags: 0,
+      LedgerEntryType: 'Offer',
+      OfferFeeRateDen: '00000000000F4240',
+      OfferFeeRateNum: '00000000000003E8',
+      OwnerNode: '0000000000000000',
+      Platform: 'jGrVFKACsF7W6PhMHn5upPN7fPUyG8NVKx',
+      PreviousTxnID: 'FA7FFA476ED893218256C5735D590FFCEC9BE67849177131123100998EF16103',
+      PreviousTxnLgrSeq: 14678331,
+      Sequence: 165,
+      TakerGets: [Object],
+      TakerPays: '40515000000',
+      index: 'DFFF4E69DB07355467D3510F82C37AADC0CDA6F658531F8504B29887246C33EB',
+      owner_funds: '182.8264976823619',
+      quality: '281690140.8450704'
+    }
+  ],
+  validated: false
+}
 ```
 #### 返回结果说明
-|参数|类型|说明|
-|----|----|---:|
-|success|Boolean|请求结果|
-|pair|String|挂单货币对|
-|bids/asks|Array|买入单|
-|&nbsp;&nbsp;&nbsp;price|Object|该档的价格|
-|&nbsp;&nbsp;&nbsp;funded|Integer|实际中用户可以成交的金额|
-|&nbsp;&nbsp;&nbsp;order_maker|String|挂单用户|
-|&nbsp;&nbsp;&nbsp;sequence|String|交易序号|
-|&nbsp;&nbsp;&nbsp;passive|Boolean|交易是否是被动交易|
-### <a name="getOrderBooksBids"></a> 4.10 获得货币对的买单列表
-#### 方法:remote.getOrderBooksBids(base, counter);
-#### 参数:
-|参数|类型|说明|
-|----|----|---:|
-|base|String|基准货币（currency+counterparty），兼容swt+counterparty|
-|counter|String|目标货币（currency+counterparty），兼容swt+counterparty|
-#### [可选参数:](#optionalParameters)
-|参数|类型|说明|
-|----|----|---:|
-|results_per_page|Integer|返回的每页数据量，默认每页买单10项|
-|page|Integer|页码，默认从第一页开始|
-#### 返回: Promise - json
-#### 例子
-```javascript
-var japi = require('swtc-api');
-var Remote = japi.Remote;
-var remote = new Remote({server: 'https://tapi.jingtum.com', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
-remote.getOrderBooksBids('SWT', 'CNY+' + remote._issuer).then(console.log).catch(console.error)
-```
-#### 返回结果
-```javascript
-> { success: true,
-  status_code: '0',
-  pair: 'CNY+jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS/SWT',
-  bids:
-   [ { price: 142.85714,
-       order_maker: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
-       sequence: 190,
-       passive: false,
-       sell: false,
-       funded: 0.007 },
-     { price: 142.85714,
-       order_maker: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
-       sequence: 191,
-       passive: false,
-       sell: false,
-       funded: 0.007 },
-     { price: 142.85714,
-       order_maker: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
-       sequence: 192,
-       passive: false,
-       sell: false,
-       funded: 0.007 },
-     { price: 0.00045,
-       order_maker: 'j3UcBBbes7HFgmTLmGkEQQShM2jdHbdGAe',
-       sequence: 37,
-       passive: false,
-       sell: false,
-       funded: 0.02 } ] }
-```
-#### 返回结果说明
-|参数|类型|说明|
-|----|----|---:|
-|success|Boolean|请求结果|
-|pair|String|挂单货币对|
-|bids|Array|买入单|
-|&nbsp;&nbsp;&nbsp;price|Object|该档的价格|
-|&nbsp;&nbsp;&nbsp;funded|Integer|实际中用户可以成交的金额|
-|&nbsp;&nbsp;&nbsp;order_maker|String|挂单用户|
-|&nbsp;&nbsp;&nbsp;sequence|String|交易序号|
-|&nbsp;&nbsp;&nbsp;passive|Boolean|交易是否是被动交易|
-### <a name="getOrderBooksAsks"></a> 4.11 获得货币对的卖单列表
-#### 方法:remote.getOrderBooksAsks(base, counter);
-#### 参数:
-|参数|类型|说明|
-|----|----|---:|
-|base|String|基准货币（currency+counterparty），兼容swt+counterparty|
-|counter|String|目标货币（currency+counterparty），兼容swt+counterparty|
-#### [可选参数:](#optionalParameters)
-|参数|类型|说明|
-|----|----|---:|
-|results_per_page|Integer|返回的每页数据量，默认每页卖单10项|
-|page|Integer|页码，默认从第一页开始|
-#### 返回: Promise - json
-#### 例子
-```javascript
-var japi = require('swtc-api');
-var Remote = japi.Remote;
-var remote = new Remote({server: 'https://tapi.jingtum.com', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
-remote.getOrderBooksAsks('SWT', 'CNY+' + remote._issuer).then(console.log).catch(console.error)
-```
-#### 返回结果
-```javascript
-> { success: true,
-  status_code: '0',
-  pair: 'SWT/CNY+jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS',
-  asks:
-   [ { price: 0.00699,
-       order_maker: 'jH6L8EzkgwMKWRmLVC4oLchqft4oNqUUj',
-       sequence: 4,
-       passive: false,
-       sell: true,
-       funded: 0.428572 },
-     { price: 0.01,
-       order_maker: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
-       sequence: 380,
-       passive: false,
-       sell: true,
-       funded: 1 },
-     { price: 0.01,
-       order_maker: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
-       sequence: 394,
-       passive: false,
-       sell: true,
-       funded: 1 },
-     { price: 0.01,
-       order_maker: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
-       sequence: 531,
-       passive: false,
-       sell: true,
-       funded: 1 },
-     { price: 0.0124,
-       order_maker: 'jQNdYXxgNHY49oxDL8mrjr7J6k7tdNy1kM',
-       sequence: 6,
-       passive: false,
-       sell: true,
-       funded: 100 },
-     { price: 0.3,
-       order_maker: 'jH6L8EzkgwMKWRmLVC4oLchqft4oNqUUj',
-       sequence: 1,
-       passive: false,
-       sell: true,
-       funded: 5 } ] }
-```
-#### 返回结果说明
-|参数|类型|说明|
-|----|----|---:|
-|success|Boolean|请求结果|
-|pair|String|挂单货币对|
-|asks|Array|卖出单|
-|&nbsp;&nbsp;&nbsp;price|Object|该档的价格|
-|&nbsp;&nbsp;&nbsp;funded|Integer|实际中用户可以成交的金额|
-|&nbsp;&nbsp;&nbsp;order_maker|String|挂单用户|
-|&nbsp;&nbsp;&nbsp;sequence|String|交易序号|
-|&nbsp;&nbsp;&nbsp;passive|Boolean|交易是否是被动交易|
-### <a name="getTransaction"></a> 4.12 获得某一交易信息
+### <a name="getOrderBooksBids"></a> 4.10 获得货币对的买单/卖单列表
+#### 方法:remote.getOrderBooks(base, counter);
+#### 方法:remote.getOrderBooks(counter, base);
+### <a name="getTransaction"></a> 4.11 获得某一事务信息
 #### 方法:remote.getTransaction(hash);
 #### 参数:
 |参数|类型|说明|
@@ -754,40 +627,35 @@ remote.getOrderBooksAsks('SWT', 'CNY+' + remote._issuer).then(console.log).catch
 ```javascript
 var japi = require('swtc-api');
 var Remote = japi.Remote;
-var remote = new Remote({server: 'https://tapi.jingtum.com', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
-remote.getTransaction('F500406922F8C0D71939EF3CA6232EA50C97C0B5BBC3777843EA0219C7EB22F1').then(console.log).catch(console.error)
+var remote = new Remote({server: 'https://swtcproxy.swtclib.ca:5080'});
+remote.getTransaction('FA45FD2FD57BF051EF19C967DFC17CD2721E29BF432B0E10CBE0AF0510A9F032').then(console.log).catch(console.error)
 ```
 #### 返回结果
 ```javascript
-> { success: true,
-  status_code: '0',
-  transaction:
-   { date: 1559225370,
-     hash:
-      'F500406922F8C0D71939EF3CA6232EA50C97C0B5BBC3777843EA0219C7EB22F1',
-     type: 'sent',
-     fee: '0.01',
-     result: 'tesSUCCESS',
-     memos: [ 'hello memo' ],
-     counterparty: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
-     amount: { value: '1.999999', currency: 'SWT', issuer: '' },
-     effects: [],
-     ledger: 3345654 } }
+> {
+  Account: 'j3vyFAMQW2Ls48eoFCTsMXFq2KNWVUskSx',
+  Amount: '5000000',
+  Destination: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+  Fee: '10000',
+  Flags: 0,
+  Sequence: 197,
+  SigningPubKey: '0302357748343E2F41D65692B9B2A6B52157D9ECF9D8555C098A8A407C06093350',
+  TransactionType: 'Payment',
+  TxnSignature: '304402207B4F7647A4CFBAE591C4D2426494A705CCB565DB6562ADFE6DAA1A677AF3447C02206267E5260311FC3B08C5BB223282351FBE6BC436B72E52FD498D73F802B55043',
+  date: 630012010,
+  hash: 'FA45FD2FD57BF051EF19C967DFC17CD2721E29BF432B0E10CBE0AF0510A9F032',
+  inLedger: 14685168,
+  ledger_index: 14685168,
+  meta: {
+    AffectedNodes: [ [Object], [Object], [Object] ],
+    TransactionIndex: 4,
+    TransactionResult: 'tesSUCCESS'
+  },
+  validated: true
+}
 ```
 #### 返回结果说明
-|参数|类型|说明|
-|----|----|---:|
-|success|Boolean|请求结果|
-|transaction|Object|具体的交易信息|
-|&nbsp;&nbsp;&nbsp;date|Integer|交易时间，UNIXTIME|
-|&nbsp;&nbsp;&nbsp;hash|Object|交易hash|
-|&nbsp;&nbsp;&nbsp;type|Object|交易类型|
-|&nbsp;&nbsp;&nbsp;fee|Object|交易费用，井通计价|
-|&nbsp;&nbsp;&nbsp;result|Object|交易结果|
-|&nbsp;&nbsp;&nbsp;counterparty|Object|交易对家|
-|&nbsp;&nbsp;&nbsp;amount|Object|交易金额|
-|&nbsp;&nbsp;&nbsp;effects|Object|[交易效果](#transactionEffects)|
-### <a name="getLedger"></a> 4.13 获得最新帐本
+### <a name="getLedger"></a> 4.12 获得最新帐本
 #### 方法:remote.getLedger();
 #### 参数: 无
 #### 返回: Promise - json
@@ -795,24 +663,23 @@ remote.getTransaction('F500406922F8C0D71939EF3CA6232EA50C97C0B5BBC3777843EA0219C
 ```javascript
 var japi = require('swtc-api');
 var Remote = japi.Remote;
-var remote = new Remote({server: 'https://tapi.jingtum.com', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'https://swtcproxy.swtclib.ca:5080'});
 remote.getLedger().then(console.log).catch(console.error)
 ```
 #### 返回结果
 ```javascript
-> { success: true,
-  status_code: '0',
-  ledger_hash:
-   '2C0D839779AB96E009F70CDC5CCFD7081F96671AF81952C25B9F782FA3978F6D',
-  ledger_index: 3348251 }
+> {
+  ledger_hash: 'EBD02238BB712D969CAEF588834DEF15E95FE2E41355A119FF888FDB1F3847C0',
+  ledger_index: 14685450,
+  ledger_time: 630014830
+}
 ```
 #### 返回结果说明
 |参数|类型|说明|
 |----|----|---:|
-|success|Boolean|请求结果|
 |ledger_hash|String|账本hash|
 |ledger_index|Integer|账本号/区块高度|
-### <a name="getLedgerDetail"></a> 4.14 获得某一帐本及其交易信息
+### <a name="getLedgerDetail"></a> 4.13 获得某一帐本及其交易信息
 #### 方法:remote.getLedger(hash_or_index);
 #### 参数:
 |参数|类型|说明|
@@ -823,38 +690,40 @@ remote.getLedger().then(console.log).catch(console.error)
 ```javascript
 var japi = require('swtc-api');
 var Remote = japi.Remote;
-var remote = new Remote({server: 'https://tapi.jingtum.com', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
-remote.getLedger(3348251).then(console.log).catch(console.error)
+var remote = new Remote({server: 'https://swtcproxy.swtclib.ca:5080'});
+remote.getLedger(14685450).then(console.log).catch(console.error)
+remote.getLedger('EBD02238BB712D969CAEF588834DEF15E95FE2E41355A119FF888FDB1F3847C0').then(console.log).catch(console.error)
 ```
 #### 返回结果
 ```javascript
-> { success: true,
-  status_code: '0',
+> {
   accepted: true,
-  account_hash:
-   '9210C4928F284B81CF5CF6877FAA74A2974F451EBD29D5912BDB6A7B9959632C',
-  close_time: 612566540,
-  close_time_human: '2019-May-30 21:22:20',
+  account_hash: 'EB7D100F0B603F388F231EF3AD89D0A33027F022CD907F35E5A73B608D86AE35',
+  close_time: 630014830,
+  close_time_human: '2019-Dec-18 20:07:10',
   close_time_resolution: 10,
   closed: true,
-  hash:
-   '2C0D839779AB96E009F70CDC5CCFD7081F96671AF81952C25B9F782FA3978F6D',
-  ledger_hash:
-   '2C0D839779AB96E009F70CDC5CCFD7081F96671AF81952C25B9F782FA3978F6D',
-  ledger_index: '3348251',
-  parent_hash:
-   '6C1F3CC145764A154AB347AD6751680010A100325F87874843D26959A4151F96',
-  seqNum: '3348251',
-  totalCoins: '600000000000000000',
-  total_coins: '600000000000000000',
-  transaction_hash:
-   '0000000000000000000000000000000000000000000000000000000000000000',
-  transactions: [] }
+  hash: 'EBD02238BB712D969CAEF588834DEF15E95FE2E41355A119FF888FDB1F3847C0',
+  ledger_hash: 'EBD02238BB712D969CAEF588834DEF15E95FE2E41355A119FF888FDB1F3847C0',
+  ledger_index: '14685450',
+  parent_hash: '09D980AC4F3FF5ED6F9895D143EB52EA06662EDDA770B2EB4F86C0672452C92F',
+  seqNum: '14685450',
+  totalCoins: '599999999999460713',
+  total_coins: '599999999999460713',
+  transaction_hash: '7FA3C98DBAD910FB394664C8BF0A80615473A4BA04BA018C4B7C1E8C86E447D5',
+  transactions: [
+    '03C0156CD184DA77D3C7B79E511CDE4BDE4D066C909FFA830EB69829D514FB1B',
+    '10D169C3EC7575562A5C9ACF5373348946B377FD1584451BE8A228FA3C8048EA',
+    '27E362082AFC877F3169C7822B2C330CF338F9C3EB2E6AB5A08D9F45A5166A25',
+    '7FB681496D49ADFBF29A04D6C1EF17649B41C3D7FBB9AC037FA5A947162F77A5',
+    'A0E2C660C8035175E2D0F12AE510B20DFE6C74A52E46262AADC72CAE70AD7357',
+    'F8E74EC60D1ABA07B8B3457C1C597EF5749ED0AE6CE9B538A6F491AA0691AC12'
+  ]
+}
 ```
 #### 返回结果说明
 |参数|类型|说明|
 |----|----|---:|
-|success|Boolean|请求结果|
 |accepted|Boolean|区块是否已经产生|
 |account_hash|String|状态hash树根|
 |close_time|Integer|关闭时间|
@@ -870,6 +739,39 @@ remote.getLedger(3348251).then(console.log).catch(console.error)
 |total_coins|String|swt总量|
 |transaction_hash|String|交易hash树根|
 |transactions|Array|该账本里的交易列表|
+### <a name="getAccountBrokerage"></a> 4.14 获得挂单佣金信息
+#### 方法:remote.getAccountBrokerage(address);
+#### 参数:
+|参数|类型|说明|
+|----|----|---:|
+|address|String|钱包地址|
+#### 返回: Promise - json
+#### 例子
+```javascript
+var japi = require('swtc-api');
+var Remote = japi.Remote;
+var remote = new Remote({server: 'https://swtcproxy.swtclib.ca:5080'});
+remote.getAccountBrokerage('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz').then(console.log).catch(console.error)
+```
+#### 返回结果
+```javascript
+> {
+  account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+  brokerages: [
+    {
+      FeeCurrency: 'JSLASH',
+      FeeCurrencyIssuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
+      OfferFeeRateDen: '1000',
+      OfferFeeRateNum: '1',
+      Platform: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+      fee_account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz'
+    }
+  ],
+  ledger_hash: 'EA0F6CA08241D01AE6CFCD8376AB9ED3747DCF8366FED35127F79CA20EC581FF',
+  ledger_index: 14685952,
+  validated: true
+}
+```
 ### <a name="paymentTx"></a> 4.15 支付
 #### 首先通过buildPaymentTx方法返回一个Transaction对象，然后通过submitPromise()方法提交支付信息。
 #### <a name="paymentBuildTx"></a> 4.15.1 创建支付对象
@@ -880,9 +782,6 @@ remote.getLedger(3348251).then(console.log).catch(console.error)
 |account|String|发起账号|
 |to|String|目标账号|
 |amount|Object|支付金额|
-|value|String|支付数量|
-|currency|String|货币种类，三到六个字母或20字节的自定义货币|
-|issuer|String|货币发行方|
 ##### 返回:Transaction对象
 #### <a name="paymentSubmit"></a> 4.15.2 提交支付
 ##### 方法:tx.submitPromise(secret, memo)
@@ -896,50 +795,49 @@ remote.getLedger(3348251).then(console.log).catch(console.error)
 ```javascript
 var japi = require('swtc-api');
 var Remote = japi.Remote;
-var remote = new Remote({server: 'https://tapi.jingtum.com', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'https://swtcproxy.swtclib.ca:5080'});
 remote.buildPaymentTx({
 	   	account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
-	   	to: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
-	   	amount: remote.makeAmount(0.02)
+	   	to: 'j3vyFAMQW2Ls48eoFCTsMXFq2KNWVUskSx',
+	   	amount: remote.makeAmount(1, 'JSLASH')
 }).submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C', 'payment memo').then(console.log).catch(console.error)
 ```
 #### 返回结果
 ```javascript
-> { success: true,
-  status_code: '0',
+> {
   engine_result: 'tesSUCCESS',
   engine_result_code: 0,
-  engine_result_message:
-   'The transaction was applied. Only final in a validated ledger.',
-  tx_blob:
-   '120000220000000024000003D0614000000000004E206840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E157446304402202D56D65F47E41AA74D0DD4C3846AB4CC38F463C21DA95BD638EFCD5C5FA67EEA02205F097D65BD83C5D1AAE902BD9D017598BEF0E96F6E36327BFE6CB03D1C2CC27881141359AA928F4D98FDB3D93E8B690C80D37DED11C38314054FADDC8595E2950FA43F673F65C2009F58C7F1F9EA7D0C7061796D656E74206D656D6FE1F1',
-  tx_json:
-   { Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
-     Amount: '20000',
-     Destination: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
-     Fee: '10000',
-     Flags: 0,
-     Memos: [ [Object] ],
-     Sequence: 976,
-     SigningPubKey:
-      '029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15',
-     TransactionType: 'Payment',
-     TxnSignature:
-      '304402202D56D65F47E41AA74D0DD4C3846AB4CC38F463C21DA95BD638EFCD5C5FA67EEA02205F097D65BD83C5D1AAE902BD9D017598BEF0E96F6E36327BFE6CB03D1C2CC278',
-     hash:
-      'E6654E461447CA68BF4D6E5156D6E63078D3DED9ED8904CA5537A66DAE7DF0EF' } }
+  engine_result_message: 'The transaction was applied. Only final in a validated ledger.',
+  tx_blob: '1200002200000000240000000461D4838D7EA4C680000000000000000000004A534C4153480000000000A582E432BFC48EEDEF852C814EC57F3CD2D415966840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E1574463044022068680CA0919F8908656DB8761CA7FBE1A9AC02216BDEEEB6A0D94A5F744CF5340220249698FA0158C24833068CD373B97B67244BD0F98E141CB694AE4B8185C44F7281141359AA928F4D98FDB3D93E8B690C80D37DED11C3831456FE5CE2D298C9493022FB43596A1B23AE3E3728F9EA7D0C74657374207061796D656E74E1F1',
+  tx_json: {
+    Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+    Amount: {
+      currency: 'JSLASH',
+      issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
+      value: '1'
+    },
+    Destination: 'j3vyFAMQW2Ls48eoFCTsMXFq2KNWVUskSx',
+    Fee: '10000',
+    Flags: 0,
+    Memos: [ [Object] ],
+    Sequence: 4,
+    SigningPubKey: '029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15',
+    TransactionType: 'Payment',
+    TxnSignature: '3044022068680CA0919F8908656DB8761CA7FBE1A9AC02216BDEEEB6A0D94A5F744CF5340220249698FA0158C24833068CD373B97B67244BD0F98E141CB694AE4B8185C44F72',
+    hash: '84CCE378A2882D417AC311CA027FC1EAD21E5486B7C7E6FBFE71187FF28E0F65'
+  }
+}
 ```
 #### 返回结果说明
 |参数|类型|说明|
 |----|----|---:|
-|success|Boolean|请求结果|
 |engine_result|String|请求结果|
 |engine_result_code|Array|请求结果编码|
 |engine_result_message|String|请求结果message信息|
 |tx_blob|String|16进制签名后的交易|
 |tx_json|Object|交易内容|
 |&nbsp;&nbsp;&nbsp;Account|String|账号地址|
-|&nbsp;&nbsp;&nbsp;Amount|String|交易金额|
+|&nbsp;&nbsp;&nbsp;Amount|Object|交易金额|
 |&nbsp;&nbsp;&nbsp;Destination|String|对家|
 |&nbsp;&nbsp;&nbsp;Fee|String|交易费|
 |&nbsp;&nbsp;&nbsp;Flags|Integer|交易标记|
@@ -976,11 +874,11 @@ remote.buildPaymentTx({
 ```javascript
 var japi = require('swtc-api');
 var Remote = japi.Remote;
-var remote = new Remote({server: 'https://tapi.jingtum.com', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'https://swtcproxy.swtclib.ca:5080'});
 let options = {
     account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
-    target: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
-    limit: remote.makeAmount(1, 'CNY'),
+    target: 'j3vyFAMQW2Ls48eoFCTsMXFq2KNWVUskSx',
+    limit: remote.makeAmount(1, 'JSLASH'),
     type:'authorize'
 };
 let tx = remote.buildRelationTx(options);
@@ -988,38 +886,34 @@ tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C', '授权').then(console.log).ca
 ```
 #### 返回结果
 ```javascript
-> { success: true,
-  status_code: '0',
+> {
   engine_result: 'tesSUCCESS',
   engine_result_code: 0,
-  engine_result_message:
-   'The transaction was applied. Only final in a validated ledger.',
-  tx_blob:
-   '120015220000000024000003D120230000000163D4838D7EA4C68000000000000000000000000000434E5900000000007478E561645059399B334448F7544F2EF308ED326840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E1574463044022046585A2EA1D1E21D1DF797D5614FC4CA2BE549C2235B43BE75C896DCFB6CE65902203230FFE3A4B17B29E9EFE29F70CF8E842F928D8F322FF580BBD8A93DFFEEDA5281141359AA928F4D98FDB3D93E8B690C80D37DED11C38714054FADDC8595E2950FA43F673F65C2009F58C7F1F9EA7D06E68E88E69D83E1F1',
-  tx_json:
-   { Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
-     Fee: '10000',
-     Flags: 0,
-     LimitAmount:
-      { currency: 'CNY',
-        issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS',
-        value: '1' },
-     Memos: [ [Object] ],
-     RelationType: 1,
-     Sequence: 977,
-     SigningPubKey:
-      '029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15',
-     Target: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
-     TransactionType: 'RelationSet',
-     TxnSignature:
-      '3044022046585A2EA1D1E21D1DF797D5614FC4CA2BE549C2235B43BE75C896DCFB6CE65902203230FFE3A4B17B29E9EFE29F70CF8E842F928D8F322FF580BBD8A93DFFEEDA52',
-     hash:
-      '17B58B5BA0109327ABA5C571C7370E7E9EA3A714D1F3F9EB959D51702F3B19A1' } }
+  engine_result_message: 'The transaction was applied. Only final in a validated ledger.',
+  tx_blob: '1200152200000000240000000620230000000163D4838D7EA4C680000000000000000000004A534C4153480000000000A582E432BFC48EEDEF852C814EC57F3CD2D415966840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E157446304402204C540968F04F958AF4FAE64EEB54CACB4BAFFFD599EBEE11BED02CB5E94A0BEE022005DA39B36B03AE999C91A36121BC5EBAFD0B675739A39F254D2E1FC08AC6175281141359AA928F4D98FDB3D93E8B690C80D37DED11C3871456FE5CE2D298C9493022FB43596A1B23AE3E3728F9EA7D06E68E88E69D83E1F1',
+  tx_json: {
+    Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+    Fee: '10000',
+    Flags: 0,
+    LimitAmount: {
+      currency: 'JSLASH',
+      issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
+      value: '1'
+    },
+    Memos: [ [Object] ],
+    RelationType: 1,
+    Sequence: 6,
+    SigningPubKey: '029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15',
+    Target: 'j3vyFAMQW2Ls48eoFCTsMXFq2KNWVUskSx',
+    TransactionType: 'RelationSet',
+    TxnSignature: '304402204C540968F04F958AF4FAE64EEB54CACB4BAFFFD599EBEE11BED02CB5E94A0BEE022005DA39B36B03AE999C91A36121BC5EBAFD0B675739A39F254D2E1FC08AC61752',
+    hash: 'D3AB416FC4C74C50FC2268C552E4B05EE1516906F92EBD9F98E085CD21619CCE'
+  }
+}
 ```
 #### 返回结果说明
 |参数|类型|说明|
 |----|----|---:|
-|success|Boolean|请求结果|
 |engine_result|String|请求结果|
 |engine_result_code|Array|请求结果编码|
 |engine_result_message|String|请求结果message信息|
@@ -1063,7 +957,7 @@ tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C', '授权').then(console.log).ca
 ```javascript
 var japi = require('swtc-api')
 var Remote = japi.Remote;
-var remote = new Remote({server: 'https://tapi.jingtum.com', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'https://swtcproxy.swtclib.ca:5080'});
 let options = {
     account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
     type:'property'
@@ -1073,26 +967,22 @@ tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C').then(console.log).catch(consol
 ```
 #### 返回结果
 ```javascript
-> { success: true,
-  status_code: '0',
+> {
   engine_result: 'tesSUCCESS',
   engine_result_code: 0,
-  engine_result_message:
-   'The transaction was applied. Only final in a validated ledger.',
-  tx_blob:
-   '120003220000000024000003D26840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E1574473045022100C5D9C036DB7C6935BF0262C4DB02A10EADCDD9951E6F65B0F8C6F4F6990C3AA80220428AE8BFEB2C460EFDA37955ADD1DF8D19F80CC2783CB9DA11BAB0FE3A6E7E8181141359AA928F4D98FDB3D93E8B690C80D37DED11C3',
-  tx_json:
-   { Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
-     Fee: '10000',
-     Flags: 0,
-     Sequence: 978,
-     SigningPubKey:
-      '029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15',
-     TransactionType: 'AccountSet',
-     TxnSignature:
-      '3045022100C5D9C036DB7C6935BF0262C4DB02A10EADCDD9951E6F65B0F8C6F4F6990C3AA80220428AE8BFEB2C460EFDA37955ADD1DF8D19F80CC2783CB9DA11BAB0FE3A6E7E81',
-     hash:
-      'AE6395C75582077ACDE786FA2001360D9843BBF972163B7C7CDCB0BD8FB472FE' } }
+  engine_result_message: 'The transaction was applied. Only final in a validated ledger.',
+  tx_blob: '120003220000000024000000076840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15744630440220524FB0AD378CEB7BEA8BCC99A8011B0D9A57DFDFC54252C8A2961C850E4B30EA022028F3A405AD690394A4BC28A7EBC0A81726460515A3450989BCCAE154C76B223581141359AA928F4D98FDB3D93E8B690C80D37DED11C3',
+  tx_json: {
+    Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+    Fee: '10000',
+    Flags: 0,
+    Sequence: 7,
+    SigningPubKey: '029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15',
+    TransactionType: 'AccountSet',
+    TxnSignature: '30440220524FB0AD378CEB7BEA8BCC99A8011B0D9A57DFDFC54252C8A2961C850E4B30EA022028F3A405AD690394A4BC28A7EBC0A81726460515A3450989BCCAE154C76B2235',
+    hash: 'C56D6AAC50DD268CF392B27ABB4A9FDBD29EE3A18B9FE21A42BC0674758EB373'
+  }
+}
 ```
 ### <a name="offerCreate"></a> 4.18 挂单
 #### 首先通过buildOfferCreateTx方法返回一个Transaction对象，然后通过通过.submitPromise()方法提交挂单。
@@ -1125,48 +1015,45 @@ tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C').then(console.log).catch(consol
 ```javascript
 var japi = require('swtc-api');
 var Remote = japi.Remote;
-var remote = new Remote({server: 'https://tapi.jingtum.com', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'https://swtcproxy.swtclib.ca:5080'});
 let options = {
     type: 'Sell',
     account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
-    taker_pays: remote.makeAmount(0.01, 'CNY'),
-    taker_gets: remote.makeAmount(1)
+    taker_pays: remote.makeAmount(1),
+    taker_gets: remote.makeAmount(1, 'JSLASH')
 };
 let tx = remote.buildOfferCreateTx(options);
 tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C').then(console.log).catch(console.error)
 ```
 ##### 返回结果:
 ```javascript
-> { success: true,
-  status_code: '0',
+> {
   engine_result: 'tesSUCCESS',
   engine_result_code: 0,
-  engine_result_message:
-   'The transaction was applied. Only final in a validated ledger.',
-  tx_blob:
-   '120007220008000024000003D364D4038D7EA4C68000000000000000000000000000434E5900000000007478E561645059399B334448F7544F2EF308ED326540000000000F42406840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E1574463044022038C287B02FB21AC10ADFCBC2EE5EDCFADE12F840C28AFA4E793F273FDC8141A90220058864F25986C8B0595A5FA327A919B72937971061FB2113A7B1313AB9E3FAEE81141359AA928F4D98FDB3D93E8B690C80D37DED11C3',
-  tx_json:
-   { Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
-     Fee: '10000',
-     Flags: 524288,
-     Sequence: 979,
-     SigningPubKey:
-      '029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15',
-     TakerGets: '1000000',
-     TakerPays:
-      { currency: 'CNY',
-        issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS',
-        value: '0.01' },
-     TransactionType: 'OfferCreate',
-     TxnSignature:
-      '3044022038C287B02FB21AC10ADFCBC2EE5EDCFADE12F840C28AFA4E793F273FDC8141A90220058864F25986C8B0595A5FA327A919B72937971061FB2113A7B1313AB9E3FAEE',
-     hash:
-      '796D47FBD3001FF7B196E752A123ED79505E234F9FE511C44B2E592CDABE8B31' } }
+  engine_result_message: 'The transaction was applied. Only final in a validated ledger.',
+  tx_blob: '120007220008000024000000056440000000000F424065D4838D7EA4C680000000000000000000004A534C4153480000000000A582E432BFC48EEDEF852C814EC57F3CD2D415966840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E1574463044022047DAE10BD5BFD70601A11EF0F9873DF1145C606F676F8C09D2DFC444A5CE95220220777D3D0629BD48532A70BF46FA742B8DDE5B6DABE4F6F0D9E720E13DBB95305581141359AA928F4D98FDB3D93E8B690C80D37DED11C3F9EA7D116D656D6F206F6666657220637265617465E1F1',
+  tx_json: {
+    Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+    Fee: '10000',
+    Flags: 524288,
+    Memos: [ [Object] ],
+    Sequence: 5,
+    SigningPubKey: '029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15',
+    TakerGets: {
+      currency: 'JSLASH',
+      issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
+      value: '1'
+    },
+    TakerPays: '1000000',
+    TransactionType: 'OfferCreate',
+    TxnSignature: '3044022047DAE10BD5BFD70601A11EF0F9873DF1145C606F676F8C09D2DFC444A5CE95220220777D3D0629BD48532A70BF46FA742B8DDE5B6DABE4F6F0D9E720E13DBB953055',
+    hash: '8D6DC86FF64DFE83AFB9B5B0E43B7BCA05B9FAB88C5F73D540814FE1DE195CAA'
+  }
+}
 ```
 ##### 返回结果说明:
 |参数|类型|说明|
 |----|----|---:|
-|success|Boolean|请求结果|
 |engine_result|String|请求结果|
 |engine_result_code|Array|请求结果编码|
 |engine_result_message|String|请求结果message信息|
@@ -1177,11 +1064,11 @@ tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C').then(console.log).catch(consol
 |&nbsp;&nbsp;&nbsp;Flags|Integer|交易标记|
 |&nbsp;&nbsp;&nbsp;Sequence|Integer|单子序列号|
 |&nbsp;&nbsp;&nbsp;SigningPubKey|String|签名公钥|
-|&nbsp;&nbsp;&nbsp;TakerGets|Object|对家得到的|
+|&nbsp;&nbsp;&nbsp;TakerGets|String/Object|对家得到的|
 |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;currency|String|货币|
 |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;issuer|String|货币发行方|
 |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;value|String|额度|
-|&nbsp;&nbsp;&nbsp;TakerPays|String|对家支付的;|
+|&nbsp;&nbsp;&nbsp;TakerPays|String/Object|对家支付的;|
 |&nbsp;&nbsp;&nbsp;Timestamp|Integer|时间戳|
 |&nbsp;&nbsp;&nbsp;TransactionType|String|交易类型:TrustSet信任;RelationDel解冻;RelationSet 授权/冻结|
 |&nbsp;&nbsp;&nbsp;TxnSignature|String|交易签名|
@@ -1204,43 +1091,39 @@ tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C').then(console.log).catch(consol
 |secret|String|井通钱包私钥|
 |memo|String|备注信息|
 ##### 返回: Promise
-#### 挂单完整例子
+#### 取消挂单完整例子
 ```javascript
 var japi = require('swtc-api');
 var Remote = japi.Remote;
-var remote = new Remote({server: 'https://tapi.jingtum.com', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
-let options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', sequence: 979};
+var remote = new Remote({server: 'https://swtcproxy.swtclib.ca:5080'});
+let options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', sequence: 5};
 let tx = remote.buildOfferCancelTx(options);
 tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C').then(console.log).catch(console.error)
 ```
 #### 返回结果
 ```javascript
-> { success: true,
-  status_code: '0',
+> {
   engine_result: 'tesSUCCESS',
   engine_result_code: 0,
-  engine_result_message:
-   'The transaction was applied. Only final in a validated ledger.',
-  tx_blob:
-   '120008220000000024000003D42019000003D36840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E1574473045022100BA4DBA1D47DEE5C0A539479D1B24D966368187311D3B0D7FC2B6A32F135A422102206E16D95F4051412C87A04800BCF2CEE813BB82A62B5D9B0CAC933068ADF9B59C81141359AA928F4D98FDB3D93E8B690C80D37DED11C3',
-  tx_json:
-   { Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
-     Fee: '10000',
-     Flags: 0,
-     OfferSequence: 979,
-     Sequence: 980,
-     SigningPubKey:
-      '029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15',
-     TransactionType: 'OfferCancel',
-     TxnSignature:
-      '3045022100BA4DBA1D47DEE5C0A539479D1B24D966368187311D3B0D7FC2B6A32F135A422102206E16D95F4051412C87A04800BCF2CEE813BB82A62B5D9B0CAC933068ADF9B59C',
-     hash:
-      'B454B0282F30E9B18F550C18878B248DCD4ADCE417C8C61D0457F8EB3BCB4869' } }
+  engine_result_message: 'The transaction was applied. Only final in a validated ledger.',
+  tx_blob: '120008220000000024000000082019000000056840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E1574473045022100DC02575A15060C96A5846BE0778082F677C63E231ACEE8C358C1F01C4D558871022049EAAD87A2C12FD4E904C186A96CB2DC7C16082D371A501235E60C4516D6282D81141359AA928F4D98FDB3D93E8B690C80D37DED11C3',
+  tx_json: {
+    Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+    Fee: '10000',
+    Flags: 0,
+    OfferSequence: 5,
+    Sequence: 8,
+    SigningPubKey: '029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15',
+    TransactionType: 'OfferCancel',
+    TxnSignature: '3045022100DC02575A15060C96A5846BE0778082F677C63E231ACEE8C358C1F01C4D558871022049EAAD87A2C12FD4E904C186A96CB2DC7C16082D371A501235E60C4516D6282D',
+    hash: 'E7A23787101254365370CE4A077F007160DADCD920D4AA385C44EBBA3147F5CA'
+  }
+}
+
 ```
 #### 返回结果说明
 |参数|类型|说明|
 |----|----|---:|
-|success|Boolean|请求结果|
 |engine_result|String|请求结果|
 |engine_result_code|Array|请求结果编码|
 |engine_result_message|String|请求结果message信息|
@@ -1256,7 +1139,7 @@ tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C').then(console.log).catch(consol
 |&nbsp;&nbsp;&nbsp;TransactionType|String|交易类型:OfferCancel取消订单|
 |&nbsp;&nbsp;&nbsp;TxnSignature|String|交易签名|
 |&nbsp;&nbsp;&nbsp;hash|String|交易hash|
-### <a name="contractDeploy"></a>4.20 部署合约 lua
+### <a name="contractDeploy"></a>4.20 部署合约 lua - 尚未支持
 #### 首先通过buildContractDeployTx (或者deployContractTx)方法返回一个Transaction对象，然后通过submitPromise()方法部署合约。
 #### <a name="contractDeployBuild"></a>4.20.1 创建部署合约对象
 ##### 方法:remote.buildContractDeployTx({});
@@ -1283,7 +1166,7 @@ tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C').then(console.log).catch(consol
 var japi = require('swtc-api');
 var Remote = japi.Remote;
 var utils = Remote.utils;
-var remote = new Remote({server: 'https://tapi.jingtum.com', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'https://swtcproxy.swtclib.ca:5080'});
 var options = {
     account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
     amount: 10,
@@ -1342,7 +1225,7 @@ tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C').then(console.log).catch(consol
 |&nbsp;&nbsp;&nbsp;TransactionType|String|交易类型:ConfigContract部署合约|
 |&nbsp;&nbsp;&nbsp;TxnSignature|String|交易签名|
 |&nbsp;&nbsp;&nbsp;hash|String|交易hash|
-### <a name="contractCall"></a> 4.21 执行合约 lua
+### <a name="contractCall"></a> 4.21 执行合约 lua - 尚未支持
 #### 首先通过buildContractCallTx (或者callContractTx)方法返回一个Transaction对象，然后通过通过submitPromise()方法执行合约
 #### <a name="contractCallBuild"></a> 4.21.1 创建执行合约对象
 ##### 方法:remote.buildContractCallTx({});
@@ -1368,7 +1251,7 @@ tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C').then(console.log).catch(consol
 ```javascript
 var japi = require('swtc-api');
 var Remote = japi.Remote;
-var remote = new Remote({server: 'https://tapi.jingtum.com', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'https://swtcproxy.swtclib.ca:5080'});
 var options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', destination: 'jNdpxLQbmMMf4ZVXjn3nb98xPYQ7EpEpTN',foo: 'foo',params: ['jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz']};
 var tx = remote.buildContractCallTx(options);
 tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C').then(console.log).catch(console.error)
@@ -1444,8 +1327,50 @@ tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C').then(console.log).catch(consol
 |参数|类型|说明|
 |----|----|---:|
 |secret|String|井通钱包私钥|
-|memo|String|留言|
-### <a name="initContract"></a>4.23 部署合约 Solidity版
+#### 设置挂单佣金完整例子
+```javascript
+var japi = require('swtc-api');
+var Remote = japi.Remote;
+var remote = new Remote({server: 'https://swtcproxy.swtclib.ca:5080'});
+let options = {
+                account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+                mol: 1,
+                den: 1000,
+                feeAccount: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+                amount: remote.makeAmount(3, "JSLASH")
+              }
+let tx = remote.buildBrokerageTx(options)
+tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C').then(console.log).catch(console.error)
+```
+#### 返回结果
+```javascript
+> {
+  engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message: 'The transaction was applied. Only final in a validated ledger.',
+  tx_blob: '1200CD220000000024000000093900000000000000013A00000000000003E861D48AA87BEE5380000000000000000000004A534C4153480000000000A582E432BFC48EEDEF852C814EC57F3CD2D415966840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E1574473045022100D3D455E933CEA48F6976424E6C42CDC1460108A2E229DBC97463B916C0AF432B0220410B6462ED03E0B4851D2EEE7A8E84A667D264400802E88709092C821A9CE4DE81141359AA928F4D98FDB3D93E8B690C80D37DED11C389141359AA928F4D98FDB3D93E8B690C80D37DED11C3',
+  tx_json: {
+    Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+    Amount: {
+      currency: 'JSLASH',
+      issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
+      value: '3'
+    },
+    Fee: '10000',
+    FeeAccountID: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+    Flags: 0,
+    OfferFeeRateDen: '00000000000003E8',
+    OfferFeeRateNum: '0000000000000001',
+    Sequence: 9,
+    SigningPubKey: '029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15',
+    TransactionType: 'Brokerage',
+    TxnSignature: '3045022100D3D455E933CEA48F6976424E6C42CDC1460108A2E229DBC97463B916C0AF432B0220410B6462ED03E0B4851D2EEE7A8E84A667D264400802E88709092C821A9CE4DE',
+    hash: '700833A35F8F126C75BFDAF597B268EE5FC107070031030D7E6C748441A322AB'
+  }
+}
+
+```
+### <a name="initContract"></a>4.23 部署合约 Solidity版 - 尚未支持
 #### 首先通过buildContractInitTx (或者initContract)方法返回一个Transaction对象，然后通过submitPromise()方法完成合约的部署
 #### 4.23.1 创建合约部署对象
 ##### 方法:remote.initContract({});
@@ -1517,7 +1442,7 @@ tx.submitPromise(v.secret).then(console.log).catch(console.error)
      hash:
       '8EADEC523DC59A3687B021E27244103B0C9CE8487B93E27F76E0479E4A40F03D' } }
 ```
-### <a name="invokeContract"></a>4.24 调用合约(Solidity版)
+### <a name="invokeContract"></a>4.24 调用合约(Solidity版) - 尚未支持
 #### 首先通过buildContractInvokeTx (或者invokeContract)方法返回一个Transaction对象，然后通过submitPromise()方法完成合约的调用。 
 #### 4.24.1 创建合约调用对象
 ##### 方法:remote.buildContractInvokeTx({})
@@ -1595,7 +1520,7 @@ tx.submitPromise(v.secret).then(console.log).catch(console.error)
 ```javascript
 var japi = require('swtc-api');
 var Remote = japi.Remote;
-var remote = new Remote({server: 'https://tapi.jingtum.com', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'https://swtcproxy.swtclib.ca:5080'});
 remote.postBlob({blob: '12001F220000000024000004172026000000016140000000000000006840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E1574473045022100FD7DF650C0C753C0589159C383A809C5F2DB7AA53705E1880EF882DFAB577EB702202A91F83336E81EA709C937E1C3DD531BBF52D9A39A386A5AEB49571F7D07F0B781141359AA928F4D98FDB3D93E8B690C80D37DED11C38314C9A6E277B39563107F89277EAF319F5952F5F5C0FEEF70138861393035396362623030303030303030303030303030303063396136653237376233393536333130376638393237376561663331396635393532663566356330363531336564613130303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303035041000E1F1'}).then(console.log).catch(console.error)
 ```
 #### 返回结果
@@ -1917,3 +1842,1056 @@ contract TokenTest {
 }
 ```
 ## 10. erc721源码
+
+## <a name="multiSign"></a> 11. 多重签名
+
+### <a name="getAccountSignerList"></a>11.1 查询帐号的签名列表
+#### 通过getAccountSignerList方法
+##### 方法:remote.getAccountSignerList(address)
+##### 参数
+|参数|类型|说明|
+|----|----|---:|
+|account|String|源账号|
+##### 返回: Promise
+#### 查询帐号的签名列表完整例子
+```javascript
+const jlib = require("swtc-api");
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5082'})
+const a = { secret: 'snaK5evc1SddiDca1BpZbg1UBft42', address: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n' }
+const log_json = object => console.log(JSON.stringify(object, '', 2))
+const sleep = time => new Promise(res => setTimeout(() => res(), time || 1))
+
+sleep()
+    .then( async () => {
+		let result = await remote.getAccountSignerList(a.address)
+		console.log(result)
+		log_json(result.account_objects)
+    })
+    .catch(console.error)
+```
+#### 输出
+```javascript
+{
+  account: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n',
+  account_objects: [
+    {
+      Flags: 0,
+      LedgerEntryType: 'SignerList',
+      OwnerNode: '0000000000000000',
+      PreviousTxnID: 'F5C29AA790682CF238F397610F98910D0947334EF63BA565B30BAE8029AE634E',
+      PreviousTxnLgrSeq: 549864,
+      SignerEntries: [Array],
+      SignerQuorum: 5,
+      index: 'D1A5CF852001ABB5FC6E7C7ECF527737F11EA3E2B6E4077B94EB7679CB371F50'
+    }
+  ],
+  ledger_current_index: 990624,
+  validated: false
+}
+[
+  {
+    "Flags": 0,
+    "LedgerEntryType": "SignerList",
+    "OwnerNode": "0000000000000000",
+    "PreviousTxnID": "F5C29AA790682CF238F397610F98910D0947334EF63BA565B30BAE8029AE634E",
+    "PreviousTxnLgrSeq": 549864,
+    "SignerEntries": [
+      {
+        "SignerEntry": {
+          "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+          "SignerWeight": 3
+        }
+      },
+      {
+        "SignerEntry": {
+          "Account": "jUv833RRTAZhbUyRzSsAutM9GwbprregiE",
+          "SignerWeight": 3
+        }
+      }
+    ],
+    "SignerQuorum": 5,
+    "index": "D1A5CF852001ABB5FC6E7C7ECF527737F11EA3E2B6E4077B94EB7679CB371F50"
+  }
+]
+```
+#### 返回结果说明
+|参数|类型|说明|
+|----|----|---:|
+|account|String|设置签名列表的源账号|
+|account_objects|Array|签名列表相关信息|
+|&nbsp;&nbsp;----|Object|签名列表相关信息|
+|&nbsp;&nbsp;&nbsp;&nbsp;Flags|Integer|交易标记|
+|&nbsp;&nbsp;&nbsp;&nbsp;LedgerEntryType|String|账本数据结构类型，SignerList表示签名列表类型|
+|&nbsp;&nbsp;&nbsp;&nbsp;OwnerNode|String|列表索引标记|
+|&nbsp;&nbsp;&nbsp;&nbsp;PreviousTxnID|String|上一笔交易hash|
+|&nbsp;&nbsp;&nbsp;&nbsp;PreviousTxnLgrSeq|Integer|上一笔交易所在账本号|
+|&nbsp;&nbsp;&nbsp;&nbsp;SignerEntries|Array|签名列表|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SignerEntry|Object|单个签名对象|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Account|String|签名者账号地址|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SignerWeight|Integer|该签名者在签名列表中的权重|
+|&nbsp;&nbsp;&nbsp;&nbsp;SignerQuorum|Integer|签名列表阈值|
+|&nbsp;&nbsp;&nbsp;&nbsp;index|String|签名列表id|
+|ledger_current_index|String|当前账本号|
+|validated|Boolean|当前账本中，交易是否通过验证|
+
+
+### <a name="buildSignerListTx"></a>11.2 设置帐号的签名列表
+#### 首先通过buildSignerListTx方法返回一个Transaction对象，通过submit方法提交列表信息
+#### 11.2.1 创建签名列表对象
+##### 方法:remote.buildSignerListTx({})
+##### 参数
+|参数|类型|说明|
+|----|----|---:|
+|account|String|交易账号|
+|threshold|Integer|生效阈值|
+|lists|Array|签名列表|
+|&nbsp;&nbsp;---|Object|列表对象|
+|&nbsp;&nbsp;&nbsp;&nbsp;account|String|帐号|
+|&nbsp;&nbsp;&nbsp;&nbsp;weight|String|权重|
+###### 注：不可将交易源账号设为签名列表名单内
+##### 返回:Transaction对象
+#### 11.2.2 设置签名列表 
+##### 方法:tx.submitPromise(secret)
+##### 参数: 密钥
+|参数|类型|说明|
+|----|----|---:|
+|secret|String|钱包私钥|
+##### 返回: Promise
+#### 设置帐号的签名列表完整例子
+```javascript
+const jlib = require("swtc-api");
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5082'})
+const a = { secret: 'snaK5evc1SddiDca1BpZbg1UBft42', address: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n' }
+const a1 = { secret: 'ssmhW3gLLg8wLPzko3dx1LbuDcwCW', address: 'jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq' }
+const a2 = { secret: 'ssXLTUGS6ZFRpGRs5p94BBu6mV1vv', address: 'jUv833RRTAZhbUyRzSsAutM9GwbprregiE' }
+const log_json = object => console.log(JSON.stringify(object, '', 2))
+const sleep = time => new Promise(res => setTimeout(() => res(), time || 1))
+
+//设置签名列表
+const tx = remote.buildSignerListTx({
+    account: a.address,
+    threshold: 7,
+    lists: [
+        { account: a1.address, weight: 4 },
+        { account: a2.address, weight: 5 },
+    ]
+})
+
+sleep()
+    .then( async () => {
+		await tx._setSequencePromise()
+		log_json(tx.tx_json)
+		console.log(`需要设置足够的燃料支持多签交易tx.setFee()`)
+		tx.setFee(30000)  // 燃料
+		log_json(tx.tx_json)
+		let result = await tx.submitPromise(a.secret)
+		console.log(result)
+		log_json(result.tx_json)
+    })
+    .catch(console.error)
+```
+#### 输出
+```javascript
+{
+  "Flags": 0,
+  "Fee": 10000,
+  "SignerEntries": [
+    {
+      "SignerEntry": {
+        "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+        "SignerWeight": 4
+      }
+    },
+    {
+      "SignerEntry": {
+        "Account": "jUv833RRTAZhbUyRzSsAutM9GwbprregiE",
+        "SignerWeight": 5
+      }
+    }
+  ],
+  "TransactionType": "SignerListSet",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "SignerQuorum": 7,
+  "Sequence": 20
+}
+需要设置足够的燃料支持多签交易tx.setFee()
+{
+  "Flags": 0,
+  "Fee": 30000,
+  "SignerEntries": [
+    {
+      "SignerEntry": {
+        "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+        "SignerWeight": 4
+      }
+    },
+    {
+      "SignerEntry": {
+        "Account": "jUv833RRTAZhbUyRzSsAutM9GwbprregiE",
+        "SignerWeight": 5
+      }
+    }
+  ],
+  "TransactionType": "SignerListSet",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "SignerQuorum": 7,
+  "Sequence": 20
+}
+{
+  engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message: 'The transaction was applied. Only final in a validated ledger.',
+  tx_blob: '1200CF220000000024000000142026000000076840000000000075307321024A02206AEFF63AF72BF6BE116073DE6D75E8D3404462CC73EC0F35207DF272287447304502210094001DBADCADE86B400E2D6DDA1D423F3182D8D2CBB9DB7C8AEDF798759E4E010220783C09F9E17812DC5FF768805A7E85DD5D830EDF0CC266C3C7D28657713C7B6381144EFA5550AA0B6A0C06793161C0D2EDC635469AC8FBEC130004811423A7CE52916DFDE210D371CF8487CFDB790B1DCBE1EC130005811482D518A6A562B198E72BC1B8976F83D996E3CCD5E1F1',
+  tx_json: {
+    Account: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n',
+    Fee: '30000',
+    Flags: 0,
+    Sequence: 20,
+    SignerEntries: [ [Object], [Object] ],
+    SignerQuorum: 7,
+    SigningPubKey: '024A02206AEFF63AF72BF6BE116073DE6D75E8D3404462CC73EC0F35207DF27228',
+    TransactionType: 'SignerListSet',
+    TxnSignature: '304502210094001DBADCADE86B400E2D6DDA1D423F3182D8D2CBB9DB7C8AEDF798759E4E010220783C09F9E17812DC5FF768805A7E85DD5D830EDF0CC266C3C7D28657713C7B63',
+    hash: '5F22F243B6235267C23CFC1C625E60C71355774F68638971638D1E3FC11347F8'
+  }
+}
+{
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "Fee": "30000",
+  "Flags": 0,
+  "Sequence": 20,
+  "SignerEntries": [
+    {
+      "SignerEntry": {
+        "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+        "SignerWeight": 4
+      }
+    },
+    {
+      "SignerEntry": {
+        "Account": "jUv833RRTAZhbUyRzSsAutM9GwbprregiE",
+        "SignerWeight": 5
+      }
+    }
+  ],
+  "SignerQuorum": 7,
+  "SigningPubKey": "024A02206AEFF63AF72BF6BE116073DE6D75E8D3404462CC73EC0F35207DF27228",
+  "TransactionType": "SignerListSet",
+  "TxnSignature": "304502210094001DBADCADE86B400E2D6DDA1D423F3182D8D2CBB9DB7C8AEDF798759E4E010220783C09F9E17812DC5FF768805A7E85DD5D830EDF0CC266C3C7D28657713C7B63",
+  "hash": "5F22F243B6235267C23CFC1C625E60C71355774F68638971638D1E3FC11347F8"
+}
+```
+#### 返回结果说明
+|参数|类型|说明|
+|----|----|---:|
+|engine_result|String|请求结果|
+|engine_result_code|Array|请求结果编码|
+|engine_result_message|String|请求结果message信息|
+|tx_blob|String|16进制签名后的交易|
+|tx_json|Object|交易内容|
+|&nbsp;&nbsp;&nbsp;Account|String|交易源账号地址|
+|&nbsp;&nbsp;&nbsp;Fee|String|交易费|
+|&nbsp;&nbsp;&nbsp;Flags|Integer|交易标记|
+|&nbsp;&nbsp;&nbsp;Sequence|Integer|单子序列号|
+|&nbsp;&nbsp;&nbsp;SignerEntries|Array|签名列表条目；销毁列表时，没有该字段|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SignerEntry|Object|单个签名条目|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Account|String|签名账号的地址|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SignerWeight|String|该签名在多重签名交易中的权重|
+|&nbsp;&nbsp;&nbsp;SignerQuorum|Integer|多重签名交易通过的阈值，应大于等于零，零表示销毁签名列表|
+|&nbsp;&nbsp;&nbsp;SigningPubKey|String|签名公钥|
+|&nbsp;&nbsp;&nbsp;TransactionType|String|交易类型，设置签名列表类为SignerListSet|
+|&nbsp;&nbsp;&nbsp;TxnSignature|String|交易签名|
+|&nbsp;&nbsp;&nbsp;hash|String|交易hash|
+
+### <a name="deactivateMasterKey"></a>11.3 废除帐号的主密钥
+#### 本功能为禁止某账号做交易而设定，且只有该账号设置了签名列表才可以废除masterkey成功。首先通过buildAccountSetTx方法返回一个Transaction对象，最后通过submitPromise方法提交到底层
+#### 11.3.1 创建废除密钥交易
+##### 方法:remote.buildAccountSetTx({})
+##### 参数
+|参数|类型|说明|
+|----|----|---:|
+|account|String|被废除或激活masterkey的账号|
+|type|String|类型，这里固定为property|
+|set_flag|Integer|4表示废除|
+##### 返回:Transaction对象
+#### 11.3.2 废除
+##### 方法:tx.submitPromise(secret);
+##### 参数: 密钥
+|参数|类型|说明|
+|----|----|---:|
+|secret|String|钱包私钥|
+##### 返回: Promise
+#### 废除主密钥完整例子
+```javascript
+const jlib = require("swtc-api");
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5082'})
+const a = { secret: 'snaK5evc1SddiDca1BpZbg1UBft42', address: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n' }
+const log_json = object => console.log(JSON.stringify(object, '', 2))
+const sleep = time => new Promise(res => setTimeout(() => res(), time || 1))
+
+//设置废除主密钥
+const tx = remote.buildAccountSetTx({
+    account: a.address,
+    type: 'property',
+    set_flag: 4
+})
+
+sleep()
+    .then( async () => {
+		await tx._setSequencePromise()
+		log_json(tx.tx_json)
+		let result = await tx.submitPromise(a.secret)
+		console.log(result)
+    })
+    .catch(console.error)
+```
+#### 输出
+```javascript
+{
+  "Flags": 0,
+  "Fee": 10000,
+  "TransactionType": "AccountSet",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "SetFlag": 4,
+  "Sequence": 21
+}
+{
+  engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message: 'The transaction was applied. Only final in a validated ledger.',
+  tx_blob: '120003220000000024000000152021000000046840000000000027107321024A02206AEFF63AF72BF6BE116073DE6D75E8D3404462CC73EC0F35207DF27228744630440220065CCCA45E57AB9D4F5821C1D52610FD4A08ADB91A657D656AD04F89A156053002205F6EF6C6E19A017DB7EADE3F4ED2B3F5AA873BB662CD73934E925BF655B4E8DC81144EFA5550AA0B6A0C06793161C0D2EDC635469AC8',
+  tx_json: {
+    Account: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n',
+    Fee: '10000',
+    Flags: 0,
+    Sequence: 21,
+    SetFlag: 4,
+    SigningPubKey: '024A02206AEFF63AF72BF6BE116073DE6D75E8D3404462CC73EC0F35207DF27228',
+    TransactionType: 'AccountSet',
+    TxnSignature: '30440220065CCCA45E57AB9D4F5821C1D52610FD4A08ADB91A657D656AD04F89A156053002205F6EF6C6E19A017DB7EADE3F4ED2B3F5AA873BB662CD73934E925BF655B4E8DC',
+    hash: '7211EA365F32F49B7CB0468A6254FD1ADD58934A7473062C4E15D43E25431FD4'
+  }
+}
+```
+#### 返回结果说明
+|参数|类型|说明|
+|----|----|---:|
+|engine_result|String|请求结果|
+|engine_result_code|Array|请求结果编码|
+|engine_result_message|String|请求结果message信息|
+|tx_blob|String|16进制签名后的交易|
+|tx_json|Object|交易内容|
+|&nbsp;&nbsp;&nbsp;Account|String|交易源账号地址|
+|&nbsp;&nbsp;&nbsp;Fee|String|交易费|
+|&nbsp;&nbsp;&nbsp;Flags|Integer|交易标记|
+|&nbsp;&nbsp;&nbsp;Sequence|Integer|单子序列号|
+|&nbsp;&nbsp;&nbsp;SetFlag|Integer|账号属性标记|
+|&nbsp;&nbsp;&nbsp;SigningPubKey|String|签名公钥|
+|&nbsp;&nbsp;&nbsp;TransactionType|String|交易类型，账号属性类为AccountSet|
+|&nbsp;&nbsp;&nbsp;TxnSignature|String|交易签名|
+|&nbsp;&nbsp;&nbsp;hash|String|交易hash|
+
+### <a name="activateMasterKey"></a>11.4 激活帐号的主密钥
+#### 激活通过多签列表中的账号去完成激活，如用账号a1和a2激活，详见下面例子
+#### 11.4.1 创建激活密钥交易
+##### 方法:remote.buildAccountSetTx({})
+##### 参数
+|参数|类型|说明|
+|----|----|---:|
+|account|String|被废除或激活masterkey的账号|
+|type|String|类型，这里固定为property|
+|clear_flag|Integer|4表示激活主密钥，用于多签中激活masterkey|
+##### 返回:Transaction对象
+#### 11.4.2 激活 
+##### 方法:tx.submitPromise();
+##### 参数: 无
+##### 返回: Promise
+#### 激活主密钥完整例子
+```javascript
+const jlib = require("swtc-api");
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5082'})
+const a = { secret: 'snaK5evc1SddiDca1BpZbg1UBft42', address: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n' }
+const a1 = { secret: 'ssmhW3gLLg8wLPzko3dx1LbuDcwCW', address: 'jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq' }
+const a2 = { secret: 'ssXLTUGS6ZFRpGRs5p94BBu6mV1vv', address: 'jUv833RRTAZhbUyRzSsAutM9GwbprregiE' }
+const log_json = object => console.log(JSON.stringify(object, '', 2))
+const sleep = time => new Promise(res => setTimeout(() => res(), time || 1))
+
+//设置激活主密钥
+const tx = remote.buildAccountSetTx({
+    account: a.address,
+    type: 'property',
+    clear_flag: 4
+})
+
+sleep()
+    .then( async () => {
+		// 设置sequence
+		await tx._setSequencePromise()
+		log_json(tx.tx_json)
+		console.log(`需要设置足够的燃料支持多签交易tx.setFee()`)
+		tx.setFee(20000)  // 燃料
+		log_json(tx.tx_json)
+        tx.multiSigning(a1)
+        tx.multiSigning(a2)
+		log_json(tx.tx_json)
+        tx.multiSigned()
+		log_json(tx.tx_json)
+		let result = await tx.submitPromise() // multisign submit does not need any secret
+		console.log(result)
+		log_json(result.tx_json)
+    })
+    .catch(console.error)
+```
+#### 输出
+```javascript
+{
+  "Flags": 0,
+  "Fee": 10000,
+  "TransactionType": "AccountSet",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "ClearFlag": 4,
+  "Sequence": 22
+}
+需要设置足够的燃料支持多签交易tx.setFee()
+{
+  "Flags": 0,
+  "Fee": 20000,
+  "TransactionType": "AccountSet",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "ClearFlag": 4,
+  "Sequence": 22
+}
+{
+  "Flags": 0,
+  "Fee": 20000,
+  "TransactionType": "AccountSet",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "ClearFlag": 4,
+  "Sequence": 22,
+  "SigningPubKey": "",
+  "Signers": [
+    {
+      "Signer": {
+        "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+        "SigningPubKey": "028749EB830410A57E89EC765DF551F7006CA19CFEBF4C43EFD87CDDA52976D2FF",
+        "TxnSignature": "30450221008D4B0B6B8EE4E0E027192CD857697754A613DCB17DBEE35E7673867CA3D01930022005C0A4FCFCE258D694679B5A70CA7DDDDAFE7A465DD3DBC41CDC1E909F1C6D1C"
+      }
+    },
+    {
+      "Signer": {
+        "Account": "jUv833RRTAZhbUyRzSsAutM9GwbprregiE",
+        "SigningPubKey": "022EB4FEDEAA5EC1584B673A0B2C4425D0A98A4909EB39C10EC1C40631B0FB9C26",
+        "TxnSignature": "30450221009F2AA42390A237C064D9D2FCF4C29F46356192EB65B6271E5269C9AE68E769F6022007F687CC2E4CBDC40266724748318B9879C74BFED7941DFE83ADE5B93261FEA4"
+      }
+    }
+  ]
+}
+{
+  "Flags": 0,
+  "Fee": 20000,
+  "TransactionType": "AccountSet",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "ClearFlag": 4,
+  "Sequence": 22,
+  "SigningPubKey": "",
+  "Signers": [
+    {
+      "Signer": {
+        "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+        "SigningPubKey": "028749EB830410A57E89EC765DF551F7006CA19CFEBF4C43EFD87CDDA52976D2FF",
+        "TxnSignature": "30450221008D4B0B6B8EE4E0E027192CD857697754A613DCB17DBEE35E7673867CA3D01930022005C0A4FCFCE258D694679B5A70CA7DDDDAFE7A465DD3DBC41CDC1E909F1C6D1C"
+      }
+    },
+    {
+      "Signer": {
+        "Account": "jUv833RRTAZhbUyRzSsAutM9GwbprregiE",
+        "SigningPubKey": "022EB4FEDEAA5EC1584B673A0B2C4425D0A98A4909EB39C10EC1C40631B0FB9C26",
+        "TxnSignature": "30450221009F2AA42390A237C064D9D2FCF4C29F46356192EB65B6271E5269C9AE68E769F6022007F687CC2E4CBDC40266724748318B9879C74BFED7941DFE83ADE5B93261FEA4"
+      }
+    }
+  ]
+}
+true
+{
+  engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message: 'The transaction was applied. Only final in a validated ledger.',
+  tx_blob: '12000322000000002400000016202200000004684000000000004E20730081144EFA5550AA0B6A0C06793161C0D2EDC635469AC8FCED7321028749EB830410A57E89EC765DF551F7006CA19CFEBF4C43EFD87CDDA52976D2FF744730450221008D4B0B6B8EE4E0E027192CD857697754A613DCB17DBEE35E7673867CA3D01930022005C0A4FCFCE258D694679B5A70CA7DDDDAFE7A465DD3DBC41CDC1E909F1C6D1C811423A7CE52916DFDE210D371CF8487CFDB790B1DCBE1ED7321022EB4FEDEAA5EC1584B673A0B2C4425D0A98A4909EB39C10EC1C40631B0FB9C26744730450221009F2AA42390A237C064D9D2FCF4C29F46356192EB65B6271E5269C9AE68E769F6022007F687CC2E4CBDC40266724748318B9879C74BFED7941DFE83ADE5B93261FEA4811482D518A6A562B198E72BC1B8976F83D996E3CCD5E1F1',
+  tx_json: {
+    Account: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n',
+    ClearFlag: 4,
+    Fee: '20000',
+    Flags: 0,
+    Sequence: 22,
+    Signers: [ [Object], [Object] ],
+    SigningPubKey: '',
+    TransactionType: 'AccountSet',
+    hash: '17254C4615EFF245205DC9E064A21CDE54177CD936E27C1E84ACDD94B6E84D46'
+  }
+}
+{
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "ClearFlag": 4,
+  "Fee": "20000",
+  "Flags": 0,
+  "Sequence": 22,
+  "Signers": [
+    {
+      "Signer": {
+        "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+        "SigningPubKey": "028749EB830410A57E89EC765DF551F7006CA19CFEBF4C43EFD87CDDA52976D2FF",
+        "TxnSignature": "30450221008D4B0B6B8EE4E0E027192CD857697754A613DCB17DBEE35E7673867CA3D01930022005C0A4FCFCE258D694679B5A70CA7DDDDAFE7A465DD3DBC41CDC1E909F1C6D1C"
+      }
+    },
+    {
+      "Signer": {
+        "Account": "jUv833RRTAZhbUyRzSsAutM9GwbprregiE",
+        "SigningPubKey": "022EB4FEDEAA5EC1584B673A0B2C4425D0A98A4909EB39C10EC1C40631B0FB9C26",
+        "TxnSignature": "30450221009F2AA42390A237C064D9D2FCF4C29F46356192EB65B6271E5269C9AE68E769F6022007F687CC2E4CBDC40266724748318B9879C74BFED7941DFE83ADE5B93261FEA4"
+      }
+    }
+  ],
+  "SigningPubKey": "",
+  "TransactionType": "AccountSet",
+  "hash": "17254C4615EFF245205DC9E064A21CDE54177CD936E27C1E84ACDD94B6E84D46"
+}
+```
+#### 返回结果说明
+|参数|类型|说明|
+|----|----|---:|
+|engine_result|String|请求结果|
+|engine_result_code|Array|请求结果编码|
+|engine_result_message|String|请求结果message信息|
+|tx_blob|String|16进制签名后的交易|
+|tx_json|Object|交易内容|
+|&nbsp;&nbsp;&nbsp;Account|String|交易源账号地址|
+|&nbsp;&nbsp;&nbsp;ClearFlag|Integer|账号属性标记|
+|&nbsp;&nbsp;&nbsp;Fee|String|交易费|
+|&nbsp;&nbsp;&nbsp;Flags|Integer|交易标记|
+|&nbsp;&nbsp;&nbsp;Sequence|Integer|单子序列号|
+|&nbsp;&nbsp;&nbsp;Signers|Array|签名列表条目；销毁列表时，没有该字段|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Signer|Object|单个签名条目|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Account|String|给该交易签名的账号地址|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SigningPubKey|String|给该交易签名的账号公钥|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TxnSignature|String|Account账号给该交易的交易签名|
+|&nbsp;&nbsp;&nbsp;SigningPubKey|String|签名公钥|
+|&nbsp;&nbsp;&nbsp;TransactionType|String|交易类型，账号属性类为AccountSet|
+|&nbsp;&nbsp;&nbsp;hash|String|交易hash|
+
+
+### <a name="buildMultisignTx"></a>11.5 多重签名 - tx.multiSigning, tx.multiSigned
+#### 通过Transaction多签， 创建正常交易，然后依次进行多签(multiSigning)， 最后确认(multiSigned)提交(tx.submitPromise)
+#### 11.5.1 创建正常交易
+##### 方法:remote.buildPaymentTx({})
+##### 返回:Transaction对象
+#### 11.5.2 多重签名 
+##### 方法:tx.multiSigning() ... tx.multiSigned()
+##### 参数: 
+##### 返回: tx
+#### 11.5.3 交易
+##### 方法:tx.submitPromise()
+##### 返回: promise
+#### 多签支付完整例子
+```javascript
+const jlib = require("swtc-api");
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5082'})
+const a = { secret: 'snaK5evc1SddiDca1BpZbg1UBft42', address: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n' }
+const a1 = { secret: 'ssmhW3gLLg8wLPzko3dx1LbuDcwCW', address: 'jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq' }
+const a2 = { secret: 'ssXLTUGS6ZFRpGRs5p94BBu6mV1vv', address: 'jUv833RRTAZhbUyRzSsAutM9GwbprregiE' }
+
+let to = 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz'
+const log_json = object => console.log(JSON.stringify(object, '', 2))
+const sleep = time => new Promise(res => setTimeout(() => res(), time || 1))
+
+// 创建支付交易
+let tx = remote.buildPaymentTx({ account: a.address, to, amount: remote.makeAmount(1) })
+tx.addMemo('multisigned payment test')
+
+sleep()
+    .then( async () => {
+		// 设置sequence
+		await tx._setSequencePromise()
+		console.log(`需要设置足够的燃料支持多签交易tx.setFee()`)
+		tx.setFee(20000)  // 燃料
+		log_json(tx.tx_json)
+        tx = tx.multiSigning(a1)
+		log_json(tx.tx_json)
+		// tx.tx_json 需要依次传递给不同的多签方
+		let tx_json = tx.tx_json
+		// 然后重组成tx
+		let tx2 = remote.buildMultisignedTx(tx_json)
+        tx2.multiSigning(a2)
+		log_json(tx2.tx_json)
+        tx2.multiSigned()
+		log_json(tx2.tx_json)
+		let result = await tx2.submitPromise() // multisign submit does not need any secret
+		console.log(result)
+		log_json(result.tx_json)
+    })
+    .catch(console.error)
+```
+#### 输出
+```javascript
+需要设置足够的燃料支持多签交易tx.setFee()
+{
+  "Flags": 0,
+  "Fee": 20000,
+  "TransactionType": "Payment",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "Amount": "1000000",
+  "Destination": "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+  "Memos": [
+    {
+      "Memo": {
+        "MemoData": "6d756c74697369676e6564207061796d656e742074657374"
+      }
+    }
+  ],
+  "Sequence": 23
+}
+{
+  "Flags": 0,
+  "Fee": 20000,
+  "TransactionType": "Payment",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "Amount": "1000000",
+  "Destination": "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+  "Memos": [
+    {
+      "Memo": {
+        "MemoData": "6d756c74697369676e6564207061796d656e742074657374"
+      }
+    }
+  ],
+  "Sequence": 23,
+  "SigningPubKey": "",
+  "Signers": [
+    {
+      "Signer": {
+        "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+        "SigningPubKey": "028749EB830410A57E89EC765DF551F7006CA19CFEBF4C43EFD87CDDA52976D2FF",
+        "TxnSignature": "3045022100DD3C6FB4E271A6010C67F4D34F73074FEAFA32C90A7F9558BB05D919F3EC009C0220349CB803473D4E633564380F9F58E5B58747986E18B35ABB7C4C2463BDA83E6C"
+      }
+    }
+  ]
+}
+{
+  "Flags": 0,
+  "Fee": 20000,
+  "TransactionType": "Payment",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "Amount": "1000000",
+  "Destination": "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+  "Memos": [
+    {
+      "Memo": {
+        "MemoData": "6d756c74697369676e6564207061796d656e742074657374"
+      }
+    }
+  ],
+  "Sequence": 23,
+  "SigningPubKey": "",
+  "Signers": [
+    {
+      "Signer": {
+        "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+        "SigningPubKey": "028749EB830410A57E89EC765DF551F7006CA19CFEBF4C43EFD87CDDA52976D2FF",
+        "TxnSignature": "3045022100DD3C6FB4E271A6010C67F4D34F73074FEAFA32C90A7F9558BB05D919F3EC009C0220349CB803473D4E633564380F9F58E5B58747986E18B35ABB7C4C2463BDA83E6C"
+      }
+    },
+    {
+      "Signer": {
+        "Account": "jUv833RRTAZhbUyRzSsAutM9GwbprregiE",
+        "SigningPubKey": "022EB4FEDEAA5EC1584B673A0B2C4425D0A98A4909EB39C10EC1C40631B0FB9C26",
+        "TxnSignature": "3044022100F5FFE445A60A7A689CED595D2848632353867535FA95B28739592B41A1B193F0021F2B6B5D839506B5DC2065612AB34DDB7EAEBEF7F49A4334C273D1F446F89674"
+      }
+    }
+  ]
+}
+{
+  "Flags": 0,
+  "Fee": 20000,
+  "TransactionType": "Payment",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "Amount": "1000000",
+  "Destination": "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+  "Memos": [
+    {
+      "Memo": {
+        "MemoData": "6d756c74697369676e6564207061796d656e742074657374"
+      }
+    }
+  ],
+  "Sequence": 23,
+  "SigningPubKey": "",
+  "Signers": [
+    {
+      "Signer": {
+        "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+        "SigningPubKey": "028749EB830410A57E89EC765DF551F7006CA19CFEBF4C43EFD87CDDA52976D2FF",
+        "TxnSignature": "3045022100DD3C6FB4E271A6010C67F4D34F73074FEAFA32C90A7F9558BB05D919F3EC009C0220349CB803473D4E633564380F9F58E5B58747986E18B35ABB7C4C2463BDA83E6C"
+      }
+    },
+    {
+      "Signer": {
+        "Account": "jUv833RRTAZhbUyRzSsAutM9GwbprregiE",
+        "SigningPubKey": "022EB4FEDEAA5EC1584B673A0B2C4425D0A98A4909EB39C10EC1C40631B0FB9C26",
+        "TxnSignature": "3044022100F5FFE445A60A7A689CED595D2848632353867535FA95B28739592B41A1B193F0021F2B6B5D839506B5DC2065612AB34DDB7EAEBEF7F49A4334C273D1F446F89674"
+      }
+    }
+  ]
+}
+{
+  engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message: 'The transaction was applied. Only final in a validated ledger.',
+  tx_blob: '120000220000000024000000176140000000000F4240684000000000004E20730081144EFA5550AA0B6A0C06793161C0D2EDC635469AC883141359AA928F4D98FDB3D93E8B690C80D37DED11C3F9EA7D186D756C74697369676E6564207061796D656E742074657374E1F1FCED7321028749EB830410A57E89EC765DF551F7006CA19CFEBF4C43EFD87CDDA52976D2FF74473045022100DD3C6FB4E271A6010C67F4D34F73074FEAFA32C90A7F9558BB05D919F3EC009C0220349CB803473D4E633564380F9F58E5B58747986E18B35ABB7C4C2463BDA83E6C811423A7CE52916DFDE210D371CF8487CFDB790B1DCBE1ED7321022EB4FEDEAA5EC1584B673A0B2C4425D0A98A4909EB39C10EC1C40631B0FB9C2674463044022100F5FFE445A60A7A689CED595D2848632353867535FA95B28739592B41A1B193F0021F2B6B5D839506B5DC2065612AB34DDB7EAEBEF7F49A4334C273D1F446F89674811482D518A6A562B198E72BC1B8976F83D996E3CCD5E1F1',
+  tx_json: {
+    Account: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n',
+    Amount: '1000000',
+    Destination: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+    Fee: '20000',
+    Flags: 0,
+    Memos: [ [Object] ],
+    Sequence: 23,
+    Signers: [ [Object], [Object] ],
+    SigningPubKey: '',
+    TransactionType: 'Payment',
+    hash: '297687746C738E61D30399C58D0410C8B604C74A93E19F1910FBA5B95C50976E'
+  }
+}
+{
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "Amount": "1000000",
+  "Destination": "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+  "Fee": "20000",
+  "Flags": 0,
+  "Memos": [
+    {
+      "Memo": {
+        "MemoData": "6D756C74697369676E6564207061796D656E742074657374"
+      }
+    }
+  ],
+  "Sequence": 23,
+  "Signers": [
+    {
+      "Signer": {
+        "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+        "SigningPubKey": "028749EB830410A57E89EC765DF551F7006CA19CFEBF4C43EFD87CDDA52976D2FF",
+        "TxnSignature": "3045022100DD3C6FB4E271A6010C67F4D34F73074FEAFA32C90A7F9558BB05D919F3EC009C0220349CB803473D4E633564380F9F58E5B58747986E18B35ABB7C4C2463BDA83E6C"
+      }
+    },
+    {
+      "Signer": {
+        "Account": "jUv833RRTAZhbUyRzSsAutM9GwbprregiE",
+        "SigningPubKey": "022EB4FEDEAA5EC1584B673A0B2C4425D0A98A4909EB39C10EC1C40631B0FB9C26",
+        "TxnSignature": "3044022100F5FFE445A60A7A689CED595D2848632353867535FA95B28739592B41A1B193F0021F2B6B5D839506B5DC2065612AB34DDB7EAEBEF7F49A4334C273D1F446F89674"
+      }
+    }
+  ],
+  "SigningPubKey": "",
+  "TransactionType": "Payment",
+  "hash": "297687746C738E61D30399C58D0410C8B604C74A93E19F1910FBA5B95C50976E"
+}
+```
+#### 返回结果说明
+|参数|类型|说明|
+|----|----|---:|
+|engine_result|String|请求结果|
+|engine_result_code|Array|请求结果编码|
+|engine_result_message|String|请求结果message信息|
+|tx_blob|String|16进制签名后的交易|
+|tx_json|Object|交易内容|
+|&nbsp;&nbsp;&nbsp;Account|String|交易源账号地址|
+|&nbsp;&nbsp;&nbsp;Fee|String|交易费|
+|&nbsp;&nbsp;&nbsp;Flags|Integer|交易标记|
+|&nbsp;&nbsp;&nbsp;Sequence|Integer|单子序列号|
+|&nbsp;&nbsp;&nbsp;--|--|相关交易对应的其他字段，如Payment类型有Amount、Destination字段，这里不一一列举|
+|&nbsp;&nbsp;&nbsp;Signers|Array|签名列表条目；销毁列表时，没有该字段|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Signer|Object|单个签名条目|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Account|String|给该交易签名的账号地址|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SigningPubKey|String|给该交易签名的账号公钥|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TxnSignature|String|Account账号给该交易的交易签名|
+|&nbsp;&nbsp;&nbsp;SigningPubKey|String|交易签名公钥，必须为空字符串|
+|&nbsp;&nbsp;&nbsp;TransactionType|String|交易类型|
+|&nbsp;&nbsp;&nbsp;hash|String|交易hash，该hash可在链上查到|
+
+
+### <a name="buildMultisignRemote"></a>11.6 多重签名 - remote.buildSignFirstTx, remote.buildSignOtherTx, remote.buildMultisignedTx
+#### 通过Transaction多签， 创建正常交易，然后依次进行多签(multiSigning)， 最后确认(multiSigned)提交(tx.submitPromise)
+#### 11.6.1 创建正常交易
+##### 方法:remote.buildPaymentTx({})
+##### 返回:Transaction对象
+#### 11.6.2 多重签名 
+##### 方法:remote.buildSignFirstTx({}) ... remote.buildSignOtherTx({}), remote.buildMultisignedTx(tx_json), tx.multiSigned()
+##### 参数: 
+##### 返回: tx
+#### 11.6.3 交易
+##### 方法:tx.submitPromise()
+##### 返回: promise
+#### 多签支付完整例子
+```javascript
+const jlib = require("swtc-api");
+var Remote = jlib.Remote;
+var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5082'})
+const a = { secret: 'snaK5evc1SddiDca1BpZbg1UBft42', address: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n' }
+const a1 = { secret: 'ssmhW3gLLg8wLPzko3dx1LbuDcwCW', address: 'jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq' }
+const a2 = { secret: 'ssXLTUGS6ZFRpGRs5p94BBu6mV1vv', address: 'jUv833RRTAZhbUyRzSsAutM9GwbprregiE' }
+
+let to = 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz'
+const log_json = object => console.log(JSON.stringify(object, '', 2))
+const sleep = time => new Promise(res => setTimeout(() => res(), time || 1))
+
+// 创建支付交易
+let tx = remote.buildPaymentTx({ account: a.address, to, amount: remote.makeAmount(1) })
+tx.addMemo('multisigned payment test')
+
+sleep()
+    .then( async () => {
+		// 设置sequence
+		await tx._setSequencePromise()
+		console.log(`需要设置足够的燃料支持多签交易tx.setFee()`)
+		tx.setFee(20000)  // 燃料
+		log_json(tx.tx_json)
+        tx = remote.buildSignFirstTx({tx, account: a1.address, secret: a1.secret})
+		log_json(tx.tx_json)
+		// tx.tx_json 需要依次传递给不同的多签方
+		let tx_json = tx.tx_json
+		// 然后重组成tx
+		let tx2 = remote.buildSignOtherTx({tx_json, account: a2.address, secret: a2.secret})
+		log_json(tx2.tx_json)
+		let tx3 = remote.buildMultisignedTx(tx2.tx_json)
+		log_json(tx3.tx_json)
+        tx3.multiSigned()
+		log_json(tx3.tx_json)
+		let result = await tx3.submitPromise() // multisign submit does not need any secret
+		console.log(result)
+		log_json(result.tx_json)
+    })
+    .catch(console.error)
+```
+#### 输出
+```javascript
+需要设置足够的燃料支持多签交易tx.setFee()
+{
+  "Flags": 0,
+  "Fee": 20000,
+  "TransactionType": "Payment",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "Amount": "1000000",
+  "Destination": "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+  "Memos": [
+    {
+      "Memo": {
+        "MemoData": "6d756c74697369676e6564207061796d656e742074657374"
+      }
+    }
+  ],
+  "Sequence": 24
+}
+{
+  "Flags": 0,
+  "Fee": 20000,
+  "TransactionType": "Payment",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "Amount": "1000000",
+  "Destination": "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+  "Memos": [
+    {
+      "Memo": {
+        "MemoData": "6d756c74697369676e6564207061796d656e742074657374"
+      }
+    }
+  ],
+  "Sequence": 24,
+  "SigningPubKey": "",
+  "Signers": [
+    {
+      "Signer": {
+        "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+        "SigningPubKey": "028749EB830410A57E89EC765DF551F7006CA19CFEBF4C43EFD87CDDA52976D2FF",
+        "TxnSignature": "3044022023CCB793A4AC5912B4CD7BEFD769B30DED870634E94C2C127DCA7572C6B62A060220790AC05A5D2B9CB5BBFCCBCECC0F18A4B6202FBB8E2B4F82D14353A32F16F5DA"
+      }
+    }
+  ]
+}
+{
+  "Flags": 0,
+  "Fee": 20000,
+  "TransactionType": "Payment",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "Amount": "1000000",
+  "Destination": "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+  "Memos": [
+    {
+      "Memo": {
+        "MemoData": "6d756c74697369676e6564207061796d656e742074657374"
+      }
+    }
+  ],
+  "Sequence": 24,
+  "SigningPubKey": "",
+  "Signers": [
+    {
+      "Signer": {
+        "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+        "SigningPubKey": "028749EB830410A57E89EC765DF551F7006CA19CFEBF4C43EFD87CDDA52976D2FF",
+        "TxnSignature": "3044022023CCB793A4AC5912B4CD7BEFD769B30DED870634E94C2C127DCA7572C6B62A060220790AC05A5D2B9CB5BBFCCBCECC0F18A4B6202FBB8E2B4F82D14353A32F16F5DA"
+      }
+    },
+    {
+      "Signer": {
+        "Account": "jUv833RRTAZhbUyRzSsAutM9GwbprregiE",
+        "SigningPubKey": "022EB4FEDEAA5EC1584B673A0B2C4425D0A98A4909EB39C10EC1C40631B0FB9C26",
+        "TxnSignature": "304402204DEA0D84FCCA5D3181D2535B9297879547B54C898BDA2C55C05B07C34609521F022013496CE02FFA94890364FE7BDA3BD4A0CEFED5CF9DD458B072F003C153BCEA92"
+      }
+    }
+  ]
+}
+{
+  "Flags": 0,
+  "Fee": 20000,
+  "TransactionType": "Payment",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "Amount": "1000000",
+  "Destination": "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+  "Memos": [
+    {
+      "Memo": {
+        "MemoData": "6d756c74697369676e6564207061796d656e742074657374"
+      }
+    }
+  ],
+  "Sequence": 24,
+  "SigningPubKey": "",
+  "Signers": [
+    {
+      "Signer": {
+        "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+        "SigningPubKey": "028749EB830410A57E89EC765DF551F7006CA19CFEBF4C43EFD87CDDA52976D2FF",
+        "TxnSignature": "3044022023CCB793A4AC5912B4CD7BEFD769B30DED870634E94C2C127DCA7572C6B62A060220790AC05A5D2B9CB5BBFCCBCECC0F18A4B6202FBB8E2B4F82D14353A32F16F5DA"
+      }
+    },
+    {
+      "Signer": {
+        "Account": "jUv833RRTAZhbUyRzSsAutM9GwbprregiE",
+        "SigningPubKey": "022EB4FEDEAA5EC1584B673A0B2C4425D0A98A4909EB39C10EC1C40631B0FB9C26",
+        "TxnSignature": "304402204DEA0D84FCCA5D3181D2535B9297879547B54C898BDA2C55C05B07C34609521F022013496CE02FFA94890364FE7BDA3BD4A0CEFED5CF9DD458B072F003C153BCEA92"
+      }
+    }
+  ]
+}
+{
+  "Flags": 0,
+  "Fee": 20000,
+  "TransactionType": "Payment",
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "Amount": "1000000",
+  "Destination": "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+  "Memos": [
+    {
+      "Memo": {
+        "MemoData": "6d756c74697369676e6564207061796d656e742074657374"
+      }
+    }
+  ],
+  "Sequence": 24,
+  "SigningPubKey": "",
+  "Signers": [
+    {
+      "Signer": {
+        "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+        "SigningPubKey": "028749EB830410A57E89EC765DF551F7006CA19CFEBF4C43EFD87CDDA52976D2FF",
+        "TxnSignature": "3044022023CCB793A4AC5912B4CD7BEFD769B30DED870634E94C2C127DCA7572C6B62A060220790AC05A5D2B9CB5BBFCCBCECC0F18A4B6202FBB8E2B4F82D14353A32F16F5DA"
+      }
+    },
+    {
+      "Signer": {
+        "Account": "jUv833RRTAZhbUyRzSsAutM9GwbprregiE",
+        "SigningPubKey": "022EB4FEDEAA5EC1584B673A0B2C4425D0A98A4909EB39C10EC1C40631B0FB9C26",
+        "TxnSignature": "304402204DEA0D84FCCA5D3181D2535B9297879547B54C898BDA2C55C05B07C34609521F022013496CE02FFA94890364FE7BDA3BD4A0CEFED5CF9DD458B072F003C153BCEA92"
+      }
+    }
+  ]
+}
+{
+  engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message: 'The transaction was applied. Only final in a validated ledger.',
+  tx_blob: '120000220000000024000000186140000000000F4240684000000000004E20730081144EFA5550AA0B6A0C06793161C0D2EDC635469AC883141359AA928F4D98FDB3D93E8B690C80D37DED11C3F9EA7D186D756C74697369676E6564207061796D656E742074657374E1F1FCED7321028749EB830410A57E89EC765DF551F7006CA19CFEBF4C43EFD87CDDA52976D2FF74463044022023CCB793A4AC5912B4CD7BEFD769B30DED870634E94C2C127DCA7572C6B62A060220790AC05A5D2B9CB5BBFCCBCECC0F18A4B6202FBB8E2B4F82D14353A32F16F5DA811423A7CE52916DFDE210D371CF8487CFDB790B1DCBE1ED7321022EB4FEDEAA5EC1584B673A0B2C4425D0A98A4909EB39C10EC1C40631B0FB9C267446304402204DEA0D84FCCA5D3181D2535B9297879547B54C898BDA2C55C05B07C34609521F022013496CE02FFA94890364FE7BDA3BD4A0CEFED5CF9DD458B072F003C153BCEA92811482D518A6A562B198E72BC1B8976F83D996E3CCD5E1F1',
+  tx_json: {
+    Account: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n',
+    Amount: '1000000',
+    Destination: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+    Fee: '20000',
+    Flags: 0,
+    Memos: [ [Object] ],
+    Sequence: 24,
+    Signers: [ [Object], [Object] ],
+    SigningPubKey: '',
+    TransactionType: 'Payment',
+    hash: '7FA74E186AA850773A40E8E591F8E3AEB78777D4E0D9F38974E33441FE55E92E'
+  }
+}
+{
+  "Account": "j3UbbRX36997CWXqYqLUn28qH55v9Dh37n",
+  "Amount": "1000000",
+  "Destination": "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+  "Fee": "20000",
+  "Flags": 0,
+  "Memos": [
+    {
+      "Memo": {
+        "MemoData": "6D756C74697369676E6564207061796D656E742074657374"
+      }
+    }
+  ],
+  "Sequence": 24,
+  "Signers": [
+    {
+      "Signer": {
+        "Account": "jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq",
+        "SigningPubKey": "028749EB830410A57E89EC765DF551F7006CA19CFEBF4C43EFD87CDDA52976D2FF",
+        "TxnSignature": "3044022023CCB793A4AC5912B4CD7BEFD769B30DED870634E94C2C127DCA7572C6B62A060220790AC05A5D2B9CB5BBFCCBCECC0F18A4B6202FBB8E2B4F82D14353A32F16F5DA"
+      }
+    },
+    {
+      "Signer": {
+        "Account": "jUv833RRTAZhbUyRzSsAutM9GwbprregiE",
+        "SigningPubKey": "022EB4FEDEAA5EC1584B673A0B2C4425D0A98A4909EB39C10EC1C40631B0FB9C26",
+        "TxnSignature": "304402204DEA0D84FCCA5D3181D2535B9297879547B54C898BDA2C55C05B07C34609521F022013496CE02FFA94890364FE7BDA3BD4A0CEFED5CF9DD458B072F003C153BCEA92"
+      }
+    }
+  ],
+  "SigningPubKey": "",
+  "TransactionType": "Payment",
+  "hash": "7FA74E186AA850773A40E8E591F8E3AEB78777D4E0D9F38974E33441FE55E92E"
+}
+```
+#### 返回结果说明
+|参数|类型|说明|
+|----|----|---:|
+|engine_result|String|请求结果|
+|engine_result_code|Array|请求结果编码|
+|engine_result_message|String|请求结果message信息|
+|tx_blob|String|16进制签名后的交易|
+|tx_json|Object|交易内容|
+|&nbsp;&nbsp;&nbsp;Account|String|交易源账号地址|
+|&nbsp;&nbsp;&nbsp;Fee|String|交易费|
+|&nbsp;&nbsp;&nbsp;Flags|Integer|交易标记|
+|&nbsp;&nbsp;&nbsp;Sequence|Integer|单子序列号|
+|&nbsp;&nbsp;&nbsp;--|--|相关交易对应的其他字段，如Payment类型有Amount、Destination字段，这里不一一列举|
+|&nbsp;&nbsp;&nbsp;Signers|Array|签名列表条目；销毁列表时，没有该字段|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Signer|Object|单个签名条目|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Account|String|给该交易签名的账号地址|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SigningPubKey|String|给该交易签名的账号公钥|
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TxnSignature|String|Account账号给该交易的交易签名|
+|&nbsp;&nbsp;&nbsp;SigningPubKey|String|交易签名公钥，必须为空字符串|
+|&nbsp;&nbsp;&nbsp;TransactionType|String|交易类型|
+|&nbsp;&nbsp;&nbsp;hash|String|交易hash，该hash可在链上查到|
