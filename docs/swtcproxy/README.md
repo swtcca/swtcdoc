@@ -34,8 +34,9 @@
 1. `git clone https://github.com/swtcca/swtcproxy.git`
 2. `cd swtcproxy`
 3. `npm install`
-4. `env UPSTREAM=wss://s.jingtum.com:5020 RATE=100 npm run start`
-5. 本地文档： http://localhost:5080/swagger
+4. `npm run test`
+5. `env UPSTREAM=wss://s.jingtum.com:5020 RATE=100 npm run start`
+6. 本地文档： http://localhost:5080/swagger
 > - 相应修改 `static/swagger.json` 的`server.url`
 
 - 配合[swtc-api](../api/)使用，提供和`swtc-lib`相似的接口
@@ -48,8 +49,9 @@
 1. `git clone https://github.com/swtcca/swtclib.git`
 2. `cd swtclib/packages/swtc-proxy`
 3. `npm install`
-4. `npm run start`
-5. 本地文档： http://localhost:5080/swagger
+4. `npm run test`
+5. `npm run start`
+6. 本地文档： http://localhost:5080/swagger
 > - 相应修改 `static/swagger.json` 的`server.url`
 
 ### 修改 start.js
