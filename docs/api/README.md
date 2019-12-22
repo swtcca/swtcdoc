@@ -26,7 +26,7 @@
 > ### 4.6 [获得账号挂单列表](#getAccountOrders)
 > ### 4.7 [获得账号交易信息](#getAccountTransaction)
 > ### 4.8 [获得账号交易记录](#getAccountTransactions)
-> ### 4.10 [获得帐号交易序号](#getAccountSequence)
+> ### 4.9 [获得帐号交易序号](#getAccountSequence)
 > ### 4.10 [获得货币对的挂单列表 - 买/卖](#getOrderBooks)
 > ### 4.11 [获得交易信息](#getTransaction)
 > ### 4.12 [获得最新账本号](#getLedger)
