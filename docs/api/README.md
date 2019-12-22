@@ -26,8 +26,8 @@
 > ### 4.6 [获得账号挂单列表](#getAccountOrders)
 > ### 4.7 [获得账号交易信息](#getAccountTransaction)
 > ### 4.8 [获得账号交易记录](#getAccountTransactions)
-> ### 4.9 [获得货币对的挂单列表](#getOrderBooks)
-> ### 4.10 [获得货币对的买单/卖单列表](#getOrderBooksBids)
+> ### 4.10 [获得帐号交易序号](#getAccountSequence)
+> ### 4.10 [获得货币对的挂单列表 - 买/卖](#getOrderBooks)
 > ### 4.11 [获得交易信息](#getTransaction)
 > ### 4.12 [获得最新账本号](#getLedger)
 > ### 4.13 [获得某一特定账本号](#getLedgerDetail)
@@ -81,6 +81,7 @@
 ### <a name="backend"></a>0 后端选择/准备
 #### swtc-proxy, 推荐
 > ### 公链 http://swtcproxy.swtclib.ca:5080
+> ### 测试 http://swtcproxy.swtclib.ca:5081
 > ### 多签 http://swtcproxy.swtclib.ca:5082
 > ### ~~公链 http://swtc-api.swtc.top:5080~~
 > ### ~~测试链 http://swtc-tapi.swtc.top:5080~~
@@ -528,8 +529,27 @@ remote.getAccountTransactions('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', {limit: 4}).
 }
 ```
 #### 返回结果说明
-### <a name="getOrderBooks"></a> 4.9 获得货币对的挂单列表
+### <a name="getOrderBooks"></a> 4.9 获得帐号交易序列号
+#### 方法:remote.getAccountSequence(address)
+#### 参数:
+|参数|类型|说明|
+|----|----|---:|
+|address|String|钱包地址|
+#### 返回: Promise - json
+#### 例子
+```javascript
+var japi = require('swtc-api');
+var Remote = japi.Remote;
+var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'});
+remote.getAccountSequence('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz').then(console.log).catch(console.error)
+```
+#### 返回结果
+```
+> { sequence: 11 }
+```
+### <a name="getOrderBooks"></a> 4.10 获得货币对的挂单列表 - 买/卖
 #### 方法:remote.getOrderBooks(base, counter);
+#### 方法:remote.getOrderBooks(counter, base);
 #### 参数:
 |参数|类型|说明|
 |----|----|---:|
@@ -613,9 +633,6 @@ remote.getOrderBooks('SWT', 'CNY+' + remote._issuer).then(console.log).catch(con
 }
 ```
 #### 返回结果说明
-### <a name="getOrderBooksBids"></a> 4.10 获得货币对的买单/卖单列表
-#### 方法:remote.getOrderBooks(base, counter);
-#### 方法:remote.getOrderBooks(counter, base);
 ### <a name="getTransaction"></a> 4.11 获得某一事务信息
 #### 方法:remote.getTransaction(hash);
 #### 参数:
