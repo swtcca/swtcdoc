@@ -1983,6 +1983,9 @@ contract TokenTest {
 
 ## <a name="multiSign"></a> 11. 多重签名
 
+### 费用
+#### 多重签名需要耗费更多的资源，费用相应的增加，每一个签名需要相应费用, 用 tx.setFee()设置
+
 ### <a name="requestSignerList"></a>11.1 查询帐号的签名列表
 #### 首先通过requestSignerList方法返回一个Request对象，通过submitPromise()方法提交列表信息
 #### 11.1.1 创建查询签名列表
