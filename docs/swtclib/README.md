@@ -3103,4 +3103,99 @@ Wallet {
 signed_ed25519 = 56404BEE3A1463C9C25C011BBE9C35FE1FF00F255E72B48CE462500CEDCAEF75D853F04F9C5275979C22C0F579D65E461D6E057BAE0ACC031CE3B7484B77980C
 verified_ed25519 = true
 ```
-### <a name="signMultiSign"></a>12.2 签名和多重签名， 不需要特殊处理
+### <a name="signMultiSign"></a>12.2 签名和多重签名， 不需要任何特殊处理
+```javascript
+const { Remote, Wallet } = require("swtc-lib")
+const remote = new Remote({server: 'ws://swtcproxy.swtclib.ca:5020'})
+
+const SS = {
+  testAddress: "jfdqBEDsbk3eMSXX2t7CGeu2RPkEjHs6ie",
+  testSecret: "shVCQFSxkF7DLXkrHY8X2PBKCKxS9",
+  address: "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+  secret: "ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C",
+  address_ed: "jfqiMxoT228vp3dMrXKnJXo6V9iYEx94pt",
+  secret_ed: "sEdTJSpen5J8ZA7H4cVGDF6oSSLLW2Y",
+}
+
+wallet = Wallet.fromSecret(SS.secret)
+wallet_test = Wallet.fromSecret(SS.testSecret)
+walleted = Wallet.fromSecret(SS.secret_ed)
+
+options = {
+		account: wallet.address,
+		threshold: 10,
+		lists: [
+				{account: wallet_test.address, weight: 6},
+				{account: walleted.address, weight: 6}
+		]
+}
+
+let tx
+remote.connectPromise()
+	.then(async () => {
+		// set signerlist
+		// tx = remote.buildSignerListTx(options)
+		// await tx.signPromise(wallet.secret)
+		// console.log(tx.tx_json)
+		// console.log(await tx.submitPromise())
+		// payment
+		tx = remote.buildPaymentTx({from: wallet.address, to: walleted.address, amount: remote.makeAmount()})
+		await tx._setSequencePromise()
+		tx.setFee(20000)
+		console.log(tx.tx_json)
+		tx.multiSigning(walleted)
+		console.log(tx.tx_json)
+		tx.multiSigning(wallet_test)
+		console.log(tx.tx_json)
+		tx.multiSigned()
+		console.log(tx.tx_json)
+		// console.log(await tx.submitPromise())
+		remote.disconnect()
+	})
+	.catch(console.error)
+```
+输出
+```
+{
+  Flags: 0,
+  Fee: 20000,
+  TransactionType: 'Payment',
+  Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+  Amount: '1000000',
+  Destination: 'jfqiMxoT228vp3dMrXKnJXo6V9iYEx94pt',
+  Sequence: 31
+}
+{
+  Flags: 0,
+  Fee: 20000,
+  TransactionType: 'Payment',
+  Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+  Amount: '1000000',
+  Destination: 'jfqiMxoT228vp3dMrXKnJXo6V9iYEx94pt',
+  Sequence: 31,
+  SigningPubKey: '',
+  Signers: [ { Signer: [Object] } ]
+}
+{
+  Flags: 0,
+  Fee: 20000,
+  TransactionType: 'Payment',
+  Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+  Amount: '1000000',
+  Destination: 'jfqiMxoT228vp3dMrXKnJXo6V9iYEx94pt',
+  Sequence: 31,
+  SigningPubKey: '',
+  Signers: [ { Signer: [Object] }, { Signer: [Object] } ]
+}
+{
+  Flags: 0,
+  Fee: 20000,
+  TransactionType: 'Payment',
+  Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+  Amount: '1000000',
+  Destination: 'jfqiMxoT228vp3dMrXKnJXo6V9iYEx94pt',
+  Sequence: 31,
+  SigningPubKey: '',
+  Signers: [ { Signer: [Object] }, { Signer: [Object] } ]
+}
+```
