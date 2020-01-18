@@ -2,9 +2,9 @@
 
 ## swtc-lib接口说明
 > ### 强制本地签名
-> ### 合约测试只能在特定节点运行, solidity支持到0.5.4, 需要安装 swtc-tum3 / tum3-eth-abi
+> ### 合约测试只能在特定节点运行, solidity支持到0.5.4, 需要安装 swtc-tum3 / tum3-eth-abi, 没有达到可用阶段
 > ### 集成生态节点failover `const remote = new Remote() ; remote.connectPromise().then(console.log).catch(console.error)`
-> ### 多重签名只能在特定节点运行, 全部本地签
+> ### 多重签名测试链上 ws://ts5.jingtum.com:5030 没有支持
 
 ## [应用实例](../examples/)
 
@@ -79,6 +79,7 @@
 > ### 11.4 [激活帐号的主密钥](#activateMasterKey)
 > ### 11.5 [多重签名 - tx.multiSigning, tx.multiSigned](#buildMultisignTx)
 > ### 11.6 [多重签名 - remote.buildSignFirstTx, remote.buildSignOtherTx, remote.buildMultisignedTx](#buildMultisignRemote)
+12. ### [ed25519支持](#ed25519)
 
 ## <a name="installation"></a>1 安装
 1. 安装SWTC公链库
@@ -3043,3 +3044,63 @@ remote.connectPromise()
 |&nbsp;&nbsp;&nbsp;TransactionType|String|交易类型|
 |&nbsp;&nbsp;&nbsp;hash|String|交易hash，该hash可在链上查到|
 
+## <a name="ed25519"></a> 12. ED25519支持
+
+### EDDSA - ed25519
+#### 井通默认的签名算法是ecdsa， 不过同时也支持eddsa （ed25519）签名
+#### ed25519签名的对象是数据本身， 而其他的(包括ecdsa)签名对象是数据的哈希
+#### 自wallet以上，包括serializer, transaction, lib, 公共方法对ed25519的支持是透明的
+#### ed25519的处理发主要在 address-codec 和 keypair上
+
+### <a name="requestSignerList"></a>12.1 生成钱包, 提供算法作为参数
+```javascript
+const { Wallet } = require("swtc-wallet")
+const data = "1234567890abcdef"  // hashed for ecdsa, raw for ed25519
+
+let secret_ecdsa = Wallet.KeyPair.generateSeed()
+// or Wallet.generate()
+console.log(Wallet.fromSecret(secret_ecdsa))
+let wallet_ecdsa = new Wallet(secret_ecdsa)
+console.log(wallet_ecdsa)
+let signed_ecdsa = wallet_ecdsa.signTx(data)
+console.log(`signed_ecdsa = ${signed_ecdsa}`)
+let verified_ecdsa = wallet_ecdsa.verifyTx(data, signed_ecdsa)
+console.log(`verified_ecdsa = ${verified_ecdsa}`)
+
+let secret_ed25519 = Wallet.KeyPair.generateSeed({algorithm: "ed25519"})
+// or Wallet.generate({algorithm: "ed25519"})
+console.log(Wallet.fromSecret(secret_ed25519))
+let wallet_ed25519 = new Wallet(secret_ed25519)
+console.log(wallet_ed25519)
+let signed_ed25519 = wallet_ed25519.signTx(data)
+console.log(`signed_ed25519 = ${signed_ed25519}`)
+let verified_ed25519 = wallet_ed25519.verifyTx(data, signed_ed25519)
+console.log(`verified_ed25519 = ${verified_ed25519}`)
+```
+
+输出
+```
+{ secret: 'spAtA9qTLBZQVKyzANKqmAfdtBgH8',
+  address: 'jsxSnYFq4CGrftSEnQohmkDa1dVyNt68hJ' }
+Wallet {
+  _keypairs:
+   { privateKey:
+      '00E66A92F53535FBD3E2B95236DF274815BBB1327D76F161EAD73F2B952B87F97C',
+     publicKey:
+      '02C28400D63F54C7B52792FAC7A5DDB473124C9A01141751C7996818A163F19A88' },
+  _secret: 'spAtA9qTLBZQVKyzANKqmAfdtBgH8' }
+signed_ecdsa = 30450221009528DC019A4FFA7515A4CA1DD5EF01963B198AA6DE4E2E8F99AFF0739D59DFF7022047385C45304A80E474685A6BC4737C0FB7D100FCAB51EB6863D99113CF755D79
+verified_ecdsa = true
+{ secret: 'sEd75SswqDV6LNNf23vEKZ51K3KZDQL',
+  address: 'jEtV1YRYVyHEhtxzJjEquQsB3HDNpBzgyB' }
+Wallet {
+  _keypairs:
+   { privateKey:
+      'ED691B99D463A7D2CD49B6B5C58EDCF9DCA0DE4158D68EC83867D99B754806447A',
+     publicKey:
+      'EDD0EB6ADBC6CE68D140B44EEC7D3A7C1DB3FD54DD0AE28C2330995CE9C6D66981' },
+  _secret: 'sEd75SswqDV6LNNf23vEKZ51K3KZDQL' }
+signed_ed25519 = 56404BEE3A1463C9C25C011BBE9C35FE1FF00F255E72B48CE462500CEDCAEF75D853F04F9C5275979C22C0F579D65E461D6E057BAE0ACC031CE3B7484B77980C
+verified_ed25519 = true
+```
+### <a name="signMultiSign"></a>12.2 签名和多重签名， 不需要特殊处理

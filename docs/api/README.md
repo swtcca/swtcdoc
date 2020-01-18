@@ -3,12 +3,14 @@
 ## 后端支持
 ### [swtc-proxy文档](../swtcproxy)
 ### [jingtum-api官方文档](http://developer.jingtum.com/api2_doc.html)
+## swtc-lib接口说明
 
 ## swtc-api说明
 > ### 对jingtum-api 作出包装， 消除不安全操作 并且提供类似swtc-lib的接口支持jingtum-api缺失的操作
 > ### 强制本地签名
-> ### 合约测试只能在特定节点运行, solidity支持到0.5.4, 需要安装 swtc-tum3 / tum3-eth-abi
+> ### 合约测试只能在特定节点运行, solidity支持到0.5.4, 需要安装 swtc-tum3 / tum3-eth-abi, 没有达到可用阶段
 > ### 同时支持`jingtum-api` 和 `swtc-proxy`
+> ### 多重签名测试链上 ws://ts5.jingtum.com:5030 没有支持
 > ### 目前文档输出为 `swtc-proxy`, [老版本](https://github.com/swtcca/swtcdoc/blob/api4jingtum/docs/api/README.md)以`jingtum-api`输出为例
 > ### 操作以`swtc-proxy`支持为主， 部分功能在`jingtum-api`不支持
 
