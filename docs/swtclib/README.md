@@ -3103,7 +3103,72 @@ Wallet {
 signed_ed25519 = 56404BEE3A1463C9C25C011BBE9C35FE1FF00F255E72B48CE462500CEDCAEF75D853F04F9C5275979C22C0F579D65E461D6E057BAE0ACC031CE3B7484B77980C
 verified_ed25519 = true
 ```
-### <a name="signMultiSign"></a>12.2 签名和多重签名， 不需要任何特殊处理
+### <a name="singleSign"></a>12.2 签名透明支持，不需要任何特殊处理
+```javascript
+xinchuns-mbp:test xcliu$ cat test.js
+const sleep = timeout => new Promise(resolve => setTimeout(resolve(), timeout || 1))
+const {Remote, Wallet, Transaction} = require('swtc-lib')
+const secret_ed = "sEdTJSpen5J8ZA7H4cVGDF6oSSLLW2Y"
+const secret_ec = 'ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C'
+const wallet_ec = Wallet.fromSecret(secret_ec)
+const wallet_ed = Wallet.fromSecret(secret_ed)
+const remote = new Remote({server: "ws://swtcproxy.swtclib.ca:5020"})
+const tx = remote.buildPaymentTx({
+	account: wallet_ed.address,
+	to: wallet_ec.address,
+	amount: remote.makeAmount(0.1),
+})
+let json
+sleep(2000).then(async () => {
+	await remote.connectPromise()
+	console.log(tx.tx_json)
+	await tx.signPromise(secret_ed)
+	console.log(tx.tx_json)
+	console.log(await tx.submitPromise())
+})
+```
+输出
+```
+{
+  Flags: 0,
+  Fee: 10000,
+  TransactionType: 'Payment',
+  Account: 'jfqiMxoT228vp3dMrXKnJXo6V9iYEx94pt',
+  Amount: '100000',
+  Destination: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz'
+}
+{
+  Flags: 0,
+  Fee: 0.01,
+  TransactionType: 'Payment',
+  Account: 'jfqiMxoT228vp3dMrXKnJXo6V9iYEx94pt',
+  Amount: 0.1,
+  Destination: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+  Sequence: 15,
+  SigningPubKey: 'ED68635043BC70DE82272BF5990642400CF79089B2ABCF8EF9D10FFFB96A658763',
+  TxnSignature: '92D4855BF6672E072785CBE7DEDCFC0A0BD30F46D74F07661301A844F95DEE7343F3493159DA10B6B46E67F4D050AE96E11F5ED9C4A00B9C758D4E7AF29FB30A',
+  blob: '1200002200000000240000000F6140000000000186A06840000000000027107321ED68635043BC70DE82272BF5990642400CF79089B2ABCF8EF9D10FFFB96A658763744092D4855BF6672E072785CBE7DEDCFC0A0BD30F46D74F07661301A844F95DEE7343F3493159DA10B6B46E67F4D050AE96E11F5ED9C4A00B9C758D4E7AF29FB30A81144B0DECFADE9D4170260CD5BA9EC1CF065CA8894683141359AA928F4D98FDB3D93E8B690C80D37DED11C3'
+}
+{
+  engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message: 'The transaction was applied. Only final in a validated ledger.',
+  tx_blob: '1200002200000000240000000F6140000000000186A06840000000000027107321ED68635043BC70DE82272BF5990642400CF79089B2ABCF8EF9D10FFFB96A658763744092D4855BF6672E072785CBE7DEDCFC0A0BD30F46D74F07661301A844F95DEE7343F3493159DA10B6B46E67F4D050AE96E11F5ED9C4A00B9C758D4E7AF29FB30A81144B0DECFADE9D4170260CD5BA9EC1CF065CA8894683141359AA928F4D98FDB3D93E8B690C80D37DED11C3',
+  tx_json: {
+    Account: 'jfqiMxoT228vp3dMrXKnJXo6V9iYEx94pt',
+    Amount: '100000',
+    Destination: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+    Fee: '10000',
+    Flags: 0,
+    Sequence: 15,
+    SigningPubKey: 'ED68635043BC70DE82272BF5990642400CF79089B2ABCF8EF9D10FFFB96A658763',
+    TransactionType: 'Payment',
+    TxnSignature: '92D4855BF6672E072785CBE7DEDCFC0A0BD30F46D74F07661301A844F95DEE7343F3493159DA10B6B46E67F4D050AE96E11F5ED9C4A00B9C758D4E7AF29FB30A',
+    hash: '26C2D8CB2B90E089CD16681B5390E88B50FA56A58DA8E10A1CC52FC753F7D746'
+  }
+}
+```
+### <a name="multiSign"></a>12.2 多重签名透明支持，不需要任何特殊处理
 ```javascript
 const { Remote, Wallet } = require("swtc-lib")
 const remote = new Remote({server: 'ws://swtcproxy.swtclib.ca:5020'})
@@ -3199,3 +3264,4 @@ remote.connectPromise()
   Signers: [ { Signer: [Object] }, { Signer: [Object] } ]
 }
 ```
+
