@@ -8,29 +8,28 @@
 - 正常情况下，我们使用[脚本方式运行](C00)
 - 用npm安装
 ```bash
-$ npm install swtc-lib # jingtum-lib接口, 版本为1.6.x, typescript promise
-$ npm install swtc-lib@jcc # jcc_jingtum_lib接口， 版本为1.5.x
+$ npm install @swtc/lib
 ```
 - 浏览器直接引用
   - CDN直接引用
-    - `<script src='https://unpkg.com/swtc-lib'></script>`
-    - 或者 `<script src='https://cdn.jsdelivr.net/npm/swtc-lib'></script>`
+    - `<script src='https://unpkg.com/@swtc/lib'></script>`
+    - 或者 `<script src='https://cdn.jsdelivr.net/npm/@swtc/lib'></script>`
   - 可以 [自行编译](https://github.com/swtcca/swtclib)
   - 不建议使用此方式
   - 建议使用 [webpack打包](W03) 方式替代
 - 常规导入
 ```javascript
-const Wallet = require('swtc-lib').Wallet
-const Remote = require('swtc-lib').Remote
+const Wallet = require('@swtc/lib').Wallet
+const Remote = require('@swtc/lib').Remote
 ```
 ## 单行代码操作
 0. 导入钱包/库
-> - `const Remote = require('swtc-lib').Remote`
+> - `const Remote = require('@swtc/lib').Remote`
 > - `import { Remote } from 'swtc-lib'`
 1. 创建remote对象
->  `const remote = new (require('swtc-lib').Remote)()`
+>  `const remote = new (require('@swtc/lib').Remote)()`
 
->  `const remote_test = new (require('swtc-lib').Remote)({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'})`
+>  `const remote_test = new (require('@swtc/lib').Remote)({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'})`
 2. 连接服务器
 >  `remote.connectPromise().then(console.log).catch(console.error)`
 3. 获取帐本

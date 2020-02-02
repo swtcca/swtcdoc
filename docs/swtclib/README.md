@@ -84,7 +84,7 @@
 ## <a name="installation"></a>1 安装
 1. 安装SWTC公链库
 ```bash
-npm install --save swtc-lib
+npm install --save @swtc/lib
 ```
 
 ## <a name="structure"></a>2 项目文件结构
@@ -104,7 +104,7 @@ npm install --save swtc-lib
 
 ```javascript
 //创建Wallet对象
-var jlib = require('swtc-lib');
+var jlib = require('@swtc/lib');
 var Wallet = jlib.Wallet;
 //方式一
 var w1 = Wallet.generate();
@@ -169,9 +169,9 @@ console.log(w2);
 |solidity|Boolean|启用solidity支持|
 #### 例子
 ```javascript
-var jlib = require('swtc-lib');
+var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 ```
 ### <a name="connectPromise"></a>4.2 创建连接
 #### 每个Remote对象都应该首先手动连接底层，然后才可以请求底层的数据。请求结果在回调函数callback中
@@ -181,9 +181,9 @@ var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3
 #### 参数: 无
 #### 例子
 ```javascript
-var jlib = require('swtc-lib');
+var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 // remote.connect( (error, server_info) => {
 // 	if (error) {
 // 		console.log(error)
@@ -238,9 +238,9 @@ remote.connectPromise()
 #### 参数:无
 #### 例子
 ```javascript
-var jlib = require('swtc-lib');
+var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 remote.connectPromise().then( () => remote.disconnect() ).catch(console.error)
 ```
 ### <a name="requestServerInfo"></a> 4.4 请求底层服务器信息
@@ -250,9 +250,9 @@ remote.connectPromise().then( () => remote.disconnect() ).catch(console.error)
 #### 返回:Request对象
 #### 例子:
 ```javascript
-var jlib = require('swtc-lib');
+var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 remote.connectPromise()
 	.then(async () => { 
 			let response = await remote.requestServerInfo().submitPromise()
@@ -287,9 +287,9 @@ remote.connectPromise()
 #### 返回: Request对象
 #### 例子:
 ```javascript
-var jlib = require('swtc-lib');
+var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 remote.connectPromise()
 	.then(async () => { 
 			let response = await remote.requestLedgerClosed().submitPromise()
@@ -323,9 +323,9 @@ remote.connectPromise()
 #### 返回:Request对象
 #### 例子
 ```javascript
-var jlib = require('swtc-lib');
+var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 remote.connectPromise()
 	.then(async () => { 
 			let response = await remote.requestLedger({
@@ -389,9 +389,9 @@ remote.connectPromise()
 #### 返回: Request对象
 #### 例子:
 ```javascript
-var jlib = require('swtc-lib');
+var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 remote.connectPromise()
 	.then(async () => {
     		let req = remote.requestTx({hash: '2C3F60ABEC539BEE768FAE1820B9C284C7EC2D45EF1D7F9E28F4357056E822F7'});
@@ -462,9 +462,9 @@ remote.connectPromise()
 #### 返回:Request对象
 #### 例子
 ```javascript
-var jlib = require('swtc-lib');
+var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 remote.connectPromise()
     .then(async () => {
     		let options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz'};
@@ -524,9 +524,9 @@ remote.connectPromise()
 #### 返回:Request对象
 #### 例子:
 ```javascript
-var jlib = require('swtc-lib');
+var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 remote.connectPromise()
     .then(async () => {
             let options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz'};
@@ -567,9 +567,9 @@ remote.connectPromise()
 #### 返回: Request对象
 #### 例子
 ```javascript
-var jlib = require('swtc-lib');
+var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 remote.connectPromise()
     .then(async () => {
     		let options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',type:'trust'};
@@ -622,9 +622,9 @@ remote.connectPromise()
 |account|String|井通钱包地址|
 #### 例子
 ```javascript
-var jlib = require('swtc-lib');
+var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 remote.connectPromise()
     .then(async () => {
     	    let options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz'};
@@ -678,9 +678,9 @@ remote.connectPromise()
 #### 返回:Request对象
 #### 例子:
 ```javascript
-var jlib = require('swtc-lib');
+var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 remote.connectPromise()
     .then(async () => {
     	    let options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz'};
@@ -749,9 +749,9 @@ remote.connectPromise()
 |pays|Object|对家想要支付的货币信息|
 #### 例子
 ```javascript
-var jlib = require('swtc-lib');
+var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 remote.connectPromise()
     .then(async () => {
    		    let options = {
@@ -828,7 +828,7 @@ remote.connectPromise()
 ##### 返回: Promise
 #### 查询佣金完整例子
 ```javascript
-const jlib = require('swtc-lib');
+const jlib = require('@swtc/lib');
 const Remote = jlib.Remote;
 const remote = new Remote();
 account = 'jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG'
@@ -878,9 +878,9 @@ remote.connectPromise().then( async () => {
 ##### 返回: Promise
 #### 支付完整例子
 ```javascript
-var jlib = require('swtc-lib');
+var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 remote.connectPromise()
     .then(async () => {
    		     let tx = remote.buildPaymentTx({
@@ -965,9 +965,9 @@ remote.connectPromise()
 #####  参数:无
 #### 设置关系完整例子
 ```javascript
-var jlib = require('swtc-lib');
+var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 remote.connectPromise()
     .then(async () => {
    		    let options = {
@@ -1055,9 +1055,9 @@ remote.connectPromise()
 ##### 返回: Promise
 #### 设置属性完整例子
 ```javascript
-var jlib = require('swtc-lib')
+var jlib = require('@swtc/lib')
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 remote.connect(function(err, result) {
     if (err) {
         return console.log('err:',err);
@@ -1121,9 +1121,9 @@ remote.connect(function(err, result) {
 #### 设置属性完整例子
 #### 挂单完整例子
 ```javascript
-var jlib = require('swtc-lib');
+var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 remote.connectPromise()
     .then(async () => {
     		let options = {
@@ -1208,9 +1208,9 @@ remote.connectPromise()
 ##### 返回: Promise
 #### 挂单完整例子
 ```javascript
-var jlib = require('swtc-lib');
+var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 remote.connectPromise()
     .then(async () => {
    		    let options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', sequence: 7};
@@ -1287,10 +1287,10 @@ remote.connectPromise()
 ##### 返回: Promise
 #### 部署合约完整例子
 ```javascript
-var jlib = require('swtc-lib');
+var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
 var utils = Remote.utils;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 remote.connect(function (err, result) {
     if (err) {
         return console.log('err:', err);
@@ -1377,9 +1377,9 @@ remote.connect(function (err, result) {
 ##### 返回: Promise
 #### 执行合约完整例子
 ```javascript
-var jlib = require('swtc-lib');
+var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 remote.connect(function (err, result) {
     if (err) {
         return console.log('err:', err);
@@ -1457,7 +1457,7 @@ remote.connect(function (err, result) {
 ##### 返回: Promise
 #### 设置挂单佣金完整例子
 ```javascript
-const jlib = require('swtc-lib');
+const jlib = require('@swtc/lib');
 const Remote = jlib.Remote;
 const remote = new Remote();
 secret = 's..........'
@@ -1527,10 +1527,10 @@ remote.connectPromise().then( async () => {
 ##### 返回: Promise
 #### 部署合约完整例子
 ```javascript
-const jlib = require("swtc-lib");
+const jlib = require("@swtc/lib");
 var Remote = jlib.Remote;
 var remote = new Remote({
-  server: "ws://ts5.jingtum.com:5020",
+  server: "ws://ts5.jingtum.com:5030",
   solidity: true
 });
 const v = {
@@ -1603,9 +1603,9 @@ remote.connectPromise()
 ##### 返回: Promise
 ##### 例子
 ```javascript
-var jlib = require('swtc-lib');
+var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', solidity: true});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', solidity: true});
 const v = {
   address: "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
   secret: "ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C"
@@ -1658,9 +1658,9 @@ remote.connectPromise()
 #### 方法:remote.on('ledger_closed',callback);
 #### 例子:
 ```javascript
-var jlib = require('swtc-lib');
+var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 remote.connect(function (err, result) {
     if (err) {
         return console.log('err:', err);
@@ -1686,9 +1686,9 @@ remote.connect(function (err, result) {
 |ledger|String|账本高度或者账号hash|
 #### 例子
 ```javascript
-var jlib = require('swtc-lib');
+var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 remote.connect(function (err, result) {
     if (err) {
         return console.log('err:', err);
@@ -1710,9 +1710,9 @@ remote.connect(function (err, result) {
 ##### 返回: Promise
 #### 例子
 ```javascript
-var jlib = require('swtc-lib');
+var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 remote.connect(function (err, result) {
     if (err) {
         return console.log('err:', err);
@@ -1741,9 +1741,9 @@ remote.connect(function (err, result) {
 #### 返回:账号
 #### 例子:
 ```javascript
-var jlib = require('swtc-lib');
+var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 var options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', sequence: 4};
 var tx = remote.buildOfferCancelTx(options);
 var account = tx.getAccount();
@@ -1755,9 +1755,9 @@ console.log(account);
 #### 返回:交易类型
 #### 例子:
 ```javascript
-var jlib = require('swtc-lib');
+var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 var options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', sequence: 4};
 var tx = remote.buildOfferCancelTx(options);
 var type = tx.getTransactionType();
@@ -1773,9 +1773,9 @@ console.log(type);
 #### 返回:Transaction对象
 #### 例子:
 ```javascript
-var jlib = require('swtc-lib');
+var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 var options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', sequence: 8};
 var tx = remote.buildOfferCancelTx(options);
 tx.setSecret('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C');;
@@ -1788,9 +1788,9 @@ tx.setSecret('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C');;
 #### 返回:Transaction对象
 #### 例子:
 ```javascript
-var jlib = require('swtc-lib');
+var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 var tx = remote.buildPaymentTx({
     account: 'jB7rxgh43ncbTX4WeMoeadiGMfmfqY2xLZ',
     to: 'jDUjqoDZLhzx4DCf6pvSivjkjgtRESY62c',
@@ -1805,9 +1805,9 @@ tx.addMemo('给jDUjqoDZLhzx4DCf6pvSivjkjgtRESY62c支付0.5swt.');
 #### 参数:密钥, 留言
 #### 例子:
 ```javascript
-var jlib = require('swtc-lib');
+var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 remote.connectPromise()
 	.then(async () => {
     	var req = remote.requestAccountInfo({account: 'jB7rxgh43ncbTX4WeMoeadiGMfmfqY2xLZ'});
@@ -2001,7 +2001,7 @@ contract TokenTest {
 ##### 返回: Promise
 #### 查询帐号的签名列表完整例子
 ```javascript
-const jlib = require("swtc-lib");
+const jlib = require("@swtc/lib");
 var Remote = jlib.Remote;
 var remote = new Remote({server: 'ws://101.200.230.74:5020'})
 const a = { secret: 'snaK5evc1SddiDca1BpZbg1UBft42', address: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n' }
@@ -2104,7 +2104,7 @@ remote.connectPromise()
 ##### 返回: Promise
 #### 设置帐号的签名列表完整例子
 ```javascript
-const jlib = require("swtc-lib");
+const jlib = require("@swtc/lib");
 var Remote = jlib.Remote;
 var remote = new Remote({server: 'ws://101.200.230.74:5020'})
 const a = { secret: 'snaK5evc1SddiDca1BpZbg1UBft42', address: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n' }
@@ -2271,7 +2271,7 @@ remote.connectPromise()
 ##### 返回: Promise
 #### 废除主密钥完整例子
 ```javascript
-const jlib = require("swtc-lib");
+const jlib = require("@swtc/lib");
 var Remote = jlib.Remote;
 var remote = new Remote({server: 'ws://101.200.230.74:5020'})
 const a = { secret: 'snaK5evc1SddiDca1BpZbg1UBft42', address: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n' }
@@ -2359,7 +2359,7 @@ remote.connectPromise()
 ##### 返回: Promise
 #### 激活主密钥完整例子
 ```javascript
-const jlib = require("swtc-lib");
+const jlib = require("@swtc/lib");
 var Remote = jlib.Remote;
 var remote = new Remote({server: 'ws://101.200.230.74:5020'})
 const a = { secret: 'snaK5evc1SddiDca1BpZbg1UBft42', address: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n' }
@@ -2545,7 +2545,7 @@ remote.connectPromise()
 ##### 返回: promise
 #### 多签支付完整例子
 ```javascript
-const jlib = require("swtc-lib");
+const jlib = require("@swtc/lib");
 var Remote = jlib.Remote;
 var remote = new Remote({server: 'ws://101.200.230.74:5020'})
 const a = { secret: 'snaK5evc1SddiDca1BpZbg1UBft42', address: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n' }
@@ -2785,7 +2785,7 @@ remote.connectPromise()
 ##### 返回: promise
 #### 多签支付完整例子
 ```javascript
-const jlib = require("swtc-lib");
+const jlib = require("@swtc/lib");
 var Remote = jlib.Remote;
 var remote = new Remote({server: 'ws://101.200.230.74:5020'})
 const a = { secret: 'snaK5evc1SddiDca1BpZbg1UBft42', address: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n' }
@@ -3054,7 +3054,7 @@ remote.connectPromise()
 
 ### <a name="requestSignerList"></a>12.1 生成钱包, 提供算法作为参数
 ```javascript
-const { Wallet } = require("swtc-wallet")
+const { Wallet } = require("@swtc/wallet")
 const data = "1234567890abcdef"  // hashed for ecdsa, raw for ed25519
 
 let secret_ecdsa = Wallet.KeyPair.generateSeed()
@@ -3107,7 +3107,7 @@ verified_ed25519 = true
 ```javascript
 xinchuns-mbp:test xcliu$ cat test.js
 const sleep = timeout => new Promise(resolve => setTimeout(resolve(), timeout || 1))
-const {Remote, Wallet, Transaction} = require('swtc-lib')
+const {Remote, Wallet, Transaction} = require('@swtc/lib')
 const secret_ed = "sEdTJSpen5J8ZA7H4cVGDF6oSSLLW2Y"
 const secret_ec = 'ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C'
 const wallet_ec = Wallet.fromSecret(secret_ec)
@@ -3170,7 +3170,7 @@ sleep(2000).then(async () => {
 ```
 ### <a name="multiSign"></a>12.2 多重签名透明支持，不需要任何特殊处理
 ```javascript
-const { Remote, Wallet } = require("swtc-lib")
+const { Remote, Wallet } = require("@swtc/lib")
 const remote = new Remote({server: 'ws://swtcproxy.swtclib.ca:5020'})
 
 const SS = {

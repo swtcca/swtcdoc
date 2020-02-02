@@ -23,17 +23,17 @@
 ### import
 
 ```javascript
-const API = require("swtc-api")
+const API = require("@swtc/api")
 const Remote = API.Remote
 // or
-import { Remote } from "swtc-api"
+import { Remote } from "@swtc/api"
 ```
 
 ### transaction operations
 
 ```typescript
 import DATA from "./config"
-import { Remote } from "swtc-api"
+import { Remote } from "@swtc/api"
 const remote = new Remote({ server: DATA.server })
 const sleep = time => new Promise(res => setTimeout(() => res(), time))
 
@@ -292,7 +292,7 @@ signed blob: 1200152200000000240000006420230000000363800000000000000000000000000
 
 ```typescript
 import DATA from "./config"
-import { Remote } from "swtc-api"
+import { Remote } from "@swtc/api"
 const remote = new Remote({ server: DATA.server })
 
 async function main() {

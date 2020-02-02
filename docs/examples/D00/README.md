@@ -12,7 +12,7 @@ $ npm init -y
 ```
 3. 安装swtc-lib库 和 electron库
 ```bash
-$ npm install swtc-lib
+$ npm install @swtc/lib
 $ npm install electron
 ```
 

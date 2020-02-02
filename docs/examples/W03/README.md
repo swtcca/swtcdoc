@@ -25,12 +25,12 @@ $ tree
 ```
 4. 安装swtc-lib库和webpack
 ```bash
-$ npm install swtc-lib
+$ npm install @swtc/lib
 $ npm install webpack webpack-cli
 ```
 5. 和常规web不同之处
 > - src/index.js, 这是我们的javascript代码文件
-> - src/index.js可以使用node.js的方式导入库, 比如 `const Wallet = require('swtc-lib').Wallet`
+> - src/index.js可以使用node.js的方式导入库, 比如 `const Wallet = require('@swtc/lib').Wallet`
 >   - 这意味着我们的 [常规终端示例](../C01) 可以不用任何修改打包成web应用
 > - 不再需要静态的swtc-lib.js , webpack会从node.js库中打包进dist/main.js
 > - index.html中不需要保留导入库的部分
@@ -64,7 +64,7 @@ $ npm install webpack webpack-cli
 ```
 7. javascript 文件放到src/index.js中， 注意可以直接使用node.js的方式引用swtc-lib库, webpack会做出处理
 ```javascript
-const Wallet = require('swtc-lib').Wallet // node.js方式导入库
+const Wallet = require('@swtc/lib').Wallet // node.js方式导入库
 import { Remote } from 'swtc-lib' // esm import也可以
 
 const dom_wallet = document.querySelector('.js-wallet')

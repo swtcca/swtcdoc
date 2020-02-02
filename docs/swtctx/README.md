@@ -27,13 +27,13 @@
 **Via npm for Node.js**
 
 ```bash
-  $ npm install swtc-transaction  // node.js and web app
+  $ npm install @swtc/transaction  // node.js and web app
 ```
 
 ```javascript
-const Transaction = require("swtc-transaction").Transaction // cjs import
+const Transaction = require("@swtc/transaction").Transaction // cjs import
 // or
-import { Transaction } from "swtc-transaction" // esm import
+import { Transaction } from "@swtc/transaction" // esm import
 ```
 
 ## Using `swtc-transaction`

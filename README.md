@@ -6,15 +6,15 @@ features:
 - title: 安全第一
   details: 本地签名 密钥不出本机
 - title: 完全兼容
-  details: 井通接口 井畅接口
+  details: 井通接口
 - title: 独享便利
   details: 零配置webpack支持 零配置browserify支持
 - title: 多框架支持
   details: node web mobile   angular vue react
 - title: 模块化
   details: 理顺依赖关系 反馈正式版本
-- title: Typescript Promise
-  details: 原生Promise, typescript编辑器关联提示
+- title: 现代化
+  details: Promise, typescript, rollup, esm
 - title: 扩展性
   details: 已经增加api, 可加代理版remote
 - title: 联盟链支持
@@ -41,15 +41,13 @@ features:
 	<img src="https://img.shields.io/badge/browserify-ready-green.svg" alt="browserify" />
 	<img src="https://img.shields.io/badge/webpack-ready-green.svg" alt="webpack" />
 	<br>
-	<a href="https://nodei.co/npm/swtc-lib/"><img src="https://nodei.co/npm/swtc-lib.png?mini=true" /></a>
+	<a href="https://nodei.co/npm/@swtc/lib/"><img src="https://nodei.co/npm/@swtc/lib.png?compact=true" /></a>
 	<br>
-	<a href="https://nodei.co/npm/swtc-x-lib/"><img src="https://nodei.co/npm/swtc-x-lib.png?mini=true" /></a>
+	<a href="https://nodei.co/npm/@swtc/api/"><img src="https://nodei.co/npm/@swtc/api.png?compact=true" /></a>
 	<br>
-	<a href="https://nodei.co/npm/swtc-api/"><img src="https://nodei.co/npm/swtc-api.png?mini=true" /></a>
+	<a href="https://nodei.co/npm/@swtc/transaction/"><img src="https://nodei.co/npm/@swtc/transaction.png?compact=true" /></a>
 	<br>
-	<a href="https://nodei.co/npm/swtc-transaction/"><img src="https://nodei.co/npm/swtc-transaction.png?mini=true" /></a>
-	<br>
-	<a href="https://nodei.co/npm/swtc-wallet/"><img src="https://nodei.co/npm/swtc-wallet.png?mini=true" /></a>
+	<a href="https://nodei.co/npm/@swtc/wallet/"><img src="https://nodei.co/npm/@swtc/wallet.png?compact=true" /></a>
 </p>
 
 <h2>文档</h2>
@@ -65,18 +63,17 @@ features:
 
 |程序包名称|CDN|功能描述|
 |----------|---|--------|
-|[swtc-proxy](docs/swtcproxy/)||节点代理, 提供标准API接口|
-|[swtc-x-lib](docs/swtcxlib/)|name: swtc_x_lib<br>[unpkg](https://unpkg.com/swtc-x-lib)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/swtc-x-lib)|等同支持井通联盟链, 基于websocket|
-|[swtc-lib](docs/swtclib/)|name: swtc_lib<br>[unpkg](https://unpkg.com/swtc-lib)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/swtc-lib)|SWTC公链库, 基于websocket|
-|[swtc-api](docs/swtcapi/)|name: swtc_api<br>[unpkg](https://unpkg.com/swtc-api)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/swtc-api)|SWTC公链库, 基于restapi|
-|[swtc-transaction](docs/swtctx/)|name: swtc_transaction<br>[unpkg](https://unpkg.com/swtc-transaction)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/swtc-transaction)|井通公链交易库, 支付/挂单/关系/合约|
-|swtc-serializer||井通公链交易序列化库, 基于钱包|
-|swtc-utils||井通公链utility库，基于钱包|
-|[swtc-wallet](docs/swtcwallet/)|name: swtc_wallet<br>[unpkg](https://unpkg.com/swtc-wallet)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/swtc-wallet)|井通公链钱包库, 支持所有联盟链|
-|swtc-factory||井通公链钱包库, 井畅接口|
-|swtc-keypairs||公钥私钥|
-|swtc-address-codec||编码解码|
-|swtc-chains||基础信息|
+|[@swtc/proxy](docs/swtcproxy/)||节点代理, 提供标准API接口|
+|[@swtc/x-lib](docs/swtcxlib/)|name: swtc_x_lib<br>[unpkg](https://unpkg.com/@swtc/x-lib)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/@swtc/x-lib)|支持井通联盟链, 基于websocket|
+|[@swtc/lib](docs/swtclib/)|name: swtc_lib<br>[unpkg](https://unpkg.com/@swtc/lib)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/@swtc/lib)|SWTC公链库, 基于websocket|
+|[@swtc/api](docs/swtcapi/)|name: swtc_api<br>[unpkg](https://unpkg.com/@swtc/api)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/@swtc/api)|SWTC公链库, 基于restapi|
+|[@swtc/transaction](docs/swtctx/)|name: swtc_transaction<br>[unpkg](https://unpkg.com/@swtc/transaction)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/@swtc/transaction)|井通公链交易库, 支付/挂单/关系/合约|
+|@swtc/serializer||井通公链交易序列化库, 基于钱包|
+|@swtc/utils||井通公链utility库，基于钱包|
+|[@swtc/wallet](docs/swtcwallet/)|name: swtc_wallet<br>[unpkg](https://unpkg.com/@swtc/wallet)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/@swtc/wallet)|井通公链钱包库, 支持所有联盟链|
+|@swtc/keypairs||公钥私钥|
+|@swtc/address-codec||编码解码|
+|@swtc/common||基础信息|
 
 <h2 align="center">支持开源SWTCLIB 支持公链生态</h2>
 

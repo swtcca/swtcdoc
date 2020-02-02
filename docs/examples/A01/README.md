@@ -6,13 +6,13 @@
 $ node
 ```
 ```javascript
-> var Wallet = require('swtc-lib').Wallet
-> var Remote = require('swtc-lib').Remote
+> var Wallet = require('@swtc/lib').Wallet
+> var Remote = require('@swtc/lib').Remote
 ```
 2. node.js目前对于ES标准的esm模块原生支持还不好，最方便的是通过esm模块来使用
 ```bash
 $ node -r esm
 ```
 ```javascript
-import { Wallet, Remote } from 'swtc-lib'
+import { Wallet, Remote } from '@swtc/lib'
 ```

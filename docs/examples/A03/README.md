@@ -8,7 +8,7 @@ $ npm install bluebird
 ```
 3. async/await
 ```javascript
-const SWTCLIB = require('swtc-lib')
+const SWTCLIB = require('@swtc/lib')
 const BLUEBIRD = require('bluebird')
 BLUEBIRD.promisifyAll(SWTCLIB)
 

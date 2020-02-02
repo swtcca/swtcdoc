@@ -19,11 +19,11 @@ $ cd vuemobapp
 ```
 4. 安装swtc-lib@nativescript定制版本
 ```bash
-$ npm install swtc-lib
+$ npm install @swtc/lib
 ```
 5. 更新webpack配置文件，应该只要添加/修改几行就可以了
 > - 编辑webpack.config.js
-> - 修改env.config.resolve.alias, 在`vue: 'nativescript-vue'` 上面添加添加 `...require('swtc-nativescript').aliases,`
+> - 修改env.config.resolve.alias, 在`vue: 'nativescript-vue'` 上面添加添加 `...require('@swtc/nativescript').aliases,`
 > - 修改env.config.resolve.symlink, `false`
 > - 修改env.config.plugins, 注释掉`"process": "global.process"`
 6. 启动模拟器或者连接手机，调试
@@ -102,7 +102,7 @@ $ tns run android
 </template>
 
 <script>
-    const SwtcLib = require('swtc-lib')
+    const SwtcLib = require('@swtc/lib')
     const Wallet = SwtcLib.Wallet
     const Remote = SwtcLib.Remote
     const remote = new Remote()

@@ -94,7 +94,7 @@
 ### <a name="installation"></a>1 安装
 1. 安装库
 ```bash
-npm install --save swtc-api
+npm install --save @swtc/api
 ```
 
 ## <a name="structure"></a>2 项目说明
@@ -114,7 +114,7 @@ npm install --save swtc-api
 
 ```javascript
 //创建Wallet对象
-var japi = require('swtc-api');
+var japi = require('@swtc/api');
 var Wallet = japi.Remote.Wallet;
 //方式一
 var w1 = Wallet.generate();
@@ -190,7 +190,7 @@ console.log(w2);
 |solidity|Boolean|启用solidity支持|
 #### 例子
 ```javascript
-var japi = require('swtc-api');
+var japi = require('@swtc/api');
 var Remote = japi.Remote;
 var remote_proxy = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'})
 ```
@@ -208,7 +208,7 @@ var remote_proxy = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'})
 #### 返回: Promise - json
 #### 例子
 ```javascript
-var japi = require('swtc-api');
+var japi = require('@swtc/api');
 var Remote = japi.Remote;
 var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'});
 remote.getAccountBalances('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz').then(console.log).catch(console.error)
@@ -247,7 +247,7 @@ remote.getAccountBalances('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz').then(console.log
 #### 返回: Promise - json
 #### 例子
 ```javascript
-var japi = require('swtc-api');
+var japi = require('@swtc/api');
 var Remote = japi.Remote;
 var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'});
 remote.getAccountPayment('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', '84CCE378A2882D417AC311CA027FC1EAD21E5486B7C7E6FBFE71187FF28E0F65').then(console.log).catch(console.error)
@@ -293,7 +293,7 @@ remote.getAccountPayment('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', '84CCE378A2882D41
 #### 返回: Promise - json
 #### 例子
 ```javascript
-var japi = require('swtc-api');
+var japi = require('@swtc/api');
 var Remote = japi.Remote;
 var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'});
 remote.getAccountPayments('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz').then(console.log).catch(console.error)
@@ -348,7 +348,7 @@ remote.getAccountPayments('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz').then(console.log
 #### 返回: Promise - json
 #### 例子
 ```javascript
-var japi = require('swtc-api');
+var japi = require('@swtc/api');
 var Remote = japi.Remote;
 var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'});
 remote.getAccountOrder('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', '8D6DC86FF64DFE83AFB9B5B0E43B7BCA05B9FAB88C5F73D540814FE1DE195CAA').then(console.log).catch(console.error)
@@ -393,7 +393,7 @@ remote.getAccountOrder('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', '8D6DC86FF64DFE83AF
 #### 返回: Promise - json
 #### 例子
 ```javascript
-var japi = require('swtc-api');
+var japi = require('@swtc/api');
 var Remote = japi.Remote;
 var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'});
 remote.getAccountOrders('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz').then(console.log).catch(console.error)
@@ -425,7 +425,7 @@ remote.getAccountOrders('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz').then(console.log).
 #### 返回: Promise - json
 #### 例子
 ```javascript
-var japi = require('swtc-api');
+var japi = require('@swtc/api');
 var Remote = japi.Remote;
 var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'});
 remote.getAccountTransaction('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', 'F42226C6A483D14ED14D34945E366917EE508CC04BE00CFF50E200440E6B0AD9').then(console.log).catch(console.error)
@@ -459,7 +459,7 @@ remote.getAccountTransaction('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', 'F42226C6A483
 #### 返回: Promise - json
 #### 例子
 ```javascript
-var japi = require('swtc-api');
+var japi = require('@swtc/api');
 var Remote = japi.Remote;
 var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'});
 remote.getAccountTransactions('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', {limit: 4}).then(console.log).catch(console.error)
@@ -540,7 +540,7 @@ remote.getAccountTransactions('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', {limit: 4}).
 #### 返回: Promise - json
 #### 例子
 ```javascript
-var japi = require('swtc-api');
+var japi = require('@swtc/api');
 var Remote = japi.Remote;
 var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'});
 remote.getAccountSequence('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz').then(console.log).catch(console.error)
@@ -564,7 +564,7 @@ remote.getAccountSequence('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz').then(console.log
 #### 返回: Promise - json
 #### 例子
 ```javascript
-var japi = require('swtc-api');
+var japi = require('@swtc/api');
 var Remote = japi.Remote;
 var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'});
 remote.getOrderBooks('SWT', 'CNY+' + remote._issuer).then(console.log).catch(console.error)
@@ -644,7 +644,7 @@ remote.getOrderBooks('SWT', 'CNY+' + remote._issuer).then(console.log).catch(con
 #### 返回: Promise - json
 #### 例子
 ```javascript
-var japi = require('swtc-api');
+var japi = require('@swtc/api');
 var Remote = japi.Remote;
 var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'});
 remote.getTransaction('FA45FD2FD57BF051EF19C967DFC17CD2721E29BF432B0E10CBE0AF0510A9F032').then(console.log).catch(console.error)
@@ -680,7 +680,7 @@ remote.getTransaction('FA45FD2FD57BF051EF19C967DFC17CD2721E29BF432B0E10CBE0AF051
 #### 返回: Promise - json
 #### 例子
 ```javascript
-var japi = require('swtc-api');
+var japi = require('@swtc/api');
 var Remote = japi.Remote;
 var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'});
 remote.getLedger().then(console.log).catch(console.error)
@@ -707,7 +707,7 @@ remote.getLedger().then(console.log).catch(console.error)
 #### 返回: Promise - json
 #### 例子
 ```javascript
-var japi = require('swtc-api');
+var japi = require('@swtc/api');
 var Remote = japi.Remote;
 var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'});
 remote.getLedger(14685450).then(console.log).catch(console.error)
@@ -767,7 +767,7 @@ remote.getLedger('EBD02238BB712D969CAEF588834DEF15E95FE2E41355A119FF888FDB1F3847
 #### 返回: Promise - json
 #### 例子
 ```javascript
-var japi = require('swtc-api');
+var japi = require('@swtc/api');
 var Remote = japi.Remote;
 var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'});
 remote.getAccountBrokerage('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz').then(console.log).catch(console.error)
@@ -812,7 +812,7 @@ remote.getAccountBrokerage('jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz').then(console.lo
 ##### 返回: Promise
 #### 支付完整例子
 ```javascript
-var japi = require('swtc-api');
+var japi = require('@swtc/api');
 var Remote = japi.Remote;
 var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'});
 remote.buildPaymentTx({
@@ -891,7 +891,7 @@ remote.buildPaymentTx({
 ##### 返回: Promise
 #### 设置关系完整例子
 ```javascript
-var japi = require('swtc-api');
+var japi = require('@swtc/api');
 var Remote = japi.Remote;
 var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'});
 let options = {
@@ -974,7 +974,7 @@ tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C', '授权').then(console.log).ca
 ##### 返回: Promise
 #### 设置属性完整例子
 ```javascript
-var japi = require('swtc-api')
+var japi = require('@swtc/api')
 var Remote = japi.Remote;
 var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'});
 let options = {
@@ -1032,7 +1032,7 @@ tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C').then(console.log).catch(consol
 #### 设置属性完整例子
 #### 挂单完整例子
 ```javascript
-var japi = require('swtc-api');
+var japi = require('@swtc/api');
 var Remote = japi.Remote;
 var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'});
 let options = {
@@ -1112,7 +1112,7 @@ tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C').then(console.log).catch(consol
 ##### 返回: Promise
 #### 取消挂单完整例子
 ```javascript
-var japi = require('swtc-api');
+var japi = require('@swtc/api');
 var Remote = japi.Remote;
 var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'});
 let options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', sequence: 5};
@@ -1182,7 +1182,7 @@ tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C').then(console.log).catch(consol
 |memo|String|备注信息|
 #### 部署合约完整例子
 ```javascript
-var japi = require('swtc-api');
+var japi = require('@swtc/api');
 var Remote = japi.Remote;
 var utils = Remote.utils;
 var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'});
@@ -1268,7 +1268,7 @@ tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C').then(console.log).catch(consol
 |memo|String|留言|
 #### 执行合约完整例子
 ```javascript
-var japi = require('swtc-api');
+var japi = require('@swtc/api');
 var Remote = japi.Remote;
 var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'});
 var options = {account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz', destination: 'jNdpxLQbmMMf4ZVXjn3nb98xPYQ7EpEpTN',foo: 'foo',params: ['jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz']};
@@ -1348,7 +1348,7 @@ tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C').then(console.log).catch(consol
 |secret|String|井通钱包私钥|
 #### 设置挂单佣金完整例子
 ```javascript
-var japi = require('swtc-api');
+var japi = require('@swtc/api');
 var Remote = japi.Remote;
 var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'});
 let options = {
@@ -1411,7 +1411,7 @@ tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C').then(console.log).catch(consol
 ##### 返回: Promise
 #### 部署合约完整例子
 ```javascript
-const japi = require("swtc-api");
+const japi = require("@swtc/api");
 var Remote = japi.Remote;
 var remote = new Remote({
   server: "https://tapi.jingtum.com",
@@ -1482,7 +1482,7 @@ tx.submitPromise(v.secret).then(console.log).catch(console.error)
 ##### 返回: Promise
 ##### 例子
 ```javascript
-var japi = require('swtc-api');
+var japi = require('@swtc/api');
 var Remote = japi.Remote;
 var remote = new Remote({server: 'https://tapi.jingtum.com', solidity: true});
 const v = {
@@ -1537,7 +1537,7 @@ tx.submitPromise(v.secret).then(console.log).catch(console.error)
 #### 返回: Promise - json
 #### 例子
 ```javascript
-var japi = require('swtc-api');
+var japi = require('@swtc/api');
 var Remote = japi.Remote;
 var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'});
 remote.postBlob({blob: '12001F220000000024000004172026000000016140000000000000006840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E1574473045022100FD7DF650C0C753C0589159C383A809C5F2DB7AA53705E1880EF882DFAB577EB702202A91F83336E81EA709C937E1C3DD531BBF52D9A39A386A5AEB49571F7D07F0B781141359AA928F4D98FDB3D93E8B690C80D37DED11C38314C9A6E277B39563107F89277EAF319F5952F5F5C0FEEF70138861393035396362623030303030303030303030303030303063396136653237376233393536333130376638393237376561663331396635393532663566356330363531336564613130303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303035041000E1F1'}).then(console.log).catch(console.error)
@@ -1874,7 +1874,7 @@ contract TokenTest {
 ##### 返回: Promise
 #### 查询帐号的签名列表完整例子
 ```javascript
-const jlib = require("swtc-api");
+const jlib = require("@swtc/api");
 var Remote = jlib.Remote;
 var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5082'})
 const a = { secret: 'snaK5evc1SddiDca1BpZbg1UBft42', address: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n' }
@@ -1979,7 +1979,7 @@ sleep()
 ##### 返回: Promise
 #### 设置帐号的签名列表完整例子
 ```javascript
-const jlib = require("swtc-api");
+const jlib = require("@swtc/api");
 var Remote = jlib.Remote;
 var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5082'})
 const a = { secret: 'snaK5evc1SddiDca1BpZbg1UBft42', address: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n' }
@@ -2144,7 +2144,7 @@ sleep()
 ##### 返回: Promise
 #### 废除主密钥完整例子
 ```javascript
-const jlib = require("swtc-api");
+const jlib = require("@swtc/api");
 var Remote = jlib.Remote;
 var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5082'})
 const a = { secret: 'snaK5evc1SddiDca1BpZbg1UBft42', address: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n' }
@@ -2230,7 +2230,7 @@ sleep()
 ##### 返回: Promise
 #### 激活主密钥完整例子
 ```javascript
-const jlib = require("swtc-api");
+const jlib = require("@swtc/api");
 var Remote = jlib.Remote;
 var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5082'})
 const a = { secret: 'snaK5evc1SddiDca1BpZbg1UBft42', address: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n' }
@@ -2416,7 +2416,7 @@ true
 ##### 返回: promise
 #### 多签支付完整例子
 ```javascript
-const jlib = require("swtc-api");
+const jlib = require("@swtc/api");
 var Remote = jlib.Remote;
 var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5082'})
 const a = { secret: 'snaK5evc1SddiDca1BpZbg1UBft42', address: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n' }
@@ -2656,7 +2656,7 @@ sleep()
 ##### 返回: promise
 #### 多签支付完整例子
 ```javascript
-const jlib = require("swtc-api");
+const jlib = require("@swtc/api");
 var Remote = jlib.Remote;
 var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5082'})
 const a = { secret: 'snaK5evc1SddiDca1BpZbg1UBft42', address: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n' }

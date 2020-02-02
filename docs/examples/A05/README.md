@@ -1,14 +1,14 @@
 # KOA example
 
 1. 工作于 **playground** 目录
-2. 安装 npm install koa swtc-lib swtc-api
+2. 安装 npm install koa @swtc/lib @swtc/api
 3. 创建koa文件 koaweb.js
 ```javascript
 
 const Koa = require('koa');
 const app = new Koa();
-const RemoteLib = require('swtc-lib').Remote
-const RemoteApi = require('swtc-api').Remote
+const RemoteLib = require('@swtc/lib').Remote
+const RemoteApi = require('@swtc/api').Remote
 const remotelib = new RemoteLib()
 const remoteapi = new RemoteApi({})
 

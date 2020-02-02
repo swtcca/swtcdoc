@@ -61,22 +61,22 @@
 ### 模块化
 ```bash
 $ npm list | grep -i swtc
-└─┬ swtc-x-lib@1.0.3
-| ├── swtc-nativescript@1.0.0
-│ └─┬ swtc-transaction@1.2.9
-│   ├─┬ swtc-serializer@2.1.2
-│   │ └─┬ swtc-wallet@1.1.11
-│   │   └─┬ swtc-keypairs@0.11.15
-│   │     └─┬ swtc-address-codec@2.0.7
-│   │       ├── swtc-chains@1.0.6
-│   ├─┬ swtc-utils@1.1.6
-│   │ ├── swtc-wallet@1.1.11 deduped
+└─┬ @swtc/x-lib@1.0.0
+| ├── @swtc/nativescript@1.0.0
+│ └─┬ @swtc/transaction@1.0.0
+│   ├─┬ @swtc/serializer@1.0.0
+│   │ └─┬ @swtc/wallet@1.0.0
+│   │   └─┬ @swtc/keypairs@1.0.0
+│   │     └─┬ @swtc/address-codec@1.0.0
+│   │       ├── @swtc/common@1.0.0
+│   ├─┬ @swtc/utils@1.0.0
+│   │ ├── @swtc/wallet@1.0.0 deduped
 ```
 ### travis集成
   - 代码提交自动测试
 ## 安装
 ```bash
-# npm install swtc-x-lib
+# npm install @swtc/x-lib
 ```
 
 ## 使用 (web)
@@ -85,10 +85,10 @@ $ npm list | grep -i swtc
 
 ## 使用 (nodejs)
 ```javascript
-const Factory = require('swtc-x-lib').Factory  // or import { Factory } from 'swtc-x-lib'
+const Factory = require('@swtc/x-lib').Factory  // or import { Factory } from '@swtc/x-lib'
 // 井通库
 const RemoteJ = Factory('jingtum')  // or const RemoteJ = Factory('swt')
-const remoteJ = new RemoteJ({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'})
+const remoteJ = new RemoteJ({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'})
 // 相应组件
 // const WalletJ = RemoteJ.Wallet
 // const TransactionJ = RemoteJ.Transaction

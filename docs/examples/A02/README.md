@@ -13,7 +13,7 @@
 1. 工作于 playground 目录
 2. 安装 swtc-lib
 ```bash
-$ npm install swtc-lib
+$ npm install @swtc/lib
 ```
 3. promisify
 ```javascript

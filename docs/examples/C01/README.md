@@ -12,8 +12,8 @@ $ tree
 "use strict"
 
 // 引用swtc-lib库
-const Wallet = require('swtc-lib').Wallet
-const Remote = require('swtc-lib').Remote
+const Wallet = require('@swtc/lib').Wallet
+const Remote = require('@swtc/lib').Remote
 
 const remote = new Remote()
 const currency_swt = remote.makeCurrency()

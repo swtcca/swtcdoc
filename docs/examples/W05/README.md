@@ -17,7 +17,7 @@ $ cd vuewebproject
 ```
 4. 安装swtc-lib
 ```bash
-$ npm install swtc-lib
+$ npm install @swtc/lib
 ```
 5. 启动开发服务器
 ```bash
@@ -106,7 +106,7 @@ a {
 </template>
 
 <script>
-const SwtcLib = require('swtc-lib')
+const SwtcLib = require('@swtc/lib')
 const Wallet = SwtcLib.Wallet
 const Remote = SwtcLib.Remote
 const remote = new Remote()

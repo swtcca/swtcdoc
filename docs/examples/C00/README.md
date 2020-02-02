@@ -12,7 +12,7 @@ $ npm init -y
 ```
 3. 安装swtc-lib库
 ```bash
-$ npm install swtc-lib
+$ npm install @swtc/lib
 ```
 
 ## 运行方式
@@ -21,7 +21,7 @@ $ npm install swtc-lib
 $ node
 ```
 ```javascript
-> var Wallet = require('swtc-lib').Wallet
+> var Wallet = require('@swtc/lib').Wallet
 undefined
 > Wallet.generate()
 { secret: 'snJT6UyLWWSpHd7BurPZnXjjvQgYE',
@@ -29,9 +29,9 @@ undefined
 ```
 2. 脚本文件运行
 ```bash
-$ echo -e "const Wallet = require('swtc-factory').Wallet\nvar wallet = new Wallet('snJT6UyLWWSpHd7BurPZnXjjvQgYE')\nconsole.log(wallet)" > file.js
+$ echo -e "const Wallet = require('@swtc/wallet').Wallet\nvar wallet = new Wallet('snJT6UyLWWSpHd7BurPZnXjjvQgYE')\nconsole.log(wallet)" > file.js
 $ cat file.js
-const Wallet = require('swtc-wallet').Wallet
+const Wallet = require('@swtc/wallet').Wallet
 var wallet = new Wallet('snJT6UyLWWSpHd7BurPZnXjjvQgYE')
 console.log(wallet)
 $ node file.js
@@ -45,15 +45,15 @@ Wallet {
 ```
 3. 半交互式
 ```bash
-$ echo -e "const Wallet = require('swtc-factory').Wallet\nvar wallet = Wallet.fromSecret('snJT6UyLWWSpHd7BurPZnXjjvQgYE')\n" >  file2.js
+$ echo -e "const Wallet = require('@swtc/wallet').Wallet\nvar wallet = Wallet.fromSecret('snJT6UyLWWSpHd7BurPZnXjjvQgYE')\n" >  file2.js
 $ cat file2.js 
-const Wallet = require('swtc-wallet').Wallet
+const Wallet = require('@swtc/wallet').Wallet
 var wallet = Wallet.fromSecret('snJT6UyLWWSpHd7BurPZnXjjvQgYE')
 $ node
 ```
 ```javascript
 > .load file2.js
-const Wallet = require('swtc-wallet').Wallet
+const Wallet = require('@swtc/wallet').Wallet
 var wallet = Wallet.fromSecret('snJT6UyLWWSpHd7BurPZnXjjvQgYE')
  
 undefined

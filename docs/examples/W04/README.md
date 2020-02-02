@@ -15,9 +15,9 @@ $ npm install -g yarn
 $ npx create-react-app myreactweb
 $ cd myreactweb
 ```
-4. 安装swtc-lib
+4. 安装@swtc/lib
 ```bash
-$ yarn add swtc-lib
+$ yarn add @swtc/lib
 ```
 5. 启动开发服务器
 ```bash
@@ -66,8 +66,8 @@ class App extends Component {
     this.state = { wallet: {}, ledger: {}, price: [], state: ''}
   }
   componentDidMount() {
-    this.Wallet = require('swtc-lib').Wallet
-	const Remote = require('swtc-lib').Remote
+    this.Wallet = require('@swtc/lib').Wallet
+	const Remote = require('@swtc/lib').Remote
     const currency_swt = remote.makeCurrency()
     const currency_cny = remote.makeCurrency('CNY')
     const swt_vs_cny = { limit: 5, gets: currency_swt, pays: currency_cny }

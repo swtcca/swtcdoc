@@ -14,9 +14,9 @@ $ git clone git@github.com:muweigg/ng7.git
 ```bash
 $ cd ng7
 ```
-4. 安装swtc-lib
+4. 安装@swtc/lib
 ```bash
-$ npm install swtc-lib
+$ npm install @swtc/lib
 ```
 5. 启动开发服务器
 ```bash
@@ -83,7 +83,7 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
-    const SwtcLib = require('swtc-lib')
+    const SwtcLib = require('@swtc/lib')
     const Wallet = SwtcLib.Wallet
     const Remote = SwtcLib.Remote
     const remote = new Remote()
