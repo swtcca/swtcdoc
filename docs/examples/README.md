@@ -29,7 +29,7 @@ const Remote = require('@swtc/lib').Remote
 1. 创建remote对象
 >  `const remote = new (require('@swtc/lib').Remote)()`
 
->  `const remote_test = new (require('@swtc/lib').Remote)({server: 'ws://ts5.jingtum.com:5020', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'})`
+>  `const remote_test = new (require('@swtc/lib').Remote)({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'})`
 2. 连接服务器
 >  `remote.connectPromise().then(console.log).catch(console.error)`
 3. 获取帐本
