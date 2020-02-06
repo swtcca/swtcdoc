@@ -84,7 +84,7 @@
 #### swtc-proxy, 推荐
 > ### 公链 http://swtcproxy.swtclib.ca:5080
 > ### 测试 http://swtcproxy.swtclib.ca:5081
-> ### 多签 http://swtcproxy.swtclib.ca:5082
+> ### ~~多签 http://swtcproxy.swtclib.ca:5082~~
 > ### ~~公链 http://swtc-api.swtc.top:5080~~
 > ### ~~测试链 http://swtc-tapi.swtc.top:5080~~
 ####  jingtum-api, 本身允许不安全操作，注意
@@ -169,16 +169,14 @@ console.log(w2);
 * buildContractInvokeTx(options)
 * makeCurrency()
 * makeAmount()
-* txSignPromise()
-* txSubmitPromise()
+* buildSignFirstTx()
+* buildSignOtherTx()
+* buildMultisignedTx()
+* buildSignerListTx(options)
 * tx.signPromise()
 * tx.submitPromise()
-* txBuildSignFirstTx()
-* txBuildSignOtherTx()
-* txBuildMultisignedTx()
 * tx.multiSigning()
 * tx.multiSigned()
-* buildSignerListTx(options)
 
 ### <a name="remoteCreate"></a>4.1 创建Remote对象
 #### 方法:new Remote(options);
