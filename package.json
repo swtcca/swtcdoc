@@ -23,6 +23,8 @@
   },
   "homepage": "https://github.com/swtcca/swtcdoc#readme",
   "devDependencies": {
+    "mermaid": "^8.4.6",
+    "vue-typed-js": "^0.1.2",
     "vuepress": "^1.0.4"
   }
 }
