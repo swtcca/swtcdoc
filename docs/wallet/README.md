@@ -28,13 +28,15 @@
 </vue-typed-js>
 :::
 
-::: details 移动开发
+## 关系
+
+::: details 移动开发支持
 ```bash
-mbp:Documents xcliu$ tns create bipapp --js
-mbp:Documents xcliu$ cd bipapp
-mbp:bipapp xcliu$ npm install bip32 bip39 @swtc/wallet @swtc/nativescript
-mbp:bipapp xcliu$ echo "更新webpack配置 更新程序引入bip和swtc"
-mbp:bipapp xcliu$ git diff
+Documents xcliu$ tns create bipapp --js
+Documents xcliu$ cd bipapp
+bipapp xcliu$ npm install bip32 bip39 @swtc/wallet @swtc/nativescript
+bipapp xcliu$ echo "更新webpack配置 更新程序引入bip和swtc"
+bipapp xcliu$ git diff
 diff --git a/webpack.config.js b/webpack.config.js
 index 59360c3..e6583c2 100644
 --- a/webpack.config.js
@@ -65,7 +67,7 @@ index 59360c3..e6583c2 100644
              }),
              // Remove all files from the out dir.
              new CleanWebpackPlugin(itemsToClean, { verbose: !!verbose }),
-mbp:bipapp xcliu$ git diff app
+bipapp xcliu$ git diff app
 diff --git a/app/main-view-model.js b/app/main-view-model.js
 index 0903f55..046e416 100755
 --- a/app/main-view-model.js
@@ -112,7 +114,7 @@ index 0903f55..046e416 100755
      };
  
     return viewModel;
-mbp:bipapp xcliu$ tns run android
+bipapp xcliu$ tns run android
 ```
 :::
 
