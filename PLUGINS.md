@@ -1,5 +1,36 @@
 # plugins
 
+## containers
+
+::: tip
+This is a tip
+:::
+
+::: warning
+This is a warning
+:::
+
+::: danger
+This is a dangerous warning
+:::
+
+::: details
+This is a details block, which does not work in IE / Edge
+:::
+
+::: danger STOP
+Danger zone, do not proceed
+:::
+
+::: details 代码
+
+```js{2}
+console.log("Hello, VuePress!")
+console.log("Hello, SwtcLib!")
+```
+
+:::
+
 ## vue-typed-js
 
 <vue-typed-js :strings="items">
@@ -105,3 +136,15 @@ pie title Pets adopted by volunteers
     "Cats" : 85
     "Rats" : 15
 </mermaid>
+
+## video
+
+<video width="560" height="240" controls>
+  <source src="https://sample-videos.com/video123/mp4/480/big_buck_bunny_480p_1mb.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/bTqVqk7FSmY" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+
+<iframe src="https://player.vimeo.com/video/143418951" width="560" height="315" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+<p><a href="https://vimeo.com/143418951">&quot;View From A Blue Moon&quot; Trailer</a> from <a href="https://vimeo.com/johnjohnflorence">John John Florence</a> on <a href="https://vimeo.com">Vimeo</a>.</p>

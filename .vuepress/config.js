@@ -3,10 +3,10 @@ module.exports = {
   title: "SWTCLIB",
   description: "社区版swtc公链node.js开发库",
   themeConfig: {
-    repo: "swtcca/swtc-app-examples",
+    repo: "swtcca/swtcdoc",
     lastUpdated: "Last Updated", // string | boolean
     repoLabel: "Contribute!",
-    docsRepo: "swtcca/swtc-app-examples",
+    docsRepo: "swtcca/swtcdoc",
     docsDir: "docs",
     editLinks: true,
     editLinkText: "帮助维护文档!",
@@ -21,4 +21,4 @@ module.exports = {
       { text: "API扩展", link: "/docs/swtcapi/" }
     ]
   }
-};
+}
