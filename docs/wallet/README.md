@@ -27,7 +27,8 @@
   <p>const pkg = require("@swtc/<span class="typing"></span>")</p>
 </vue-typed-js>
 :::
-::: details 移动开发nativescript
+
+::: details 移动开发
 ```bash
 mbp:Documents xcliu$ tns create bipapp --js
 mbp:Documents xcliu$ cd bipapp
@@ -110,7 +111,7 @@ index 0903f55..046e416 100755
 +        viewModel.set("message", getMessage(viewModel.counter, viewModel.mnemonic, viewModel.seed.toString("hex"), viewModel.b32.toString("hex")));
      };
  
-     return viewModel;
+    return viewModel;
 mbp:bipapp xcliu$ tns run android
 ```
 :::
