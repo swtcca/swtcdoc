@@ -86,7 +86,7 @@ const entropy = Buffer.alloc(16)  // 128位整数， 0
 privateKey = Buffer.from(Keypairs.hash(entropy)).toString('hex').toUpperCase()
 console.log(`私钥（ed25519）：${privateKey}`)
 
-const keypair = Keypairs.deriveKeypair({privateKey, algorithm: "ed25519"})
+const keypair = Keypairs.deriveKeypair(privateKey, "ed25519")
 console.log(keypair)
 
 const address = Keypairs.deriveAddress(keypair.publicKey)
