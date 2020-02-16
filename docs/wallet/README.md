@@ -281,7 +281,7 @@ bip43的一个实例<br>
 :::
 ::: details 代码演示
 ```javascript
-> .load test.js
+> .load t.js
 const bip39 = require("bip39")
 const bip32 = require("bip32")
 const constants = require("bip44-constants")
@@ -296,16 +296,16 @@ b32 = bip32.fromSeed(seed)
 
 console.log(`主节点 私钥: ${b32.privateKey.toString("hex")}`)
 
-let private_key_moac = b32.derivePath(`m/44'/${MOAC}'/0/0/0`).privateKey
-let private_key_swtc = b32.derivePath(`m/44'/${SWTC}'/0/0/0`).privateKey
+let private_key_moac = b32.derivePath(`m/44'/${MOAC}'/0'/0/0`).privateKey
+let private_key_swtc = b32.derivePath(`m/44'/${SWTC}'/0'/0/0`).privateKey
 
 console.log(`墨客 第一个私钥: ${private_key_moac.toString("hex")}`)
 console.log(`井通 第一个私钥: ${private_key_swtc.toString("hex")}`)
 
 315
 主节点 私钥: de515c704d69559b2ad1bd1724cd400097fa5c7b94cce4249f4198239f3e1af2
-墨客 第一个私钥: 4811ecbd173cf51a85b7563dbc55ff95760e3b286d81cf766043c08423b73c05
-井通 第一个私钥: c038cb886d299ff45362ca39900a7025c484ddf6dbac20676b6fe7cc509231d1
+墨客 第一个私钥: 0e380e7f29a9bdbf0d04e8933e625d244737154b095edcc14dadffb8ae707b01
+井通 第一个私钥: 42f255cd10c52ddda2af360b6561caf3275c02bd2e5fce6886c6ddc389ba72e9
 undefined
 >
 ```
