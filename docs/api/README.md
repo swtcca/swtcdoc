@@ -1874,7 +1874,7 @@ contract TokenTest {
 ```javascript
 const jlib = require("@swtc/api");
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5082'})
+var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'})
 const a = { secret: 'snaK5evc1SddiDca1BpZbg1UBft42', address: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n' }
 const log_json = object => console.log(JSON.stringify(object, '', 2))
 const sleep = time => new Promise(res => setTimeout(() => res(), time || 1))
@@ -1979,7 +1979,7 @@ sleep()
 ```javascript
 const jlib = require("@swtc/api");
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5082'})
+var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'})
 const a = { secret: 'snaK5evc1SddiDca1BpZbg1UBft42', address: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n' }
 const a1 = { secret: 'ssmhW3gLLg8wLPzko3dx1LbuDcwCW', address: 'jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq' }
 const a2 = { secret: 'ssXLTUGS6ZFRpGRs5p94BBu6mV1vv', address: 'jUv833RRTAZhbUyRzSsAutM9GwbprregiE' }
@@ -2144,7 +2144,7 @@ sleep()
 ```javascript
 const jlib = require("@swtc/api");
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5082'})
+var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'})
 const a = { secret: 'snaK5evc1SddiDca1BpZbg1UBft42', address: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n' }
 const log_json = object => console.log(JSON.stringify(object, '', 2))
 const sleep = time => new Promise(res => setTimeout(() => res(), time || 1))
@@ -2230,7 +2230,7 @@ sleep()
 ```javascript
 const jlib = require("@swtc/api");
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5082'})
+var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'})
 const a = { secret: 'snaK5evc1SddiDca1BpZbg1UBft42', address: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n' }
 const a1 = { secret: 'ssmhW3gLLg8wLPzko3dx1LbuDcwCW', address: 'jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq' }
 const a2 = { secret: 'ssXLTUGS6ZFRpGRs5p94BBu6mV1vv', address: 'jUv833RRTAZhbUyRzSsAutM9GwbprregiE' }
@@ -2416,7 +2416,7 @@ true
 ```javascript
 const jlib = require("@swtc/api");
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5082'})
+var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'})
 const a = { secret: 'snaK5evc1SddiDca1BpZbg1UBft42', address: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n' }
 const a1 = { secret: 'ssmhW3gLLg8wLPzko3dx1LbuDcwCW', address: 'jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq' }
 const a2 = { secret: 'ssXLTUGS6ZFRpGRs5p94BBu6mV1vv', address: 'jUv833RRTAZhbUyRzSsAutM9GwbprregiE' }
@@ -2656,7 +2656,7 @@ sleep()
 ```javascript
 const jlib = require("@swtc/api");
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5082'})
+var remote = new Remote({server: 'http://swtcproxy.swtclib.ca:5080'})
 const a = { secret: 'snaK5evc1SddiDca1BpZbg1UBft42', address: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n' }
 const a1 = { secret: 'ssmhW3gLLg8wLPzko3dx1LbuDcwCW', address: 'jhEXgnPdLijQ8Gaqz4FCxUFAQE31LqoNMq' }
 const a2 = { secret: 'ssXLTUGS6ZFRpGRs5p94BBu6mV1vv', address: 'jUv833RRTAZhbUyRzSsAutM9GwbprregiE' }
