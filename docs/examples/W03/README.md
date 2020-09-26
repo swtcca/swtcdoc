@@ -23,7 +23,7 @@ $ tree
 │   └── index.js
 └── styles.css
 ```
-4. 安装swtc-lib库和webpack
+4. 安装@swtc/lib库和webpack
 ```bash
 $ npm install @swtc/lib
 $ npm install webpack webpack-cli
@@ -62,10 +62,10 @@ $ npm install webpack webpack-cli
 	</body>
 </html>
 ```
-7. javascript 文件放到src/index.js中， 注意可以直接使用node.js的方式引用swtc-lib库, webpack会做出处理
+7. javascript 文件放到src/index.js中， 注意可以直接使用node.js的方式引用@swtc/lib库, webpack会做出处理
 ```javascript
 const Wallet = require('@swtc/lib').Wallet // node.js方式导入库
-import { Remote } from 'swtc-lib' // esm import也可以
+import { Remote } from '@swtc/lib' // esm import也可以
 
 const dom_wallet = document.querySelector('.js-wallet')
 const dom_ledger = document.querySelector('.js-ledger')

@@ -10,7 +10,7 @@ $ cd playground
 ```bash
 $ npm init -y
 ```
-3. 安装swtc-lib库
+3. 安装@swtc/lib库
 ```bash
 $ npm install @swtc/lib
 ```

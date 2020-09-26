@@ -1,18 +1,19 @@
 # Async/Await 是对Promise的进一步简化，让程序看起来像是同步运行一样
 
+0. @swtc/lib已内置支持promise， 下面是对jingtum-lib操作
 1. 工作于 playground 目录
-2. 安装 swtc-lib 和 bluebird
+2. 安装 jingtum-lib 和 bluebird
 ```bash
-$ npm install swtc-lib
+$ npm install jingtum-lib
 $ npm install bluebird
 ```
 3. async/await
 ```javascript
-const SWTCLIB = require('@swtc/lib')
+const JLIB = require('jingtum-lib')
 const BLUEBIRD = require('bluebird')
-BLUEBIRD.promisifyAll(SWTCLIB)
+BLUEBIRD.promisifyAll(JLIB)
 
-const Remote = SWTCLIB.Remote
+const Remote = JLIB.Remote
 const remote = new Remote()
 // 我们现在对于每个有回调的函数就拥有相应的Async函数, 最常见
 // await必须运行于async函数中

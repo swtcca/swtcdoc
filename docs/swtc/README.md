@@ -1,4 +1,4 @@
-# swtc-lib swtc-x-lib 增强
+# @swtc/lib @swtc/x-lib 增强
 
 ## [应用实例](../examples/)
 
@@ -17,8 +17,8 @@
 
 ## 内容
 ### 扩展
-  - 实现了ApiRemote(swtc-api) - 目前只支持井通
-  - 默认使用 https://api.jingtum.com
+  - 实现了ApiRemote(@swtc/api) - 目前只支持井通
+  - 默认使用 https://swtcproxy.swtclib.ca
 ### 安全
   - 本地签名
   - 密钥不出本机
@@ -61,23 +61,16 @@
   - eslint / tslint
 ### 模块化
 ```bash
-$ npm list | grep -i swtc
-├─┬ swtc-api@1.1.2
-│ └─┬ swtc-transaction@1.2.9
-│   ├─┬ swtc-serializer@2.1.2
-│   │ └─┬ swtc-wallet@1.1.11
-│   │   └─┬ swtc-keypairs@0.11.15
-│   │     └─┬ swtc-address-codec@2.0.7
-│   │       ├── swtc-chains@1.0.6
-│   ├─┬ swtc-utils@1.1.6
-│   │ ├── swtc-wallet@1.1.11 deduped
-├─┬ swtc-lib@1.6.16
-│ ├─┬ swtc-nativescript@1.0.0
-│ │ └─┬ swtc-nativescript-brorand@1.1.2
-│ ├── swtc-transaction@1.2.9 deduped
-└─┬ swtc-x-lib@1.0.2
-  ├── swtc-nativescript@1.0.0 deduped
-  ├── swtc-transaction@1.2.9 deduped
+$ npm list | grep swtc | grep -v deduped
+├─┬ @swtc/lib@1.0.14
+│ ├─┬ @swtc/address-codec@1.0.12
+│ ├── @swtc/common@1.0.18
+│ ├─┬ @swtc/keypairs@1.0.15
+│ ├─┬ @swtc/serializer@1.0.14
+│ ├─┬ @swtc/transaction@1.0.17
+│ ├─┬ @swtc/utils@1.0.13
+│ ├─┬ @swtc/wallet@1.0.16
+└─┬ @swtc/x-lib@1.0.13
 ```
 ### travis集成
   - 代码提交自动测试

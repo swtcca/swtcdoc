@@ -1,6 +1,6 @@
 # swtc-transaction
 
-## swtc-transaction is seprated package from swtc-lib (jingtum-lib)
+## swtc-transaction is seprated package from @swtc/lib (jingtum-lib)
 
 > ### keeps the **same interface** as original without **websocket** dependancy
 >
@@ -8,7 +8,7 @@
 >
 > ### adds transaction builds and submit
 >
-> ### support multiple **Remote** including swtc-lib(websocket) and swtc-api(api)
+> ### support multiple **Remote** including @swtc/lib(websocket) and swtc-api(api)
 
 ## Changes
 
@@ -17,10 +17,10 @@
 - typescript OrderBook
 - typescript support
 - add methods buildRelationTx()
-- support null Remote, swtc-api Remote and swtc-lib Remote
+- support null Remote, swtc-api Remote and @swtc/lib Remote
 - add method submitApi() to submit transactions to https://api.jingtum.com by default
 - add methods buildPaymentTx(), buildOfferCreateTX(), buildOfferCancelTx()
-- seperate package from swtc-lib
+- seperate package from @swtc/lib
 
 ## Getting and Using `swtc-transaction`
 
@@ -139,10 +139,8 @@ Promise {}
 **Build from the source and test**
 
 ```bash
-  $ git clone https://github.com/swtcca/swtc-lib.git -b transaction swtc-transaction
-  $ cd swtc-transaction; npm install
-  $ npm run build or npm run build:production (optional for static browser)
-  $ npm run test
+  $ git clone https://github.com/swtcca/swtclib.git
+  $ npm install; npm run test
 ```
 
 ---

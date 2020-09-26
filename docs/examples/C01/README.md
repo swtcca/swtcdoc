@@ -1,7 +1,7 @@
 # 终端程序
 
 1. 工作于 **playground** 目录
-2. 安装 swtc-lib
+2. 安装 @swtc/lib
 3. 生成文件 **index.js** ,  目录结构和内容如下
 ```bash
 $ tree
@@ -11,7 +11,7 @@ $ tree
 ```javascript
 "use strict"
 
-// 引用swtc-lib库
+// 引用@swtc/lib库
 const Wallet = require('@swtc/lib').Wallet
 const Remote = require('@swtc/lib').Remote
 

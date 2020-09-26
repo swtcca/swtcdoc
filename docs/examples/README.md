@@ -1,7 +1,9 @@
 
-# DAPP Examples Using Javascript and SWTC-LIB
+# DAPP Examples Using Javascript and @SWTC/LIB
 
-## 使用swtc-lib
+[[toc]]
+
+## 使用@swtc/lib
 
 - 正常情况下，所有实例使用的node.js为最新的LTS版本
 - 正常情况下，所有显式安装的包使用缺省的最新版本
@@ -25,7 +27,7 @@ const Remote = require('@swtc/lib').Remote
 ## 单行代码操作
 0. 导入钱包/库
 > - `const Remote = require('@swtc/lib').Remote`
-> - `import { Remote } from 'swtc-lib'`
+> - `import { Remote } from '@swtc/lib'`
 1. 创建remote对象
 >  `const remote = new (require('@swtc/lib').Remote)()`
 

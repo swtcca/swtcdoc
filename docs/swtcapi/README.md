@@ -7,7 +7,7 @@
 
 - added .txSignPromise() and .txSubmitPromise()
 
-## Compare with swtc-lib
+## Compare with jingtum-lib
 
 1. use rest **api** instead of web socket
 2. masked unsafe operations (never send out **secret**)

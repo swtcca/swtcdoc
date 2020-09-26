@@ -1,6 +1,6 @@
 # Promise 和 Promisify
 
-### swtc-lib的Promise皆以Promise结尾，比如
+### @swtc/lib的Promise皆以Promise结尾，比如
 - connectPromise()
 - signPromise()
 - submitPromise()
@@ -8,10 +8,10 @@
 - txSignPromise()
 - txSubmitPromise()
 
-### jingtum-lib 没有提供原生的Promise支持, swtc-lib支持
+### jingtum-lib 没有提供原生的Promise支持, @swtc/lib支持
 0. 可以使用工具 **bluebird** 为jingtum-lib提供Promise
 1. 工作于 playground 目录
-2. 安装 swtc-lib
+2. 安装 @swtc/lib
 ```bash
 $ npm install @swtc/lib
 ```

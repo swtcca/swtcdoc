@@ -15,7 +15,7 @@ $ npm install -g @vue/cli
 $ vue create vuewebproject
 $ cd vuewebproject
 ```
-4. 安装swtc-lib
+4. 安装@swtc/lib
 ```bash
 $ npm install @swtc/lib
 ```
@@ -89,7 +89,7 @@ a {
 ```vue
 <template>
 	<div class="hello">
-	<h1>SWTC-LIB示例</h1>
+	<h1>@SWTC/LIB示例</h1>
 	<div>
 		<h3>钱包</h3><hr>
 		<pre>{{ wallet_text }}</pre>

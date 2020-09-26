@@ -17,7 +17,7 @@ $ tns doctor
 $ tns create vuemobapp --vue
 $ cd vuemobapp
 ```
-4. 安装swtc-lib@nativescript定制版本
+4. 安装@swtc/lib
 ```bash
 $ npm install @swtc/lib
 ```

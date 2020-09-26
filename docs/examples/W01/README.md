@@ -53,7 +53,7 @@ $ tree
   - 浏览器中打开index.html
   - 打开Javascript Console, 处于浏览器运行时的交互模式
   - 类似于node.js交互式运行，每个命令都有即时反馈
-  - 不同于node.js运行，导入swtc-lib是在html文件中指定了
+  - 不同于node.js运行，导入@swtc/lib是在html文件中指定了
   - [除了导入库不同外其他代码和node.js完全不变](../C01)
 ```javascript
 > const Wallet = swtc_lib.Wallet
