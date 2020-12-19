@@ -16,7 +16,7 @@ features:
 - title: 现代化
   details: Promise, typescript, rollup, esm
 - title: 扩展性
-  details: 已经增加api, 可加代理版remote
+  details: 增加api/rpc, 可加代理版remote
 - title: 联盟链支持
   details: 等同支持所有井通联盟链
 - title: CDN可用
@@ -41,6 +41,8 @@ features:
 	<img src="https://img.shields.io/badge/browserify-ready-green.svg" alt="browserify" />
 	<img src="https://img.shields.io/badge/webpack-ready-green.svg" alt="webpack" />
 	<br>
+	<a href="https://nodei.co/npm/@swtc/rpc/"><img src="https://nodei.co/npm/@swtc/rpc.png?compact=true" /></a>
+	<br>
 	<a href="https://nodei.co/npm/@swtc/lib/"><img src="https://nodei.co/npm/@swtc/lib.png?compact=true" /></a>
 	<br>
 	<a href="https://nodei.co/npm/@swtc/api/"><img src="https://nodei.co/npm/@swtc/api.png?compact=true" /></a>
@@ -54,6 +56,7 @@ features:
 
 <h3><a href="docs/swtc/">改进提高</a></h3>
 <h3><a href="docs/swtclib/">编程接口(lib)</a></h3>
+<h3><a href="docs/swtcrpc/">编程接口(rpc)</a></h3>
 <h3><a href="docs/api/">编程接口(api)</a></h3>
 <h3><a href="docs/examples/">应用实例</a></h3>
 <h3><a href="docs/swtcxlib/">联盟链扩展</a></h3>
@@ -66,6 +69,7 @@ features:
 |[@swtc/proxy](docs/swtcproxy/)||节点代理, 提供标准API接口|
 |[@swtc/x-lib](docs/swtcxlib/)|name: swtc_x_lib<br>[unpkg](https://unpkg.com/@swtc/x-lib)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/@swtc/x-lib)|支持井通联盟链, 基于websocket|
 |[@swtc/lib](docs/swtclib/)|name: swtc_lib<br>[unpkg](https://unpkg.com/@swtc/lib)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/@swtc/lib)|SWTC公链库, 基于websocket|
+|[@swtc/rpc](docs/swtcrpc/)|name: swtc_rpc<br>[unpkg](https://unpkg.com/@swtc/rpc)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/@swtc/rpc)|SWTC公链库, 基于rpc|
 |[@swtc/api](docs/swtcapi/)|name: swtc_api<br>[unpkg](https://unpkg.com/@swtc/api)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/@swtc/api)|SWTC公链库, 基于restapi|
 |[@swtc/transaction](docs/swtctx/)|name: swtc_transaction<br>[unpkg](https://unpkg.com/@swtc/transaction)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/@swtc/transaction)|井通公链交易库, 支付/挂单/关系/合约|
 |@swtc/serializer||井通公链交易序列化库, 基于钱包|
