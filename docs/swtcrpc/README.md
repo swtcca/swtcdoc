@@ -1135,6 +1135,59 @@ Promise { <pending> }
   ]
 }
 ```
+#### 4.6.7 Remote.rpcAccountRelation(params: IRpcAccountRelationOptions) 获取账户关系
+::: tip 参数
+```typescript
+export interface IRpcAccountRelationOptions {
+  account: string
+  ledger_index?: "validated" | "closed" | "current" | number
+  ledger_hash?: string
+  strict?: boolean
+  peer?: string
+  marker?: IMarker
+}
+```
+:::
+::: details 参数说明
+| 参数          | 类型        | 解析
+|--------------|-------------|-----| 
+| account      | string      | 指定账户, 地址 |
+| ledger_index | Uint/string | 可选参数, 指定账本,"validated","closed","current"或区块编号 |
+| ledger_hash  | string      | 可选参数, 指定账本, 区块哈希 |
+| strict       | boolean     | 可选参数, 严格模式，account要求地址或公钥 |
+| peer         | string      | 可选参数, 第二个账户的地址，如果提供，则只显示连接这两个账户之间的relation |
+| marker       | IMarker     | 可选参数，分页相关 |
+:::
+::: details 代码示例
+```javascript
+> const Remote = require("@swtc/rpc").Remote
+> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> remote.rpcAccountRelation({account: "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz"}).then(console.log)
+Promise { <pending> }
+> {
+  account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+  ledger_current_index: 17867635,
+  lines: [
+    {
+      currency: 'JSLASH',
+      issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
+      limit: '1',
+      limit_peer: 'j3vyFAMQW2Ls48eoFCTsMXFq2KNWVUskSx',
+      relation_type: '1'
+    },
+    {
+      currency: 'CNY',
+      issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
+      limit: '0.1',
+      limit_peer: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
+      relation_type: '3'
+    }
+  ],
+  status: 'success',
+  validated: false
+}
+```
+:::
 :::
 ## 5 错误处理
 所有rpc交互都是通过axios进行的，返回`Promise`, 不成功时抛出`Exception`
