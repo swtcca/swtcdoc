@@ -1054,17 +1054,17 @@ remote.connect(function(err, result) {
 ```javascript
 var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
-var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
+var remote = new Remote({server: 'ws://ws.swtclib.ca:5020'});
 remote.connectPromise()
     .then(async () => {
     		let options = {
     		    type: 'Sell',
     		    account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
-    		    taker_pays: remote.makeAmount(0.01, 'CNY'),
-    		    taker_gets: remote.makeAmount(1)
+    		    taker_pays: remote.makeAmount(1),
+    		    taker_gets: remote.makeAmount(0.01, "slash")
     		};
     		let tx = remote.buildOfferCreateTx(options);
-            let response = await tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C')
+            let response = await tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C', "payment tx demo")
             console.log(response)
             remote.disconnect()
         }
@@ -1073,29 +1073,30 @@ remote.connectPromise()
 ```
 ###### 返回结果:
 ```javascript
-> res: { engine_result: 'tesSUCCESS',
+> {
+  engine_result: 'tesSUCCESS',
   engine_result_code: 0,
-  engine_result_message:
-   'The transaction was applied. Only final in a validated ledger.',
-  tx_blob:
-   '1200072200080000240000000764D4038D7EA4C68000000000000000000000000000434E590000000000054FADDC8595E2950FA43F673F65C2009F58C7F16540000000000F42406840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15744730450221009BC83757257D09A5B66B07BD06E9368B5DED0FD576487FE88F8DD6B1D96B735A022020827BE97AD1DE11D528721E3BBCB0DA4C8E0591DBC244905AB776DCD72ED20981141359AA928F4D98FDB3D93E8B690C80D37DED11C3',
-  tx_json:
-   { Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
-     Fee: '10000',
-     Flags: 524288,
-     Sequence: 7,
-     SigningPubKey:
-      '029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15',
-     TakerGets: '1000000',
-     TakerPays:
-      { currency: 'CNY',
-        issuer: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
-        value: '0.01' },
-     TransactionType: 'OfferCreate',
-     TxnSignature:
-      '30450221009BC83757257D09A5B66B07BD06E9368B5DED0FD576487FE88F8DD6B1D96B735A022020827BE97AD1DE11D528721E3BBCB0DA4C8E0591DBC244905AB776DCD72ED209',
-     hash:
-      '3EB37E4CB1017C1A5F4DA81B95CBB94345405BA7F791445BF9EEA9AB8C177DD8' } }
+  engine_result_message: 'The transaction was applied. Only final in a validated ledger.',
+  status: 'success',
+  tx_blob: '120007220008000024000000706440000000000F424065D4038D7EA4C680000000000000000000004A534C4153480000000000A582E432BFC48EEDEF852C814EC57F3CD2D415966840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E1574473045022100DF3A6A51BBE9C3D87C9923DE59C59D443A58A78254DB99881A2BE095D3C1B3C6022009947792ADA2E6FFB920D73E1E98331BE07DA55786251937B36536A8A4EBD15C81141359AA928F4D98FDB3D93E8B690C80D37DED11C3F9EA7D0F7061796D656E742074782064656D6FE1F1',
+  tx_json: {
+    Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+    Fee: '10000',
+    Flags: 524288,
+    Memos: [ [Object] ],
+    Sequence: 112,
+    SigningPubKey: '029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15',
+    TakerGets: {
+      currency: 'JSLASH',
+      issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
+      value: '0.01'
+    },
+    TakerPays: '1000000',
+    TransactionType: 'OfferCreate',
+    TxnSignature: '3045022100DF3A6A51BBE9C3D87C9923DE59C59D443A58A78254DB99881A2BE095D3C1B3C6022009947792ADA2E6FFB920D73E1E98331BE07DA55786251937B36536A8A4EBD15C',
+    hash: '27BE735F6D1A226A67821EDE68270B21F09A9DEDCEA2B018A3EBE341E28829B4'
+  }
+}
 ```
 ###### 返回结果说明:
 |参数|类型|说明|
@@ -1137,7 +1138,7 @@ remote.connectPromise()
 |secret|String|井通钱包私钥|
 |memo|String|备注信息|
 ###### 返回: Promise
-##### 挂单完整例子
+##### 取消挂单完整例子
 ```javascript
 var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;

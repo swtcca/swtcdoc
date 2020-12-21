@@ -1219,9 +1219,215 @@ return Remote.rpcSubmit({tx_blog})
 return Remote.rpcSubmitMultisigned({tx_json})
 ```
 :::
-### 6.2 账户相关
+### 6.2 查询相关
 #### 6.2.1 Remote.getAccountBalance(address: string)
-#### 6.2.2 Remote.getAccountOffers(address: string)
+#### 6.2.2 Remote.getAccountOffers(address: string) 账户挂单
+::: tip 调用
+```javascript
+return Remote.rpcAccountOffers({account: address})
+```
+:::
+::: details 代码示例
+```javascript
+> const Remote = require("@swtc/rpc").Remote
+> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> remote.getAccountOffers("jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz").then(console.log).catch(console.error)
+Promise { <pending> }
+> {
+  account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+  ledger_current_index: 17867384,
+  offers: [
+    {
+      flags: 131072,
+      seq: 112,
+      taker_gets: [Object],
+      taker_pays: '1000000'
+    }
+  ],
+  status: 'success',
+  validated: false
+}
+```
+:::
 #### 6.2.3 Remote.getAccountTrusts(address: string)
 #### 6.2.4 Remote.getAccountRelations(address: string)
-### 6.3 事务相关
+### 6.3 写入相关
+::: tip 事务 (和lib/api 表现一致)
+buildXyzTx(options) 生成 (@swtc/transaction).Transaction实例 tx
+
+使用tx.submitPromise([secret[, memo[, sequence]]])提交
+
+单签可以分步骤:
+- `tx.setSequence(sequence)` 或者 `tx._setSequencePromise()`
+- `tx.addMemo(memo)`
+- `tx.signPromise(secret)`
+
+多签应该本地签好/组装好
+:::
+#### 6.3.1 Remote.buildPaymentTx(options: IPaymentTxOptions) 支付
+::: tip 参数
+```typescript
+interface IPaymentTxOptions {
+  amount: IAmount
+  source?: string
+  from?: string
+  account?: string
+  destination?: string
+  to?: string
+  memo?: string
+  secret?: string
+  invoice?: string
+  sequence?: string | number
+}
+```
+:::
+::: details 代码示例
+```javascript
+> const Remote = require("@swtc/rpc").Remote
+> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const tx = remote.buildPaymentTx({from: "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz", to: "jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D", amount: remote.makeAmount(0.01)})
+> tx.submitPromise("ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C","payment tx demo").then(console.log).catch(console.error)
+Promise { <pending> }
+> {
+  engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message: 'The transaction was applied. Only final in a validated ledger.',
+  status: 'success',
+  tx_blob: '1200002200000000240000006E6140000000000027106840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E157447304502210098FF76746D03A50D671FDBC09046E05ED163C2A5C01BD13AEF2512A7A4EDF4E302203D27A795D0E4271336612E9DB92384C65B99255765B1240F2F179217B27CED2281141359AA928F4D98FDB3D93E8B690C80D37DED11C38314054FADDC8595E2950FA43F673F65C2009F58C7F1F9EA7D0F7061796D656E742074782064656D6FE1F1',
+  tx_json: {
+    Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+    Amount: '10000',
+    Destination: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
+    Fee: '10000',
+    Flags: 0,
+    Memos: [ [Object] ],
+    Sequence: 110,
+    SigningPubKey: '029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15',
+    TransactionType: 'Payment',
+    TxnSignature: '304502210098FF76746D03A50D671FDBC09046E05ED163C2A5C01BD13AEF2512A7A4EDF4E302203D27A795D0E4271336612E9DB92384C65B99255765B1240F2F179217B27CED22',
+    hash: '1BA252F38A64DDF3E729E4FB84675403D664AA71C7EB97837D3EC96F7DCC9513'
+  }
+}
+```
+:::
+#### 6.3.2 Remote.buildOfferCreateTx(options: IOfferCreateTxOptions) 挂单
+::: tip 参数
+```typescript
+interface IOfferCreateTxOptions {
+  type: string
+  source?: string
+  from?: string
+  account?: string
+  gets?: IAmount
+  pays?: IAmount
+  taker_gets?: IAmount
+  taker_pays?: IAmount
+  platform?: any
+  memo?: string
+  secret?: string
+  sequence?: string | number
+}
+```
+:::
+::: details 代码示例
+```javascript
+> const Remote = require("@swtc/rpc").Remote
+> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const tx = remote.buildOfferCreateTx({
+... type: 'Sell',
+... account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+... taker_pays: remote.makeAmount(1),
+... taker_gets: remote.makeAmount(0.01, "slash")
+... })
+> tx.submitPromise("ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C","payment tx demo").then(console.log).catch(console.error)
+Promise { <pending> }
+> {
+  engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message: 'The transaction was applied. Only final in a validated ledger.',
+  status: 'success',
+  tx_blob: '120007220008000024000000706440000000000F424065D4038D7EA4C680000000000000000000004A534C4153480000000000A582E432BFC48EEDEF852C814EC57F3CD2D415966840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E1574473045022100DF3A6A51BBE9C3D87C9923DE59C59D443A58A78254DB99881A2BE095D3C1B3C6022009947792ADA2E6FFB920D73E1E98331BE07DA55786251937B36536A8A4EBD15C81141359AA928F4D98FDB3D93E8B690C80D37DED11C3F9EA7D0F7061796D656E742074782064656D6FE1F1',
+  tx_json: {
+    Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+    Fee: '10000',
+    Flags: 524288,
+    Memos: [ [Object] ],
+    Sequence: 112,
+    SigningPubKey: '029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15',
+    TakerGets: {
+      currency: 'JSLASH',
+      issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
+      value: '0.01'
+    },
+    TakerPays: '1000000',
+    TransactionType: 'OfferCreate',
+    TxnSignature: '3045022100DF3A6A51BBE9C3D87C9923DE59C59D443A58A78254DB99881A2BE095D3C1B3C6022009947792ADA2E6FFB920D73E1E98331BE07DA55786251937B36536A8A4EBD15C',
+    hash: '27BE735F6D1A226A67821EDE68270B21F09A9DEDCEA2B018A3EBE341E28829B4'
+  }
+}
+```
+:::
+#### 6.3.3 Remote.buildOfferCancelTx(options: IOfferCancelTxOptions)
+::: tip 参数
+```typescript
+export interface IOfferCancelTxOptions {
+  sequence: number
+  source?: string
+  from?: string
+  account?: string
+  memo?: string
+  secret?: string
+}
+```
+:::
+::: details 代码示例
+```javascript
+> const Remote = require("@swtc/rpc").Remote
+> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const tx = remote.buildOfferCancelTx({
+... account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+... sequence: 112
+... })
+> tx.tx_json
+{
+  Flags: 0,
+  Fee: 10000,
+  TransactionType: 'OfferCancel',
+  Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+  OfferSequence: 112
+}
+> tx.submitPromise("ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C").then(console.log).catch(console.error)
+Promise { <pending> }
+> {
+  engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message: 'The transaction was applied. Only final in a validated ledger.',
+  status: 'success',
+  tx_blob: '120008220000000024000000712019000000706840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E157446304402200B73C7069C8AEA5A676393940870FB6FC0A480264B2751AB30841D26FD0F48C002202B7D1EE21D3501064112F2A503058E2967DC3D448D813CD1D2BCBDEC8C33493881141359AA928F4D98FDB3D93E8B690C80D37DED11C3',
+  tx_json: {
+    Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+    Fee: '10000',
+    Flags: 0,
+    OfferSequence: 112,
+    Sequence: 113,
+    SigningPubKey: '029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15',
+    TransactionType: 'OfferCancel',
+    TxnSignature: '304402200B73C7069C8AEA5A676393940870FB6FC0A480264B2751AB30841D26FD0F48C002202B7D1EE21D3501064112F2A503058E2967DC3D448D813CD1D2BCBDEC8C334938',
+    hash: '6687AB600DC12F13897582BAA62CE5304068D77E725A4C6DDDC9EF6CE8A9DE78'
+  }
+}
+```
+:::
+#### 6.3.4 Remote.buildRelationTx(options: IRelationTxOptions)
+#### 6.3.5 Remote.buildAccountSetTx(options: IAccountSetTxOptions)
+#### 6.3.6 Remote.buildBrokerageTx(options)
+#### 6.3.7 Remote.buildSignerListTx(options: ISignerListTxOptions)
+#### 6.3.1 Remote.buildSignFirstTx(options: ISignFirstTxOptions)
+#### 6.3.1 Remote.buildSignOtherTx(options: ISignOtherTxOptions)
+#### 6.3.1 Remote.buildMultisignedTx(tx_json)
+#### 6.3.1 Remote.buildTx(tx_json)
+#### 6.3.1 Remote.buildSignTx(options: ISignTxOptions)
+#### 6.3.1 Remote.buildContractDeployTx(options: IContractDeployTxOptions)
+#### 6.3.1 Remote.buildContractCallTx(options: IContractCallTxOptions)
+#### 6.3.1 Remote.buildContractInitTx(options: IContractInitTxOptions)
+#### 6.3.1 Remote.buildContractInvokeTx(options: IContractInvokeTxOptions)
