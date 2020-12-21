@@ -581,7 +581,7 @@ To be successful, the weights of the signatures must be equal or higher than the
 ::: tip 参数
 ```typescript
 export interface IRpcSubmitMultisignedOptions {
-  tx_json: string
+  tx_json: object
   fail_hard?: boolean
 }
 ```
@@ -589,7 +589,7 @@ export interface IRpcSubmitMultisignedOptions {
 ::: details 参数说明
 | 参数          | 类型        | 解析
 |--------------|-------------|-----| 
-| tx_json      | string      | 多签签名后得到的tx_json |
+| tx_json      | object      | 多签签名后得到的tx_json |
 | fail_hard    | boolean     | 可选参数, 默认false。 为真时不尝试其它服务器 |
 :::
 ::: details 代码示例
@@ -756,6 +756,34 @@ export interface IRpcBookOffersOptions {
         destination_amount: remote.makeAmount(1, "cny"),
         source_currencies: [ remote.makeCurrency("vcc"), remote.makeCurrency("jcc") ]
       }).then(console.log)
+
+  Promise { <pending> }
+> {
+  alternatives: [
+    {
+      paths_canonical: [],
+      paths_computed: [Array],
+      source_amount: [Object]
+    }
+  ],
+  destination_account: 'jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG',
+  destination_currencies: [
+    'JETH',
+    'BGT',
+    'CNY',
+    'VCC',
+    'SWT',
+    'SPC',
+    'SEAA',
+    'JMOAC',
+    'JEKT',
+    'HJT',
+    'JJCC',
+    'JCALL',
+    'JSLASH'
+  ],
+  status: 'success'
+}
 ```
 :::
 ### 4.6 账户相关
@@ -1108,3 +1136,92 @@ Promise { <pending> }
 }
 ```
 :::
+## 5 错误处理
+所有rpc交互都是通过axios进行的，返回`Promise`, 不成功时抛出`Exception`
+
+### 5.1 RpcError对象
+[具体错误信息](../swtclib/#_7-底层常见错误附录)
+::: tip
+当Remote与节点rpc交互时，如果出现错误就会抛出RpcError
+
+包括axios的各种错误
+
+包括rpc应答中`status`不是`success`时
+```typescript
+export class RpcError {
+  public error
+  public error_code
+  public error_message
+  public status
+  constructor(inst: any = {}) {
+    this.status = inst.status || "error"
+    this.error = inst.error || "axiosIssue"
+    this.error_code = inst.error_code || -9999
+    this.error_message = inst.message || inst.error_message || "axios Issue."
+  }
+}
+```
+:::
+### 5.2 axios错误 生成 RpcError对象
+::: details 实例化 RpcError
+```javascript
+> const Remote = require("@swtc/rpc").Remote
+> const remote = new Remote({server: "http://aixos.exception.example:5050"})
+> remote.rpcVersion().catch(e => console.log(e))
+Promise { <pending> }
+> RpcError {
+  status: 'error',
+  error: 'axiosIssue',
+  error_code: -9999,
+  error_message: 'getaddrinfo ENOTFOUND aixos.exception.example'
+}
+```
+:::
+### 5.3 rpc应答错误 生成 RpcError对象
+::: details 实例化 RpcError
+```javascript
+> const Remote = require("@swtc/rpc").Remote
+> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> remote.rpcAccountInfo().then(console.log).catch(console.error)
+Promise { <pending> }
+> RpcError {
+  status: 'error',
+  error: 'invalidParams',
+  error_code: 29,
+  error_message: "Missing field 'account'."
+}
+```
+:::
+## 6 派生调用
+派生调用是运用rpc交互实现一些方便的功能，或者尝试使用其它库相似/一致的方式来实现
+### 6.1 方便调用(连接@swtc/transaction)
+#### 6.1.1 Remote.getAccountInfo(address: string)
+::: tip 调用
+```javascript
+return Remote.rpcAccountInfo({account: address})
+```
+:::
+#### 6.1.2 Remote.getAccountSequence(address: string)
+::: tip 调用
+```javacript
+return (await Remote.AccountInfo({account: address})).account_data.Sequence
+```
+:::
+#### 6.1.3 Remote.submit(tx_blob: string)
+::: tip 调用
+```javascript
+return Remote.rpcSubmit({tx_blog})
+```
+:::
+#### 6.1.4 Remote.submitMultisigned(tx_json: object)
+::: tip 调用
+```javascript
+return Remote.rpcSubmitMultisigned({tx_json})
+```
+:::
+### 6.2 账户相关
+#### 6.2.1 Remote.getAccountBalance(address: string)
+#### 6.2.2 Remote.getAccountOffers(address: string)
+#### 6.2.3 Remote.getAccountTrusts(address: string)
+#### 6.2.4 Remote.getAccountRelations(address: string)
+### 6.3 事务相关

@@ -3,11 +3,11 @@
 [[toc]]
 
 ## 0. 接口说明
-> #### 强制本地签名
-> #### 合约测试只能在特定节点运行, solidity支持到0.5.4, 需要安装 swtc-tum3 / tum3-eth-abi, 没有达到可用阶段
-> #### 集成生态节点failover `const remote = new Remote() ; remote.connectPromise().then(console.log).catch(console.error)`
-> #### 多重签名测试链上没有支持
-> #### [应用实例](../examples/)
+> ##### 强制本地签名
+> ##### 合约测试只能在特定节点运行, solidity支持到0.5.4, 需要安装 swtc-tum3 / tum3-eth-abi, 没有达到可用阶段
+> ##### 集成生态节点failover `const remote = new Remote() ; remote.connectPromise().then(console.log).catch(console.error)`
+> ##### 多重签名测试链上没有支持
+> ##### [应用实例](../examples/)
 
 ## 1 安装
 1. 安装SWTC公链库
@@ -16,15 +16,15 @@ npm install --save @swtc/lib
 ```
 
 ## 2 项目文件结构
-#### @swtc/lib库基于ws协议跟底层交互，其中ws封装到Server类中，Server类是一个内部类，不对 外开放;Server类封装在Remote类中，Remote类提供对外访问接口并可创建两类对象:Get方 式请求的Request对象和Post方式请求的Transaction对象，这两类对象都通过submit()或者submitPromise()方法提交 数据到底层。
+##### @swtc/lib库基于ws协议跟底层交互，其中ws封装到Server类中，Server类是一个内部类，不对 外开放;Server类封装在Remote类中，Remote类提供对外访问接口并可创建两类对象:Get方 式请求的Request对象和Post方式请求的Transaction对象，这两类对象都通过submit()或者submitPromise()方法提交 数据到底层。
 文件结构图如下
 ![structure](../../images/structure.png)
 
 ## 3 创建钱包
-> #### 首先引入@swtc/lib库的Wallet对象，然后使用以下两种方法创建钱包
-> #### 方法1: Wallet.generate()
-> #### 方法2: Wallet.fromSecret(secret);
-#### 参数:
+> ##### 首先引入@swtc/lib库的Wallet对象，然后使用以下两种方法创建钱包
+> ##### 方法1: Wallet.generate()
+> ##### 方法2: Wallet.fromSecret(secret);
+##### 参数:
  
 |参数    |类型      |说明       |
 |--------|----------|-----------:|
@@ -45,12 +45,12 @@ var w4 = Wallet.fromSecret('snaSEqR4cTU6stvgtQKjq9FNPet8m');
 console.log(w2);
 console.log(w3);
 ```
-#### 返回的结果信息:
+##### 返回的结果信息:
 |参数    |类型    |说明        |
 |-------|--------|-----------:|
 |secret|String|井通钱包私钥|
 |address|String|井通钱包地址|
-#### 输出
+##### 输出
 ```javascript
 > Wallet.generate()
 { secret: 'ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C',
@@ -58,7 +58,7 @@ console.log(w3);
 ```
 
 ## 4 REMOTE类
-#### Remote是跟井通底层交互最主要的类，它可以组装交易发送到底层、订阅事件及从底层拉取数据。提供以下方法:
+##### Remote是跟井通底层交互最主要的类，它可以组装交易发送到底层、订阅事件及从底层拉取数据。提供以下方法:
 * Remote(options)
 * connect(callback)
 * disconnect()
@@ -82,7 +82,7 @@ console.log(w3);
 * buildOfferCancelTx(options)
 * deployContractTx(options)
 * callContractTx(options)
-#### @swtc/lib REMOTE 独享
+##### @swtc/lib REMOTE 独享
 * makeCurrency()
 * makeAmount()
 * remote.connectPromise()
@@ -91,26 +91,26 @@ console.log(w3);
 * tx.submitPromise()
 
 ### 4.1 创建Remote对象
-#### 方法:new Remote(options);
-#### 参数:
+##### 方法:new Remote(options);
+##### 参数:
 |参数    |类型    |说明        |
 |--------|--------|-----------:|
 |server|String|井通底层服务地址|
 |issuer|String|默认银关|
 |solidity|Boolean|启用solidity支持|
-#### 例子
+##### 例子
 ```javascript
 var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
 var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'});
 ```
 ### 4.2 创建连接
-#### 每个Remote对象都应该首先手动连接底层，然后才可以请求底层的数据。请求结果在回调函数callback中
-#### 方法: connect(callback)
-#### 参数: 回调函数 callback(err, result)
-#### 方法: connectPromise()
-#### 参数: 无
-#### 例子
+##### 每个Remote对象都应该首先手动连接底层，然后才可以请求底层的数据。请求结果在回调函数callback中
+##### 方法: connect(callback)
+##### 参数: 回调函数 callback(err, result)
+##### 方法: connectPromise()
+##### 参数: 无
+##### 例子
 ```javascript
 var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
@@ -130,7 +130,7 @@ remote.connectPromise()
 	})
 	.catch(console.error)
 ```
-#### 返回结果
+##### 返回结果
 ```json
 { fee_base: 10,
   fee_ref: 10,
@@ -150,7 +150,7 @@ remote.connectPromise()
   validated_ledgers: '100-2064052,2106781-2838574'
 }
 ```
-#### 返回结果说明:
+##### 返回结果说明:
 |参数|类型|说明|
 |----|----|---:|
 |fee_base|Integer|基础费用(手续费计算公式因子)|
@@ -165,9 +165,9 @@ remote.connectPromise()
 |server_status|String|服务器状态|
 |validated_ledgers|String|账本区间|
 ### 4.3 关闭连接 每个Remote对象可以手动关闭连接。
-#### 方法:disconnect()
-#### 参数:无
-#### 例子
+##### 方法:disconnect()
+##### 参数:无
+##### 例子
 ```javascript
 var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
@@ -175,11 +175,11 @@ var remote = new Remote({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3
 remote.connectPromise().then( () => remote.disconnect() ).catch(console.error)
 ```
 ### 4.4 请求底层服务器信息
-#### 首先通过本方法返回一个Request对象，然后通过submitPromise方法获得井通底层的服务器信息，包含 服务程序版本号version、该服务器缓存的账本区间ledgers、节点公钥node、服务器当前状态 state。其中服务器当前状态包含可提供服务状态full和验证节点状态proposing。
-#### 方法:requestServerInfo()
-#### 参数:无
-#### 返回:Request对象
-#### 例子:
+##### 首先通过本方法返回一个Request对象，然后通过submitPromise方法获得井通底层的服务器信息，包含 服务程序版本号version、该服务器缓存的账本区间ledgers、节点公钥node、服务器当前状态 state。其中服务器当前状态包含可提供服务状态full和验证节点状态proposing。
+##### 方法:requestServerInfo()
+##### 参数:无
+##### 返回:Request对象
+##### 例子:
 ```javascript
 var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
@@ -194,7 +194,7 @@ remote.connectPromise()
 	.catch(console.error)
         
 ```
-#### 返回结果
+##### 返回结果
 ```javascript
 > serverInfo: { complete_ledgers: '100-2064052,2106781-2838682',
   ledger:
@@ -204,7 +204,7 @@ remote.connectPromise()
   peers: 5,
   version: 'skywelld-0.29.60' }
 ```
-#### 返回结果说明:
+##### 返回结果说明:
 |参数|类型|说明|
 |----|----|---:|
 |version|String|服务器部署项目版本|
@@ -212,11 +212,11 @@ remote.connectPromise()
 |node|String|节点公钥|
 |state|String|服务器状态|
 ### 4.5 获取最新账本信息
-#### 首先通过本方法返回一个Request对象，然后通过submitPromise方法获得最新账本信息，包括区块高度(ledger_index)与区块hash(ledger_hash)
-#### 方法: requestLedgerClosed()
-#### 参数: 无
-#### 返回: Request对象
-#### 例子:
+##### 首先通过本方法返回一个Request对象，然后通过submitPromise方法获得最新账本信息，包括区块高度(ledger_index)与区块hash(ledger_hash)
+##### 方法: requestLedgerClosed()
+##### 参数: 无
+##### 返回: Request对象
+##### 例子:
 ```javascript
 var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
@@ -230,29 +230,29 @@ remote.connectPromise()
 	)
 	.catch(console.error)
 ```
-#### 返回结果
+##### 返回结果
 ```javascript
 > ledgerInfo: { ledger_hash:
    '93D6C3B76B5D6A2637F92F88A8CFB42C8433DA0EE69BD08A8CFAC327571173DD',
   ledger_index: 2838718 }
 ```
-#### 返回结果说明
+##### 返回结果说明
 |参数|类型|说明|
 |----|----|---:|
 |ledger_hash|String|账本hash|
 |ledger_index|String|账本高度/区块高度|
 ### 4.6 获取某一账本具体信息
-#### 首先通过本方法返回一个Request对象，然后通过submitPromise方法获得某一账本的具体信息
-#### 方法:remote.requestLedger({ledger_index:’8488670’,transactions:true});
-#### 参数:
+##### 首先通过本方法返回一个Request对象，然后通过submitPromise方法获得某一账本的具体信息
+##### 方法:remote.requestLedger({ledger_index:’8488670’,transactions:true});
+##### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |ledger_index|String|井通区块高度|
 |ledger_hash|String|井通区块hash(与上面ledger_index二选其一)|
 |transactions|Boolean|是否返回账本上的交易记录hash，默认false|
 注:整体参数是Object类型，当参数都不填时，默认返回最新账本信息
-#### 返回:Request对象
-#### 例子
+##### 返回:Request对象
+##### 例子
 ```javascript
 var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
@@ -269,7 +269,7 @@ remote.connectPromise()
 	)
 	.catch(console.error)
 ```
-#### 返回结果
+##### 返回结果
 ```javascript
 > res: { accepted: true,
   account_hash:
@@ -292,7 +292,7 @@ remote.connectPromise()
    '0000000000000000000000000000000000000000000000000000000000000000',
   transactions: [] }
 ```
-#### 返回结果说明
+##### 返回结果说明
 |参数|类型|说明|
 |----|----|---:|
 |accepted|Boolean|区块是否已经产生|
@@ -311,14 +311,14 @@ remote.connectPromise()
 |transaction_hash|String|交易hash树根|
 |transactions|Array|该账本里的交易列表|
 ### 4.7 查询某一交易具体信息
-#### 首先通过本方法返回一个Request对象，然后通过submitPromise方法获得某一交易的具体信息。
-#### 方法:remote.requestTx({hash:’xxx’});
-#### 参数:
+##### 首先通过本方法返回一个Request对象，然后通过submitPromise方法获得某一交易的具体信息。
+##### 方法:remote.requestTx({hash:’xxx’});
+##### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |hash|String|交易hash|
-#### 返回: Request对象
-#### 例子:
+##### 返回: Request对象
+##### 例子:
 ```javascript
 var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
@@ -333,7 +333,7 @@ remote.connectPromise()
 	)
 	.catch(console.error)
 ```
-#### 返回结果
+##### 返回结果
 ```javascript
 > res: { Account: 'jpLpucnjfX7ksggzc9Qw6hMSm1ATKJe3AF',
   Amount: '100000000000',
@@ -360,7 +360,7 @@ remote.connectPromise()
   validated: true }
 关键信息:【 交易费: 0.01 】
 ```
-#### 返回结果说明
+##### 返回结果说明
 |参数|类型|说明|
 |----|----|---:|
 |Account|String|钱包地址|
@@ -384,14 +384,14 @@ remote.connectPromise()
 |&nbsp;&nbsp;&nbsp;   TransactionResult|String|交易结果|
 |validated|Boolean|交易是否通过验证|
 ### 4.8 请求账号信息
-#### 首先通过本方法返回一个Request对象，然后通过submitPromise方法获得某一账号的交易信息。
-#### 方法:remote.requestAccountInfo({account:’xxx’});
-#### 参数:
+##### 首先通过本方法返回一个Request对象，然后通过submitPromise方法获得某一账号的交易信息。
+##### 方法:remote.requestAccountInfo({account:’xxx’});
+##### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |account|String|井通钱包地址|
-#### 返回:Request对象
-#### 例子
+##### 返回:Request对象
+##### 例子
 ```javascript
 var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
@@ -407,7 +407,7 @@ remote.connectPromise()
     )
     .catch(console.error)
 ```
-#### 返回结果
+##### 返回结果
 ```javascript
 > res: { account_data:
    { Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
@@ -426,7 +426,7 @@ remote.connectPromise()
   ledger_index: 2840469,
   validated: true }
 ```
-#### 返回结果说明
+##### 返回结果说明
 |参数|类型|说明|
 |----|----|---:|
 |account_data|Object|账号信息|
@@ -446,14 +446,14 @@ remote.connectPromise()
 |ledger_index|Integer|账本高度|
 |validated|Boolean|交易是否通过验证|
 ### 4.9 获得账号可接收和发送的货币
-#### 首先通过本方法返回一个Request对象，然后通过submitPromise方法获得某一账号可发送和接收的货币种类。
-#### 方法:remote.requestAccountTums({account:’xxx’});
-#### 参数:
+##### 首先通过本方法返回一个Request对象，然后通过submitPromise方法获得某一账号可发送和接收的货币种类。
+##### 方法:remote.requestAccountTums({account:’xxx’});
+##### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |account|String|井通钱包地址|
-#### 返回:Request对象
-#### 例子:
+##### 返回:Request对象
+##### 例子:
 ```javascript
 var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
@@ -469,7 +469,7 @@ remote.connectPromise()
     )
     .catch(console.error)
 ```
-#### 返回结果
+##### 返回结果
 ```javascript
 > res: { ledger_hash:
    '80F7661460F62D707F923F4D6932624A1CBA6EF5E1F1CC4577AEA27D545CF2BD',
@@ -478,7 +478,7 @@ remote.connectPromise()
   send_currencies: [ 'CNY' ],
   validated: true }
 ```
-#### 返回结果说明
+##### 返回结果说明
 |参数|类型|说明|
 |----|----|---:|
 |ledger_hash|String|账本hash|
@@ -487,16 +487,16 @@ remote.connectPromise()
 |send_currencies|Array|可发送的货币列表|
 |validated|Boolean|交易是否通过验证|
 ### 4.10 获得账号关系
-#### 井通账户之间会建立各种不同的关系。这些关系由井通后台的关系(relations)机制来处理，目前支持以下关系:信任(trust)、授权(authorize)、冻结(freeze)。
-#### 首先通过本方法返回一个Request对象，然后通过submitPromise方法获得某一账号指定关系的信息
-#### 方法:remote.requestAccountRelations({account:’xxx’,type:’xxx’});
-#### 参数:
+##### 井通账户之间会建立各种不同的关系。这些关系由井通后台的关系(relations)机制来处理，目前支持以下关系:信任(trust)、授权(authorize)、冻结(freeze)。
+##### 首先通过本方法返回一个Request对象，然后通过submitPromise方法获得某一账号指定关系的信息
+##### 方法:remote.requestAccountRelations({account:’xxx’,type:’xxx’});
+##### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |account|String|井通钱包地址|
 |type|String|关系类型，固定的三个值:trust、authorize、freeze|
-#### 返回: Request对象
-#### 例子
+##### 返回: Request对象
+##### 例子
 ```javascript
 var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
@@ -512,7 +512,7 @@ remote.connectPromise()
     )
     .catch(console.error)
 ```
-#### 返回结果
+##### 返回结果
 ```javascript
 > res: { account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
   ledger_hash:
@@ -529,7 +529,7 @@ remote.connectPromise()
        quality_out: 0 } ],
   validated: true }
 ```
-#### 返回结果说明
+##### 返回结果说明
 |参数|类型|说明|
 |----|----|---:|
 |account|String|钱包地址|
@@ -545,13 +545,13 @@ remote.connectPromise()
 |quality_out|Integer|兑换比例，默认0，暂时未用|
 |validated|Boolean|交易是否通过验证|
 ### 4.11 获得账号挂单
-#### 首先通过本方法返回一个Request对象，然后通过submitPromise方法获得某一账号的挂单信息
-#### 方法:remote.requestAccountOffers({account:’xxx’});
-#### 参数:
+##### 首先通过本方法返回一个Request对象，然后通过submitPromise方法获得某一账号的挂单信息
+##### 方法:remote.requestAccountOffers({account:’xxx’});
+##### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |account|String|井通钱包地址|
-#### 例子
+##### 例子
 ```javascript
 var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
@@ -567,7 +567,7 @@ remote.connectPromise()
     )
     .catch(console.error)
 ```
-#### 返回结果
+##### 返回结果
 ```javascript
 > res: { account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
   ledger_hash:
@@ -580,7 +580,7 @@ remote.connectPromise()
        taker_pays: [Object] } ],
   validated: true }
 ```
-#### 返回结果说明
+##### 返回结果说明
 |参数|类型|说明|
 |----|----|---:|
 |account|String|钱包地址|
@@ -599,15 +599,15 @@ remote.connectPromise()
 |&nbsp;&nbsp;&nbsp;&nbsp;issuer|String|货币|
 |validated|Boolean|交易是否通过验证|
 ### 4.12 获得账号交易列表
-#### 首先通过本方法返回一个Request对象，然后通过submitPromise方法获得某一账号的交易列表信息。
-#### 方法:remote.requestAccountTx({account:’xxx’});
-#### 参数:
+##### 首先通过本方法返回一个Request对象，然后通过submitPromise方法获得某一账号的交易列表信息。
+##### 方法:remote.requestAccountTx({account:’xxx’});
+##### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |account|String|井通钱包地址|
 |limit|Integer|限定返回多少条记录，默认200|
-#### 返回:Request对象
-#### 例子:
+##### 返回:Request对象
+##### 例子:
 ```javascript
 var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
@@ -623,7 +623,7 @@ remote.connectPromise()
     )
     .catch(console.error)
 ```
-#### 返回结果
+##### 返回结果
 ```javascript
 > res: { account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
   ledger_index_max: 2844681,
@@ -650,7 +650,7 @@ remote.connectPromise()
        amount: [Object],
        effects: [] } ] }
 ```
-#### 返回结果说明
+##### 返回结果说明
 |参数|类型|说明|
 |----|----|---:|
 |account|String|钱包地址|
@@ -671,14 +671,14 @@ remote.connectPromise()
 |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;issuer|String|货币|
 |effects|Array|交易效果|
 ### 4.13 获得市场挂单
-#### 首先通过本方法返回一个Request对象，然后通过submitPromise方法获得市场挂单列表信息。
-#### 方法:remote.requestOrderBook({});
-#### 参数:
+##### 首先通过本方法返回一个Request对象，然后通过submitPromise方法获得市场挂单列表信息。
+##### 方法:remote.requestOrderBook({});
+##### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |gets|Object|对家想要获得的货币信息|
 |pays|Object|对家想要支付的货币信息|
-#### 例子
+##### 例子
 ```javascript
 var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
@@ -698,7 +698,7 @@ remote.connectPromise()
     )
     .catch(console.error)
 ```
-#### 返回结果
+##### 返回结果
 ```javascript
 > res: { ledger_current_index: 2861869,
   offers:
@@ -721,7 +721,7 @@ remote.connectPromise()
        quality: '0.00000001' } ],
   validated: false }
 ```
-#### 返回结果说明
+##### 返回结果说明
 |参数|类型|说明|
 |----|----|---:|
 |ledger_current_index|String|当前账本号|
@@ -745,19 +745,19 @@ remote.connectPromise()
 |quality|String|价格或价格的倒数|
 |validated|Boolean|交易是否通过验证|
 ### 4.14 获得挂单佣金设置信息
-#### 首先通过requestBrokerage方法返回一个Request对象，然后通过submitPromise方法提交。
-#### 4.14.1 创建查询挂单佣金对象
-##### 方法: remote.requestBrokerage({});
-##### 参数:
+##### 首先通过requestBrokerage方法返回一个Request对象，然后通过submitPromise方法提交。
+##### 4.14.1 创建查询挂单佣金对象
+###### 方法: remote.requestBrokerage({});
+###### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |account|String|井通钱包地址|
-##### 返回:Request对象
-#### <a name="brokerageSubmit"></a> 4.14.2 提交查询
-##### 方法:request.submitPromise()
-##### 参数: 无
-##### 返回: Promise
-#### 查询佣金完整例子
+###### 返回:Request对象
+##### <a name="brokerageSubmit"></a> 4.14.2 提交查询
+###### 方法:request.submitPromise()
+###### 参数: 无
+###### 返回: Promise
+##### 查询佣金完整例子
 ```javascript
 const jlib = require('@swtc/lib');
 const Remote = jlib.Remote;
@@ -770,7 +770,7 @@ remote.connectPromise().then( async () => {
             console.log(result)
         })
 ```
-#### 返回结果
+##### 返回结果
 ```javascript
 { account: 'jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG',
   brokerages:
@@ -786,10 +786,10 @@ remote.connectPromise().then( async () => {
   validated: true }
 ```
 ### 4.15 支付
-#### 首先通过buildPaymentTx方法返回一个Transaction对象，addMemo添加备注为可选项，最后通过submitPromise方法提交支付信息。
-#### <a name="buildPaymentTx"></a> 4.15.1 创建支付对象
-##### 方法: remote.buildPaymentTx({});
-##### 参数:
+##### 首先通过buildPaymentTx方法返回一个Transaction对象，addMemo添加备注为可选项，最后通过submitPromise方法提交支付信息。
+##### <a name="buildPaymentTx"></a> 4.15.1 创建支付对象
+###### 方法: remote.buildPaymentTx({});
+###### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |account|String|发起账号|
@@ -798,16 +798,16 @@ remote.connectPromise().then( async () => {
 |value|String|支付数量|
 |currency|String|货币种类，三到六个字母或20字节的自定义货币|
 |issuer|String|货币发行方|
-##### 返回:Transaction对象
-#### <a name="paymentSubmit"></a> 4.15.2 提交支付
-##### 方法:tx.submitPromise(secret, memo)
-##### 参数:
+###### 返回:Transaction对象
+##### <a name="paymentSubmit"></a> 4.15.2 提交支付
+###### 方法:tx.submitPromise(secret, memo)
+###### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |secret|String|井通钱包私钥|
 |memo|String|备注信息|
-##### 返回: Promise
-#### 支付完整例子
+###### 返回: Promise
+##### 支付完整例子
 ```javascript
 var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
@@ -826,7 +826,7 @@ remote.connectPromise()
     )
     .catch(console.error)
 ```
-#### 返回结果
+##### 返回结果
 ```javascript
 > res: { engine_result: 'tesSUCCESS',
   engine_result_code: 0,
@@ -850,7 +850,7 @@ remote.connectPromise()
      hash:
       'EB94F5155E8977B888E553C10C8EAC9567426BD3AF186E321CB614F4DCD1A4F2' } }
 ```
-#### 返回结果说明
+##### 返回结果说明
 |参数|类型|说明|
 |----|----|---:|
 |engine_result|String|请求结果|
@@ -870,10 +870,10 @@ remote.connectPromise()
 |&nbsp;&nbsp;&nbsp;TxnSignature|String|交易签名|
 |&nbsp;&nbsp;&nbsp;hash|String|交易hash|
 ### 4.16 设置关系
-#### 首先通过buildRelationTx方法返回一个Transaction对象，然后通过submitPromise方法提交支付信息。目前支持的关系类型:信任(trust)、授权(authorize)、冻结 (freeze)
-#### <a name="buildRelationTx"></a> 4.16.1 创建关系对象
-##### 方法:remote.buildRelationTx({});
-##### 参数
+##### 首先通过buildRelationTx方法返回一个Transaction对象，然后通过submitPromise方法提交支付信息。目前支持的关系类型:信任(trust)、授权(authorize)、冻结 (freeze)
+##### <a name="buildRelationTx"></a> 4.16.1 创建关系对象
+###### 方法:remote.buildRelationTx({});
+###### 参数
 |参数|类型|说明|
 |----|----|---:|
 |type|String|关系种类|
@@ -883,18 +883,18 @@ remote.connectPromise()
 |value|String|数量|
 |currency|String|货币种类，三到六个字母或20字节的自定义货币|
 |issuer|String|货币发行方|
-##### 返回:Transaction对象
-#### <a name="relationSubmit"></a> 4.16.2 关系设置
-##### 方法:tx.submitPromise(secret, memo)
-##### 参数:
+###### 返回:Transaction对象
+##### <a name="relationSubmit"></a> 4.16.2 关系设置
+###### 方法:tx.submitPromise(secret, memo)
+###### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |secret|String|井通钱包私钥|
 |memo|String|备注信息|
-##### 返回: Promise
-##### 方法: tx.submitPromise(secret);
-#####  参数:无
-#### 设置关系完整例子
+###### 返回: Promise
+###### 方法: tx.submitPromise(secret);
+######  参数:无
+##### 设置关系完整例子
 ```javascript
 var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
@@ -915,7 +915,7 @@ remote.connectPromise()
     )
     .catch(console.error)
 ```
-#### 返回结果
+##### 返回结果
 ```javascript
 > res: { engine_result: 'tesSUCCESS',
   engine_result_code: 0,
@@ -942,7 +942,7 @@ remote.connectPromise()
      hash:
       'C95235169DB1F994F67E0CC73BB98D0D044D2C4093E846675B29E4F13BE97DAC' } }
 ```
-#### 返回结果说明
+##### 返回结果说明
 |参数|类型|说明|
 |----|----|---:|
 |engine_result|String|请求结果|
@@ -966,25 +966,25 @@ remote.connectPromise()
 |&nbsp;&nbsp;TxnSignature|String|交易签名|
 |&nbsp;&nbsp;hash|String|交易hash|
 ### 4.17 设置账号属性 ------待完善
-#### 首先通过buildAccountSetTx方法返回一个Transaction对象，然后通过submitPromise方法设置账号属性。目前支持的三类:`property`、`delegate` 、`signer`。property 用于设置账号一般属性;delegate用于某账号设置委托帐户;signer用于设置签名。
-#### <a name="buildAccountSetTx"></a>4.17.1 创建属性对象
-##### 方法:remote.buildAccountSetTx({});
-##### 参数:
+##### 首先通过buildAccountSetTx方法返回一个Transaction对象，然后通过submitPromise方法设置账号属性。目前支持的三类:`property`、`delegate` 、`signer`。property 用于设置账号一般属性;delegate用于某账号设置委托帐户;signer用于设置签名。
+##### <a name="buildAccountSetTx"></a>4.17.1 创建属性对象
+###### 方法:remote.buildAccountSetTx({});
+###### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |type|String|属性种类|
 |account|String|设置属性的源账号|
 |set_flag|String|属性编号|
-##### 返回:Transaction对象
-#### <a name="accountSetSubmit"></a>4.17.2 属性设置
-##### 方法:tx.submitPromise(secret, memo)
-##### 参数:
+###### 返回:Transaction对象
+##### <a name="accountSetSubmit"></a>4.17.2 属性设置
+###### 方法:tx.submitPromise(secret, memo)
+###### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |secret|String|井通钱包私钥|
 |memo|String|备注信息|
-##### 返回: Promise
-#### 设置属性完整例子
+###### 返回: Promise
+##### 设置属性完整例子
 ```javascript
 var jlib = require('@swtc/lib')
 var Remote = jlib.Remote;
@@ -1001,7 +1001,7 @@ remote.connect(function(err, result) {
     tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C').then(console.log).catch(console.error)
 });
 ```
-#### 返回结果
+##### 返回结果
 ```javascript
 > res: { engine_result: 'tesSUCCESS',
   engine_result_code: 0,
@@ -1024,10 +1024,10 @@ remote.connect(function(err, result) {
       '56969504AF776BB5EBC8830D87822E201973C4EBCD24CEA64A90D10EF740BD90' } }
 ```
 ### 4.18 挂单
-#### 首先通过buildOfferCreateTx方法返回一个Transaction对象，然后通过submitPromise方法提交挂单。
-#### <a name="offerCreateBuild"></a> 4.18.1 创建挂单对象
-##### 方法:remote.buildOfferCreateTx({});
-##### 参数:
+##### 首先通过buildOfferCreateTx方法返回一个Transaction对象，然后通过submitPromise方法提交挂单。
+##### <a name="offerCreateBuild"></a> 4.18.1 创建挂单对象
+###### 方法:remote.buildOfferCreateTx({});
+###### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |type|String|挂单类型，固定的两个值:Buy、Sell|
@@ -1040,17 +1040,17 @@ remote.connect(function(err, result) {
 |&nbsp;&nbsp;&nbsp;value|String|数量|
 |&nbsp;&nbsp;&nbsp;currency|String|货币种类|
 |&nbsp;&nbsp;&nbsp;issuer|String|货币发行方|
-##### 返回:Transaction对象
-#### <a name="offerCreateSubmit"></a> 4.18.2 提交挂单
-##### 方法:tx.submitPromise(secret, memo)
-##### 参数:
+###### 返回:Transaction对象
+##### <a name="offerCreateSubmit"></a> 4.18.2 提交挂单
+###### 方法:tx.submitPromise(secret, memo)
+###### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |secret|String|井通钱包私钥|
 |memo|String|备注信息|
-##### 返回: Promise
-#### 设置属性完整例子
-#### 挂单完整例子
+###### 返回: Promise
+##### 设置属性完整例子
+##### 挂单完整例子
 ```javascript
 var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
@@ -1071,7 +1071,7 @@ remote.connectPromise()
     )
     .catch(console.error)
 ```
-##### 返回结果:
+###### 返回结果:
 ```javascript
 > res: { engine_result: 'tesSUCCESS',
   engine_result_code: 0,
@@ -1097,7 +1097,7 @@ remote.connectPromise()
      hash:
       '3EB37E4CB1017C1A5F4DA81B95CBB94345405BA7F791445BF9EEA9AB8C177DD8' } }
 ```
-##### 返回结果说明:
+###### 返回结果说明:
 |参数|类型|说明|
 |----|----|---:|
 |engine_result|String|请求结果|
@@ -1120,24 +1120,24 @@ remote.connectPromise()
 |&nbsp;&nbsp;&nbsp;TxnSignature|String|交易签名|
 |&nbsp;&nbsp;&nbsp;hash|String|交易hash|
 ### 4.19 取消挂单
-#### 首先通过buildOfferCancelTx方法返回一个Transaction对象，然后通过submitPromise方法取消挂单。
-#### 4.19.1 <a name="offerCancelBuild"></a> 创建取消挂单对象
-#### 方法:remote.buildOfferCancelTx({});
-#### 参数:
+##### 首先通过buildOfferCancelTx方法返回一个Transaction对象，然后通过submitPromise方法取消挂单。
+##### 4.19.1 <a name="offerCancelBuild"></a> 创建取消挂单对象
+##### 方法:remote.buildOfferCancelTx({});
+##### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |account|String||挂单方账号|
 |sequence|Integer|取消的单子号|
-#### 返回:Transaction对象
-#### <a name="offerCancelSubmit"></a> 4.19.2 取消挂单
-##### 方法:tx.submitPromise(secret, memo)
-##### 参数:
+##### 返回:Transaction对象
+##### <a name="offerCancelSubmit"></a> 4.19.2 取消挂单
+###### 方法:tx.submitPromise(secret, memo)
+###### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |secret|String|井通钱包私钥|
 |memo|String|备注信息|
-##### 返回: Promise
-#### 挂单完整例子
+###### 返回: Promise
+##### 挂单完整例子
 ```javascript
 var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
@@ -1153,7 +1153,7 @@ remote.connectPromise()
     )
     .catch(console.error)
 ```
-#### 返回结果
+##### 返回结果
 ```javascript
 > res: { engine_result: 'tesSUCCESS',
   engine_result_code: 0,
@@ -1175,7 +1175,7 @@ remote.connectPromise()
      hash:
       'AAD3063387632E3BEDF947FBBD2694A364FE1FF15EC1CDE26B7FEBA70B32BDD7' } }
 ```
-#### 返回结果说明
+##### 返回结果说明
 |参数|类型|说明|
 |----|----|---:|
 |engine_result|String|请求结果|
@@ -1194,29 +1194,29 @@ remote.connectPromise()
 |&nbsp;&nbsp;&nbsp;TxnSignature|String|交易签名|
 |&nbsp;&nbsp;&nbsp;hash|String|交易hash|
 ### 4.20 部署合约 lua
-#### 首先通过deployContractTx方法返回一个Transaction对象，然后通过submitPromise方法部署合约。
-#### <a name="contractDeployBuild"></a>4.20.1 创建部署合约对象
-##### 方法:remote.deployContractTx({});
-##### 参数:
+##### 首先通过deployContractTx方法返回一个Transaction对象，然后通过submitPromise方法部署合约。
+##### <a name="contractDeployBuild"></a>4.20.1 创建部署合约对象
+###### 方法:remote.deployContractTx({});
+###### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |account|String|合约交易源账号|
 |amount|String/Number|支付金额(最多支持六位小数)|
 |payload|String|智能合约代码(16进制字符串)|
-##### 可选参数:
+###### 可选参数:
 |参数|类型|说明|
 |----|----|---:|
 |params|String|合约参数|
-#### 返回:Transaction对象
-#### <a name="contractDeploySubmit"></a> 4.20.2 部署合约
-##### 方法:tx.submitPromise(secret, memo);
-##### 参数:
+##### 返回:Transaction对象
+##### <a name="contractDeploySubmit"></a> 4.20.2 部署合约
+###### 方法:tx.submitPromise(secret, memo);
+###### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |secret|String|井通钱包私钥|
 |memo|String|备注信息|
-##### 返回: Promise
-#### 部署合约完整例子
+###### 返回: Promise
+##### 部署合约完整例子
 ```javascript
 var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
@@ -1237,7 +1237,7 @@ remote.connect(function (err, result) {
     tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C').then(console.log).catch(console.error)
 });
 ```
-#### 返回结果
+##### 返回结果
 ```javascript
 > res: { ContractState: 'jNdpxLQbmMMf4ZVXjn3nb98xPYQ7EpEpTN',
   engine_result: 'tesSUCCESS',
@@ -1264,7 +1264,7 @@ remote.connect(function (err, result) {
      hash:
       '71C1AAEAAB9D2F9CC4C65D9A9DB733EB80DF6037BDC6D4A6F1445BFDBDE25A02' } }
 ```
-#### 返回结果说明
+##### 返回结果说明
 |参数|类型|说明|
 |----|----|---:|
 |ContractState|String|生成的合约地址|
@@ -1284,29 +1284,29 @@ remote.connect(function (err, result) {
 |&nbsp;&nbsp;&nbsp;TxnSignature|String|交易签名|
 |&nbsp;&nbsp;&nbsp;hash|String|交易hash|
 ### 4.21 执行合约 lua
-#### 首先通过callContractTx方法返回一个Transaction对象，然后通过submitPromise方法执行合约
-#### <a name="contractCallBuild"></a> 4.21.1 创建执行合约对象
-##### 方法:remote.callContractTx({});
-##### 参数:
+##### 首先通过callContractTx方法返回一个Transaction对象，然后通过submitPromise方法执行合约
+##### <a name="contractCallBuild"></a> 4.21.1 创建执行合约对象
+###### 方法:remote.callContractTx({});
+###### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |account|String|合约交易源账号|
 |destination|String|合约地址|
 |foo|String|合约函数名|
-##### 可选参数:
+###### 可选参数:
 |参数|类型|说明|
 |----|----|---:|
 |params|String|合约参数|
-#### 返回:Transaction对象
-#### <a name="contractCallSubmit"></a> 4.21.2 执行合约
-##### 方法:tx.submitPromise(secret, memo);
-##### 参数:
+##### 返回:Transaction对象
+##### <a name="contractCallSubmit"></a> 4.21.2 执行合约
+###### 方法:tx.submitPromise(secret, memo);
+###### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |secret|String|井通钱包私钥|
 |memo|String|备注信息|
-##### 返回: Promise
-#### 执行合约完整例子
+###### 返回: Promise
+##### 执行合约完整例子
 ```javascript
 var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
@@ -1320,7 +1320,7 @@ remote.connect(function (err, result) {
     tx.submitPromise('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C').then(console.log).catch(console.error)
 });
 ```
-#### 返回结果
+##### 返回结果
 ```javascript
 > res: { ContractState: '99889937242',
   engine_result: 'tesSUCCESS',
@@ -1346,7 +1346,7 @@ remote.connect(function (err, result) {
      hash:
       '060E534F8274A25EF4D48C5A6DC49F4200173BF6E61F287854821F598829BEBC' } }
 ```
-#### 返回结果说明
+##### 返回结果说明
 |参数|类型|说明|
 |----|----|---:|
 |ContractState|String|调用的合约结果|
@@ -1368,10 +1368,10 @@ remote.connect(function (err, result) {
 |&nbsp;&nbsp;&nbsp;TxnSignature|String|交易签名|
 |&nbsp;&nbsp;&nbsp;hash|String|交易hash|
 ### 4.22 设置挂单佣金
-#### 首先通过buildBrokerageTx方法返回一个Transaction对象，然后通过submitPromise方法设置平台手续费
-#### 4.22.1 创建挂单佣金对象
-##### 方法: remote.buildBrokerageTx({})
-##### 参数:
+##### 首先通过buildBrokerageTx方法返回一个Transaction对象，然后通过submitPromise方法设置平台手续费
+##### 4.22.1 创建挂单佣金对象
+###### 方法: remote.buildBrokerageTx({})
+###### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |account|String|管理员账号|
@@ -1382,11 +1382,11 @@ remote.connect(function (err, result) {
 |&nbsp;&nbsp;value|String|数量，这里只是占位，没有实际意义。|
 |&nbsp;&nbsp;currency|String|货币种类|
 |&nbsp;&nbsp;issuer|String|货币发行方|
-#### 4.22.2 设置挂单佣金
-##### 方法:tx.submitPromise(secret);
-##### 参数: `secret` 密钥
-##### 返回: Promise
-#### 设置挂单佣金完整例子
+##### 4.22.2 设置挂单佣金
+###### 方法:tx.submitPromise(secret);
+###### 参数: `secret` 密钥
+###### 返回: Promise
+##### 设置挂单佣金完整例子
 ```javascript
 const jlib = require('@swtc/lib');
 const Remote = jlib.Remote;
@@ -1407,7 +1407,7 @@ remote.connectPromise().then( async () => {
         })
         .catch(console.error)
 ```
-#### 返回结果
+##### 返回结果
 ```javascript
 { engine_result: 'tesSUCCESS',
   engine_result_code: 0,
@@ -1435,12 +1435,12 @@ remote.connectPromise().then( async () => {
      hash:
       'A74D89B9FBA9A6D9F4158373EF9C57180186548B48CCA9C70F933083F12B5B0B' } }
 ```
-#### 返回结果说明
+##### 返回结果说明
 ### 4.23 部署合约 Solidity版
-#### 首先通过initContract方法返回一个Transaction对象，然后通过setSecret传入密钥，最后通过submit方法完成合约的部署
-#### 4.23.1 创建合约部署对象
-##### 方法:remote.initContract({});
-##### 参数
+##### 首先通过initContract方法返回一个Transaction对象，然后通过setSecret传入密钥，最后通过submit方法完成合约的部署
+##### 4.23.1 创建合约部署对象
+###### 方法:remote.initContract({});
+###### 参数
 |参数|类型|说明|
 |----|----|---:|
 |account|String|合约发布者|
@@ -1448,15 +1448,15 @@ remote.connectPromise().then( async () => {
 |payload|String|合约编译后的16进制字节码|
 |abi|Array|合约abi|
 |params|Array|可选，合约初始化参数|
-##### 返回:Transaction对象
-#### <a name="initContractSubmit"></a> 4.23.2 部署合约
-##### 方法:tx.submitPromise(secret);
-##### 参数: 密钥
+###### 返回:Transaction对象
+##### <a name="initContractSubmit"></a> 4.23.2 部署合约
+###### 方法:tx.submitPromise(secret);
+###### 参数: 密钥
 |参数|类型|说明|
 |----|----|---:|
 |secret|String|合约发布者私钥|
-##### 返回: Promise
-#### 部署合约完整例子
+###### 返回: Promise
+##### 部署合约完整例子
 ```javascript
 const jlib = require("@swtc/lib");
 var Remote = jlib.Remote;
@@ -1487,7 +1487,7 @@ remote.connectPromise()
     .catch(console.error)
 
 ```
-#### 输出
+##### 输出
 ```javascript
 { ContractState: 'j3QhjEeyB2uje8HeyYKByRNqS3sYzH7Yuz',
   engine_result: 'tesSUCCESS',
@@ -1514,25 +1514,25 @@ remote.connectPromise()
       'BE321F06749FA9FFEA556BB5761BE964D5C3029BF95EE6D95B21EB738EF53765' } }
 ```
 ### 4.24 调用合约(Solidity版)
-#### 首先通过invokeContract方法返回一个Transaction对象，然后通过submitPromise方法完成合约的调用。 
-#### 4.24.1 创建合约调用对象
-##### 方法:remote.invokeContract({})
-##### 参数
+##### 首先通过invokeContract方法返回一个Transaction对象，然后通过submitPromise方法完成合约的调用。 
+##### 4.24.1 创建合约调用对象
+###### 方法:remote.invokeContract({})
+###### 参数
 |参数|类型|说明|
 |----|----|---:|
 |account|String|合约发布者|
 |destination|String|合约帐号|
 |abi|Array|合约abi|
 |func|String|合约函数名及参数|
-##### 返回:Transaction对象
-#### <a name="invokeContractSubmit"></a> 4.24.3 执行合约
-##### 方法:tx.submitPromise(secret);
-##### 参数:
+###### 返回:Transaction对象
+##### <a name="invokeContractSubmit"></a> 4.24.3 执行合约
+###### 方法:tx.submitPromise(secret);
+###### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |secret|String|合约执行者私钥|
-##### 返回: Promise
-##### 例子
+###### 返回: Promise
+###### 例子
 ```javascript
 var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
@@ -1557,7 +1557,7 @@ remote.connectPromise()
 	})
 	.catch(console.error)
 ```
-##### 输出
+###### 输出
 ```javascript
 { ContractState: '',
   engine_result: 'tesSUCCESS',
@@ -1584,10 +1584,10 @@ remote.connectPromise()
       '041F2D514FCEABE5015B3E26F47041DB7E51FA577D9331507E9B2BB8DDCD0162' } }
 ```
 ### 4.25 监听事件
-#### Remote有两个监听事件:监听所有交易(transactions)和监听所有账本(ledger_closed)，监听结果放到回调函数中，回调中只有一个参数，为监听到的消息。
-#### 方法:remote.on('transactions',callback);
-#### 方法:remote.on('ledger_closed',callback);
-#### 例子:
+##### Remote有两个监听事件:监听所有交易(transactions)和监听所有账本(ledger_closed)，监听结果放到回调函数中，回调中只有一个参数，为监听到的消息。
+##### 方法:remote.on('transactions',callback);
+##### 方法:remote.on('ledger_closed',callback);
+##### 例子:
 ```javascript
 var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
@@ -1605,17 +1605,17 @@ remote.connect(function (err, result) {
 });
 ```
 ## 5 REQUEST类
-#### Request类主管GET请求，包括获得服务器、账号、挂单、路径等信息。请求时不需要提供密 钥，且对所有用户公开。所有的请求是异步的，会提供一个回调函数。每个回调函数有两个参 数，一个是错误，另一个是结果。提供以下方法:
+##### Request类主管GET请求，包括获得服务器、账号、挂单、路径等信息。请求时不需要提供密 钥，且对所有用户公开。所有的请求是异步的，会提供一个回调函数。每个回调函数有两个参 数，一个是错误，另一个是结果。提供以下方法:
 * selectLedger(ledger)
 * submit(callback)
 * submitPromise()
 ### 5.1 指定账本
-#### 方法:selectLedger(ledger);
-#### 参数:
+##### 方法:selectLedger(ledger);
+##### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |ledger|String|账本高度或者账号hash|
-#### 例子
+##### 例子
 ```javascript
 var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
@@ -1630,16 +1630,16 @@ remote.connect(function (err, result) {
 });
 ```
 ### 5.2 提交请求
-#### 方法:submit(callback);
-#### 参数:回调函数，包含两个参数:错误信息和结果信息
-#### 方法:submitPromise(secret, memo);
-##### 参数:
+##### 方法:submit(callback);
+##### 参数:回调函数，包含两个参数:错误信息和结果信息
+##### 方法:submitPromise(secret, memo);
+###### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |secret|String|井通钱包私钥|
 |memo|String|备注信息|
-##### 返回: Promise
-#### 例子
+###### 返回: Promise
+##### 例子
 ```javascript
 var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
@@ -1653,7 +1653,7 @@ remote.connect(function (err, result) {
 });
 ```
 ## 6 TRANSACTION类
-#### Transaction类主管POST请求，包括组装交易和交易参数。请求时需要提供密钥，且交易可以 进行本地签名和服务器签名。目前支持服务器签名，本地签名支持主要的交易，还有部分参数 不支持。所有的请求是异步的，会提供一个回调函数。每个回调函数有两个参数，一个是错误， 另一个是结果。提供以下方法:
+##### Transaction类主管POST请求，包括组装交易和交易参数。请求时需要提供密钥，且交易可以 进行本地签名和服务器签名。目前支持服务器签名，本地签名支持主要的交易，还有部分参数 不支持。所有的请求是异步的，会提供一个回调函数。每个回调函数有两个参数，一个是错误， 另一个是结果。提供以下方法:
 * getAccount()
 * getTransactionType()
 * setSecret(secret)
@@ -1663,14 +1663,14 @@ remote.connect(function (err, result) {
 * setTransferRate(rate)
 * setFlags(flags)
 * submit(callback)
-#### 额外
+##### 额外
 * signPromise(secret, [memo, [sequence])]
 * submitPromise(secret, [memo, [sequence])]
 ### 6.1 获得交易账号
-#### 方法:getAccount();
-#### 参数:无
-#### 返回:账号
-#### 例子:
+##### 方法:getAccount();
+##### 参数:无
+##### 返回:账号
+##### 例子:
 ```javascript
 var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
@@ -1681,10 +1681,10 @@ var account = tx.getAccount();
 console.log(account);
 ```
 ### 6.2 获得交易类型
-#### 方法:getTransactionType();
-#### 参数:无
-#### 返回:交易类型
-#### 例子:
+##### 方法:getTransactionType();
+##### 参数:无
+##### 返回:交易类型
+##### 例子:
 ```javascript
 var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
@@ -1695,14 +1695,14 @@ var type = tx.getTransactionType();
 console.log(type);
 ```
 ### 6.3 传入私钥
-#### 交易提交之前需要传入私钥。
-#### 方法:setSecret(secret);
-#### 参数:
+##### 交易提交之前需要传入私钥。
+##### 方法:setSecret(secret);
+##### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |secret|String|井通钱包私钥|
-#### 返回:Transaction对象
-#### 例子:
+##### 返回:Transaction对象
+##### 例子:
 ```javascript
 var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
@@ -1712,12 +1712,12 @@ var tx = remote.buildOfferCancelTx(options);
 tx.setSecret('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C');;
 ```
 ### 6.4 添加备注 方法:addMemo(memo);
-#### 参数:
+##### 参数:
 |参数|类型|说明|
 |----|----|---:|
 |memo|String|备注信息，不超过2k。|
-#### 返回:Transaction对象
-#### 例子:
+##### 返回:Transaction对象
+##### 例子:
 ```javascript
 var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
@@ -1730,11 +1730,11 @@ var tx = remote.buildPaymentTx({
 tx.addMemo('给jDUjqoDZLhzx4DCf6pvSivjkjgtRESY62c支付0.5swt.');
 ```
 ### 6.5 提交请求
-#### 方法:submit(callback);
-#### 参数:回调函数，包含两个参数:错误信息和结果信息
-#### 方法:submitPromise(secret, memo);
-#### 参数:密钥, 留言
-#### 例子:
+##### 方法:submit(callback);
+##### 参数:回调函数，包含两个参数:错误信息和结果信息
+##### 方法:submitPromise(secret, memo);
+##### 参数:密钥, 留言
+##### 例子:
 ```javascript
 var jlib = require('@swtc/lib');
 var Remote = jlib.Remote;
@@ -1916,21 +1916,21 @@ contract TokenTest {
 ## 11. 多重签名
 
 ### 11.0 费用
-#### 多重签名需要耗费更多的资源，费用相应的增加，每一个签名需要相应费用, 用 tx.setFee()设置
+##### 多重签名需要耗费更多的资源，费用相应的增加，每一个签名需要相应费用, 用 tx.setFee()设置
 
 ### 11.1 查询帐号的签名列表
-#### 首先通过requestSignerList方法返回一个Request对象，通过submitPromise()方法提交列表信息
-#### 11.1.1 创建查询签名列表
-##### 方法:remote.requestSignerList({})
-##### 参数
+##### 首先通过requestSignerList方法返回一个Request对象，通过submitPromise()方法提交列表信息
+##### 11.1.1 创建查询签名列表
+###### 方法:remote.requestSignerList({})
+###### 参数
 |参数|类型|说明|
 |----|----|---:|
 |account|String|源账号|
-##### 返回: Request对象
-#### 11.1.2 查询
-##### 方法: request.submitPromise()
-##### 返回: Promise
-#### 查询帐号的签名列表完整例子
+###### 返回: Request对象
+##### 11.1.2 查询
+###### 方法: request.submitPromise()
+###### 返回: Promise
+##### 查询帐号的签名列表完整例子
 ```javascript
 const jlib = require("@swtc/lib");
 var Remote = jlib.Remote;
@@ -1948,7 +1948,7 @@ remote.connectPromise()
     .catch(console.error)
 
 ```
-#### 输出
+##### 输出
 ```javascript
 { account: 'j3UbbRX36997CWXqYqLUn28qH55v9Dh37n',
   account_objects:
@@ -1990,7 +1990,7 @@ remote.connectPromise()
   }
 ]
 ```
-#### 返回结果说明
+##### 返回结果说明
 |参数|类型|说明|
 |----|----|---:|
 |account|String|设置签名列表的源账号|
@@ -2012,10 +2012,10 @@ remote.connectPromise()
 
 
 ### 11.2 设置帐号的签名列表
-#### 首先通过buildSignerListTx方法返回一个Transaction对象，通过submit方法提交列表信息
-#### 11.2.1 创建签名列表对象
-##### 方法:remote.buildSignerListTx({})
-##### 参数
+##### 首先通过buildSignerListTx方法返回一个Transaction对象，通过submit方法提交列表信息
+##### 11.2.1 创建签名列表对象
+###### 方法:remote.buildSignerListTx({})
+###### 参数
 |参数|类型|说明|
 |----|----|---:|
 |account|String|交易账号|
@@ -2024,16 +2024,16 @@ remote.connectPromise()
 |&nbsp;&nbsp;---|Object|列表对象|
 |&nbsp;&nbsp;&nbsp;&nbsp;account|String|帐号|
 |&nbsp;&nbsp;&nbsp;&nbsp;weight|String|权重|
-###### 注：不可将交易源账号设为签名列表名单内
-##### 返回:Transaction对象
-#### 11.2.2 设置签名列表 
-##### 方法:tx.submitPromise(secret);
-##### 参数: 密钥
+####### 注：不可将交易源账号设为签名列表名单内
+###### 返回:Transaction对象
+##### 11.2.2 设置签名列表 
+###### 方法:tx.submitPromise(secret);
+###### 参数: 密钥
 |参数|类型|说明|
 |----|----|---:|
 |secret|String|钱包私钥|
-##### 返回: Promise
-#### 设置帐号的签名列表完整例子
+###### 返回: Promise
+##### 设置帐号的签名列表完整例子
 ```javascript
 const jlib = require("@swtc/lib");
 var Remote = jlib.Remote;
@@ -2067,7 +2067,7 @@ remote.connectPromise()
     })
     .catch(console.error)
 ```
-#### 输出
+##### 输出
 ```javascript
 {
   "Flags": 0,
@@ -2160,7 +2160,7 @@ remote.connectPromise()
   "hash": "F5C29AA790682CF238F397610F98910D0947334EF63BA565B30BAE8029AE634E"
 }
 ```
-#### 返回结果说明
+##### 返回结果说明
 |参数|类型|说明|
 |----|----|---:|
 |engine_result|String|请求结果|
@@ -2183,24 +2183,24 @@ remote.connectPromise()
 |&nbsp;&nbsp;&nbsp;hash|String|交易hash|
 
 ### 11.3 废除帐号的主密钥
-#### 本功能为禁止某账号做交易而设定，且只有该账号设置了签名列表才可以废除masterkey成功。首先通过buildAccountSetTx方法返回一个Transaction对象，最后通过submitPromise方法提交到底层
-#### 11.3.1 创建废除密钥交易
-##### 方法:remote.buildAccountSetTx({})
-##### 参数
+##### 本功能为禁止某账号做交易而设定，且只有该账号设置了签名列表才可以废除masterkey成功。首先通过buildAccountSetTx方法返回一个Transaction对象，最后通过submitPromise方法提交到底层
+##### 11.3.1 创建废除密钥交易
+###### 方法:remote.buildAccountSetTx({})
+###### 参数
 |参数|类型|说明|
 |----|----|---:|
 |account|String|被废除或激活masterkey的账号|
 |type|String|类型，这里固定为property|
 |set_flag|Integer|4表示废除|
-##### 返回:Transaction对象
-#### 11.3.2 废除
-##### 方法:tx.submitPromise(secret);
-##### 参数: 密钥
+###### 返回:Transaction对象
+##### 11.3.2 废除
+###### 方法:tx.submitPromise(secret);
+###### 参数: 密钥
 |参数|类型|说明|
 |----|----|---:|
 |secret|String|钱包私钥|
-##### 返回: Promise
-#### 废除主密钥完整例子
+###### 返回: Promise
+##### 废除主密钥完整例子
 ```javascript
 const jlib = require("@swtc/lib");
 var Remote = jlib.Remote;
@@ -2225,7 +2225,7 @@ remote.connectPromise()
     })
     .catch(console.error)
 ```
-#### 输出
+##### 输出
 ```javascript
 {
   "Flags": 0,
@@ -2255,7 +2255,7 @@ remote.connectPromise()
      hash:
       '78FA2577E70DFB86F8089290B1051F2FBE8529888B293142FAD94F2707A65D7B' } }
 ```
-#### 返回结果说明
+##### 返回结果说明
 |参数|类型|说明|
 |----|----|---:|
 |engine_result|String|请求结果|
@@ -2274,21 +2274,21 @@ remote.connectPromise()
 |&nbsp;&nbsp;&nbsp;hash|String|交易hash|
 
 ### 11.4 激活帐号的主密钥
-#### 激活通过多签列表中的账号去完成激活，如用账号a1和a2激活，详见下面例子
-#### 11.4.1 创建激活密钥交易
-##### 方法:remote.buildAccountSetTx({})
-##### 参数
+##### 激活通过多签列表中的账号去完成激活，如用账号a1和a2激活，详见下面例子
+##### 11.4.1 创建激活密钥交易
+###### 方法:remote.buildAccountSetTx({})
+###### 参数
 |参数|类型|说明|
 |----|----|---:|
 |account|String|被废除或激活masterkey的账号|
 |type|String|类型，这里固定为property|
 |clear_flag|Integer|4表示激活主密钥，用于多签中激活masterkey|
-##### 返回:Transaction对象
-#### 11.4.2 激活 
-##### 方法:tx.submitPromise();
-##### 参数: 无
-##### 返回: Promise
-#### 激活主密钥完整例子
+###### 返回:Transaction对象
+##### 11.4.2 激活 
+###### 方法:tx.submitPromise();
+###### 参数: 无
+###### 返回: Promise
+##### 激活主密钥完整例子
 ```javascript
 const jlib = require("@swtc/lib");
 var Remote = jlib.Remote;
@@ -2325,7 +2325,7 @@ remote.connectPromise()
     })
     .catch(console.error)
 ```
-#### 输出
+##### 输出
 ```javascript
 {
   "Flags": 0,
@@ -2439,7 +2439,7 @@ remote.connectPromise()
 }
 
 ```
-#### 返回结果说明
+##### 返回结果说明
 |参数|类型|说明|
 |----|----|---:|
 |engine_result|String|请求结果|
@@ -2463,18 +2463,18 @@ remote.connectPromise()
 
 
 ### 11.5 多重签名 - tx.multiSigning, tx.multiSigned
-#### 通过Transaction多签， 创建正常交易，然后依次进行多签(multiSigning)， 最后确认(multiSigned)提交(tx.submitPromise)
-#### 11.5.1 创建正常交易
-##### 方法:remote.buildPaymentTx({})
-##### 返回:Transaction对象
-#### 11.5.2 多重签名 
-##### 方法:tx.multiSigning() ... tx.multiSigned()
-##### 参数: 
-##### 返回: tx
-#### 11.5.3 交易
-##### 方法:tx.submitPromise()
-##### 返回: promise
-#### 多签支付完整例子
+##### 通过Transaction多签， 创建正常交易，然后依次进行多签(multiSigning)， 最后确认(multiSigned)提交(tx.submitPromise)
+##### 11.5.1 创建正常交易
+###### 方法:remote.buildPaymentTx({})
+###### 返回:Transaction对象
+##### 11.5.2 多重签名 
+###### 方法:tx.multiSigning() ... tx.multiSigned()
+###### 参数: 
+###### 返回: tx
+##### 11.5.3 交易
+###### 方法:tx.submitPromise()
+###### 返回: promise
+##### 多签支付完整例子
 
 ::: details 展开
 ```javascript
@@ -2516,7 +2516,7 @@ remote.connectPromise()
     })
     .catch(console.error)
 ```
-#### 输出
+##### 输出
 ```javascript
 需要设置足够的燃料支持多签交易tx.setFee()
 {
@@ -2683,7 +2683,7 @@ remote.connectPromise()
 ```
 :::
 
-#### 返回结果说明
+##### 返回结果说明
 |参数|类型|说明|
 |----|----|---:|
 |engine_result|String|请求结果|
@@ -2707,18 +2707,18 @@ remote.connectPromise()
 
 
 ### 11.6 多重签名 - remote.buildSignFirstTx, remote.buildSignOtherTx, remote.buildMultisignedTx
-#### 通过Transaction多签， 创建正常交易，然后依次进行多签(multiSigning)， 最后确认(multiSigned)提交(tx.submitPromise)
-#### 11.6.1 创建正常交易
-##### 方法:remote.buildPaymentTx({})
-##### 返回:Transaction对象
-#### 11.6.2 多重签名 
-##### 方法:remote.buildSignFirstTx({}) ... remote.buildSignOtherTx({}), remote.buildMultisignedTx(tx_json), tx.multiSigned()
-##### 参数: 
-##### 返回: tx
-#### 11.6.3 交易
-##### 方法:tx.submitPromise()
-##### 返回: promise
-#### 多签支付完整例子
+##### 通过Transaction多签， 创建正常交易，然后依次进行多签(multiSigning)， 最后确认(multiSigned)提交(tx.submitPromise)
+##### 11.6.1 创建正常交易
+###### 方法:remote.buildPaymentTx({})
+###### 返回:Transaction对象
+##### 11.6.2 多重签名 
+###### 方法:remote.buildSignFirstTx({}) ... remote.buildSignOtherTx({}), remote.buildMultisignedTx(tx_json), tx.multiSigned()
+###### 参数: 
+###### 返回: tx
+##### 11.6.3 交易
+###### 方法:tx.submitPromise()
+###### 返回: promise
+##### 多签支付完整例子
 
 ::: details 展开
 ```javascript
@@ -2761,7 +2761,7 @@ remote.connectPromise()
     })
     .catch(console.error)
 ```
-#### 输出
+##### 输出
 ```javascript
 需要设置足够的燃料支持多签交易tx.setFee()
 {
@@ -2961,7 +2961,7 @@ remote.connectPromise()
 ```
 :::
 
-#### 返回结果说明
+##### 返回结果说明
 |参数|类型|说明|
 |----|----|---:|
 |engine_result|String|请求结果|
@@ -2986,10 +2986,10 @@ remote.connectPromise()
 ## 12. ED25519支持
 
 ### 12.0 EDDSA - ed25519
-#### 井通默认的签名算法是ecdsa， 不过同时也支持eddsa （ed25519）签名
-#### ed25519签名的对象是数据本身， 而其他的(包括ecdsa)签名对象是数据的哈希
-#### 自wallet以上，包括serializer, transaction, lib, 公共方法对ed25519的支持是透明的
-#### ed25519的处理发主要在 address-codec 和 keypair上
+##### 井通默认的签名算法是ecdsa， 不过同时也支持eddsa （ed25519）签名
+##### ed25519签名的对象是数据本身， 而其他的(包括ecdsa)签名对象是数据的哈希
+##### 自wallet以上，包括serializer, transaction, lib, 公共方法对ed25519的支持是透明的
+##### ed25519的处理发主要在 address-codec 和 keypair上
 
 ### 12.1 生成钱包, 提供算法作为参数
 ```javascript
