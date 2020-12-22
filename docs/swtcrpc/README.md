@@ -1247,65 +1247,72 @@ Promise { <pending> }
 :::
 ## 6 派生调用
 派生调用是运用rpc交互实现一些方便的功能，或者尝试使用其它库相似/一致的方式来实现
-### 6.1 方便调用(连接@swtc/transaction)
-#### 6.1.1 Remote.getAccountInfo(address: string)
-::: tip 调用
-```javascript
-return Remote.rpcAccountInfo({account: address})
-```
-:::
-#### 6.1.2 Remote.getAccountSequence(address: string)
+### 6.0 连接@swtc/transaction
+#### 6.0.1 Remote.rpcAccountInfo()
+#### 6.0.2 Remote.rpcSubmit()
+#### 6.0.3 Remote.rpcSubmitMultisigned()
+### 6.1 方便调用
+#### 6.1.1 Remote.getAccountBalance(address: string) 账户余额
 ::: tip 调用
 ```javacript
-return (await Remote.AccountInfo({account: address})).account_data.Sequence
+await Remote.rpcAccountInfo({account: address})
+await Remote.rpcAccountCurrencies({account: address})
+await Remote.rpcAccountObjects({account: address})
 ```
 :::
-#### 6.1.3 Remote.submit(tx_blob: string)
+:::
+#### 6.1.2 Remote.getAccountSequence(address: string) 账户序号
+::: tip 调用
+```javacript
+return (await Remote.rpcAccountInfo({account: address})).account_data.Sequence
+```
+:::
+#### 6.1.3 Remote.submit(tx_blob: string) 提交单签事务
 ::: tip 调用
 ```javascript
 return Remote.rpcSubmit({tx_blog})
 ```
 :::
-#### 6.1.4 Remote.submitMultisigned(tx_json: object)
+#### 6.1.4 Remote.submitMultisigned(tx_json: object) 提交多签事务
 ::: tip 调用
 ```javascript
 return Remote.rpcSubmitMultisigned({tx_json})
 ```
 :::
-### 6.2 查询相关
-#### 6.2.1 Remote.getAccountBalance(address: string)
+### 6.2 其它查询相关
+#### 6.2.1 Remote.getAccountInfo(address: string) 账户基本信息
+::: tip 调用
+```javascript
+return Remote.rpcAccountInfo({account: address})
+```
 #### 6.2.2 Remote.getAccountOffers(address: string) 账户挂单
 ::: tip 调用
 ```javascript
 return Remote.rpcAccountOffers({account: address})
 ```
 :::
-::: details 代码示例
+#### 6.2.3 Remote.getAccountTrusts(address: string) 账户信任
+::: tip 调用
 ```javascript
-> const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
-> remote.getAccountOffers("jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz").then(console.log).catch(console.error)
-Promise { <pending> }
-> {
-  account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
-  ledger_current_index: 17867384,
-  offers: [
-    {
-      flags: 131072,
-      seq: 112,
-      taker_gets: [Object],
-      taker_pays: '1000000'
-    }
-  ],
-  status: 'success',
-  validated: false
-}
+return Remote.rpcAccountLines({account: address})
 ```
-:::
-#### 6.2.3 Remote.getAccountTrusts(address: string)
-#### 6.2.4 Remote.getAccountRelations(address: string)
-### 6.3 写入相关
-::: tip 事务 (和lib/api 表现一致)
+#### 6.2.4 Remote.getAccountRelation(address: string) 账户关系
+::: tip 调用
+```javascript
+return Remote.rpcAccountRelation({account: address})
+```
+#### 6.2.5 Remote.getAccountTx(address: string) 账户事务
+::: tip 调用
+```javascript
+return Remote.rpcAccountTx({account: address})
+```
+#### 6.2.6 Remote.getBrokerage(address: string) 挂单佣金
+::: tip 调用
+```javascript
+return Remote.rpcFeeInfo({account: address})
+```
+### 6.3 其它写入相关
+::: tip 事务 (和lib/api Remote 表现一致)
 buildXyzTx(options) 生成 (@swtc/transaction).Transaction实例 tx
 
 使用tx.submitPromise([secret[, memo[, sequence]]])提交
@@ -1420,7 +1427,7 @@ Promise { <pending> }
 }
 ```
 :::
-#### 6.3.3 Remote.buildOfferCancelTx(options: IOfferCancelTxOptions)
+#### 6.3.3 Remote.buildOfferCancelTx(options: IOfferCancelTxOptions) 取消挂单
 ::: tip 参数
 ```typescript
 export interface IOfferCancelTxOptions {
@@ -1471,9 +1478,200 @@ Promise { <pending> }
 }
 ```
 :::
-#### 6.3.4 Remote.buildRelationTx(options: IRelationTxOptions)
-#### 6.3.5 Remote.buildAccountSetTx(options: IAccountSetTxOptions)
-#### 6.3.6 Remote.buildBrokerageTx(options)
+#### 6.3.4 Remote.buildRelationTx(options: IRelationTxOptions) 信任/授权/冻结
+::: tip 参数
+```typescript
+interface IRelationTxOptions {
+  type: "trust" | "authorize" | "freeze"
+  source?: string
+  from?: string
+  account?: string
+  target?: string
+  limit: IAmount
+  quality_out?: any
+  quality_in?: any
+  memo?: string
+  secret?: string
+  sequence?: string | number
+}
+}
+```
+:::
+::: details 代码示例
+```javascript
+> const Remote = require("@swtc/rpc").Remote
+> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> remote.buildRelationTx({
+... account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+... target: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
+... limit: remote.makeAmount(0.1, "slash"),
+... type: "authorize"
+... }).submitPromise("ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C", "授权").then(console.log).catch(console.error)
+Promise { <pending> }
+> {
+  engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message: 'The transaction was applied. Only final in a validated ledger.',
+  status: 'success',
+  tx_blob: '1200152200000000240000007220230000000163D4438D7EA4C680000000000000000000004A534C4153480000000000A582E432BFC48EEDEF852C814EC57F3CD2D415966840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E1574473045022100E3EC883EAC255018DEAC561D182F0DED824E9301BF56BC30292414F7835398D3022042807AFD74DC4BBF54A65BAB57B34D14F2012D028A1E32E9BB32A3A13EEDEBAD81141359AA928F4D98FDB3D93E8B690C80D37DED11C38714054FADDC8595E2950FA43F673F65C2009F58C7F1F9EA7D06E68E88E69D83E1F1',
+  tx_json: {
+    Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+    Fee: '10000',
+    Flags: 0,
+    LimitAmount: {
+      currency: 'JSLASH',
+      issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
+      value: '0.1'
+    },
+    Memos: [ [Object] ],
+    RelationType: 1,
+    Sequence: 114,
+    SigningPubKey: '029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15',
+    Target: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
+    TransactionType: 'RelationSet',
+    TxnSignature: '3045022100E3EC883EAC255018DEAC561D182F0DED824E9301BF56BC30292414F7835398D3022042807AFD74DC4BBF54A65BAB57B34D14F2012D028A1E32E9BB32A3A13EEDEBAD',
+    hash: '7C9D297C1F13FE45FAAF34CA6DCD97593BB40D6761B7F9174B54BB8AE207490F'
+  }
+}
+
+> remote.buildRelationTx({
+... account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+... limit: remote.makeAmount(10000, "slash"),
+... type: "trust"
+... }).submitPromise("ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C", "信任").then(console.log).catch(console.error)
+Promise { <pending> }
+> {
+  engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message: 'The transaction was applied. Only final in a validated ledger.',
+  status: 'success',
+  tx_blob: '1200142200000000240000007263D5838D7EA4C680000000000000000000004A534C4153480000000000A582E432BFC48EEDEF852C814EC57F3CD2D415966840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E157446304402200DB5BB2B331C27A6322866934B443F01D4105D2DE2AE01149AEA2F09E85ABDFA0220225963707BF00C712C2AA92381E94D33136D225BCCAEBDC2453AD93163A5286881141359AA928F4D98FDB3D93E8B690C80D37DED11C3F9EA7D06E4BFA1E4BBBBE1F1',
+  tx_json: {
+    Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+    Fee: '10000',
+    Flags: 0,
+    LimitAmount: {
+      currency: 'JSLASH',
+      issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
+      value: '10000'
+    },
+    Memos: [ [Object] ],
+    Sequence: 114,
+    SigningPubKey: '029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15',
+    TransactionType: 'TrustSet',
+    TxnSignature: '304402200DB5BB2B331C27A6322866934B443F01D4105D2DE2AE01149AEA2F09E85ABDFA0220225963707BF00C712C2AA92381E94D33136D225BCCAEBDC2453AD93163A52868',
+    hash: '4B4B922B63156AFDF5DB4241F67601E67A35F290032B274ABAD9FFBC2314572D'
+  }
+}
+```
+#### 6.3.5 Remote.buildAccountSetTx(options: IAccountSetTxOptions) 帐号属性
+::: tip 参数
+```typescript
+interface IAccountSetTxOptions {
+  type: "property" | "delegate" | "signer"
+  source?: string
+  from?: string
+  account?: string
+  set?: string | number
+  set_flag?: string | number
+  clear?: string | number
+  clear_flag?: string | number
+  delegate_key?: string
+  memo?: string
+  secret?: string
+  sequence?: string | number
+}
+
+```
+:::
+::: details 代码示例
+```javascript
+> const Remote = require("@swtc/rpc").Remote
+> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const tx = remote.buildAccountSetTx({
+... account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+... type:'property'
+... })
+> tx.submitPromise("ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C").then(console.log).catch(console.error)
+Promise { <pending> }
+> {
+  engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message: 'The transaction was applied. Only final in a validated ledger.',
+  status: 'success',
+  tx_blob: '120003220000000024000000736840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E157446304402207E0514A928B7CBB6662815A835B8B7EDE04397867AF501DB8764BC8CECF74B5D0220357CA75B9EBB0A782099CC4340EEBB1FCA8951B165F2F732ACFADDA462DD6A6981141359AA928F4D98FDB3D93E8B690C80D37DED11C3',
+  tx_json: {
+    Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+    Fee: '10000',
+    Flags: 0,
+    Sequence: 115,
+    SigningPubKey: '029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15',
+    TransactionType: 'AccountSet',
+    TxnSignature: '304402207E0514A928B7CBB6662815A835B8B7EDE04397867AF501DB8764BC8CECF74B5D0220357CA75B9EBB0A782099CC4340EEBB1FCA8951B165F2F732ACFADDA462DD6A69',
+    hash: 'F2BD8774F1816A0957D74AC42975A9AF6CFC94152D671D9756D732418E49DD90'
+  }
+}
+```
+:::
+#### 6.3.6 Remote.buildBrokerageTx(options) 挂单佣金
+::: tip 参数
+```typescript
+interface IBrokerageTxOptions {
+  account: string
+  address?: string
+  feeAccount: string
+  mol?: number
+  molecule?: number
+  den?: number
+  denominator?: number
+  amount: IAmount
+  memo?: string
+  secret?: string
+  sequence?: string | number
+}
+```
+:::
+::: details 代码示例
+```javascript
+> const Remote = require("@swtc/rpc").Remote
+> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const tx = remote.buildBrokerageTx({
+... account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+... mol: 10,
+... den: 1000,
+... feeAccount: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+... amount: remote.makeAmount(3, "slash")
+... })
+undefined
+> tx.submitPromise("ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C").then(console.log).catch(console.error)
+Promise { <pending> }
+> {
+  engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message: 'The transaction was applied. Only final in a validated ledger.',
+  status: 'success',
+  tx_blob: '1200CD2200000000240000007439000000000000000A3A00000000000003E861D48AA87BEE5380000000000000000000004A534C4153480000000000A582E432BFC48EEDEF852C814EC57F3CD2D415966840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E157447304502210091F0DBF8C80E53F93C1D7E9898CB96E00AE5F1CB5B68A20828E31807B1333A920220047F13F40B05AFB1CCC7EA0670FF3840F3ADD4CB442929650A63FB487335ECEB81141359AA928F4D98FDB3D93E8B690C80D37DED11C389141359AA928F4D98FDB3D93E8B690C80D37DED11C3',
+  tx_json: {
+    Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+    Amount: {
+      currency: 'JSLASH',
+      issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
+      value: '3'
+    },
+    Fee: '10000',
+    FeeAccountID: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+    Flags: 0,
+    OfferFeeRateDen: '00000000000003E8',
+    OfferFeeRateNum: '000000000000000A',
+    Sequence: 116,
+    SigningPubKey: '029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15',
+    TransactionType: 'Brokerage',
+    TxnSignature: '304502210091F0DBF8C80E53F93C1D7E9898CB96E00AE5F1CB5B68A20828E31807B1333A920220047F13F40B05AFB1CCC7EA0670FF3840F3ADD4CB442929650A63FB487335ECEB',
+    hash: '67506B732F4298F731EF6FF32BAB3DB19AB6D75607556828B56B308B14599026'
+  }
+}
+```
+:::
 #### 6.3.7 Remote.buildSignerListTx(options: ISignerListTxOptions)
 #### 6.3.1 Remote.buildSignFirstTx(options: ISignFirstTxOptions)
 #### 6.3.1 Remote.buildSignOtherTx(options: ISignOtherTxOptions)
