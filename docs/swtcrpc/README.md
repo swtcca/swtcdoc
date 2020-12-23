@@ -4,8 +4,19 @@
 
 ## 0. 接口说明
 ::: tip
-##### 强制本地签名
-##### 使用rpc接口，不依赖于websocket
+- 使用rpc接口，不依赖于websocket
+- 对于返回的内容不作进一步处理, 原生通证的单位通常是 `1e-6 swtc`, 
+- 所有rpc调用基于Promise
+- 安全，强制本地签名
+- 隐藏不稳定调用 rpcLedgerEntry() rpcSkywellPathFind()
+- 错误处理
+- 所有rpc交互对应一个方法， 名字以`rpc`开头
+- 所有rpc交互对应一个等价方法， 名字以`get`开头, 将最有意义的参数（若不多于两个）单独提前 （submit/submitMultisigned省略`get`）
+- 提供一部分额外方法，以便捷或者保持和其它库相似性为目的
+
+参考
+- https://xrpl.org/public-rippled-methods.html
+- https://github.com/jingtum/jingtum-core
 :::
 
 ## 1 安装
@@ -83,10 +94,73 @@ remote.config()
 }
 ```
 :::
+
+#### 4.1.1 rpc调用列表
+- rpcVersion()
+- rpcRandom()
+- rpcServerInfo()
+- rpcServerState()
+- rpcLedgerClosed()
+- rpcLedgerCurrent()
+- rpcLedger(params: IRpcLedgerOptions = {})
+- rpcLedgerData(params: IRpcLedgerDataOptions = {})
+- rpcTxHistory(params: IRpcTxHistoryOptions = { start: 0 })
+- rpcTx(params: IRpcTxOptions)
+- rpcTxEntry(params: IRpcTxEntryOptions)
+- rpcSubmit(params: IRpcSubmitOptions)
+- rpcSubmitMultisigned(params: IRpcSubmitMultisignedOptions)
+- rpcFeeInfo(params: IRpcFeeInfoOptions)
+- rpcBlacklistInfo(params: IRpcBlacklistInfoOptions = {})
+- rpcAccountInfo(params: IRpcAccountInfoOptions)
+- rpcAccountObjects(params: IRpcAccountObjectsOptions)
+- rpcAccountCurrencies(params: IRpcAccountCurrenciesOptions)
+- rpcAccountLines(params: IRpcAccountLinesOptions)
+- rpcAccountRelation(params: IRpcAccountRelationOptions)
+- rpcAccountOffers(params: IRpcAccountOffersOptions)
+- rpcAccountTx(params: IRpcAccountTxOptions)
+- rpcBookOffers(params: IRpcBookOffersOptions)
+- rpcLedgerEntry(params: IRpcLedgerEntryOptions = {})
+- rpcSkywellPathFind(params: IRpcSkywellPathFindOptions)
+
+#### 4.1.2 派生调用列表
+- async getAccountBalances(address: string, params = {})
+- async getAccountSequence(address: string, params = {})
+- getAccountCurrencies(address: string, params = {})
+- getAccountInfo(address: string, params = {})
+- getAccountObjects(address: string, params = {})
+- getAccountOffers(address: string, params = {})
+- getAccountRelation(address: string, params = {})
+- getAccountSignerList(address: string, params = {})
+- getAccountTrusts(address: string, params = {})
+- getAccountTx(address: string, params = {})
+- getBlacklistInfo(params: IRpcBlacklistInfoOptions = {})
+- getBookOffers(taker_gets: object, taker_pays: object, params = {})
+- getBrokerage(address: string, params = {})
+- getLedger(params: IRpcLedgerOptions = {})
+- getLedgerClosed()
+- getLedgerCurrent()
+- getLedgerData(params: IRpcLedgerDataOptions = {})
+- getLedgerEntry(params: IRpcLedgerEntryOptions = {})
+- getRandom()
+- getServerInfo()
+- getServerState()
+- getSkywellPathFind(params: IRpcSkywellPathFindOptions)
+- getTx(transaction: string, params = {})
+- getTxEntry(tx_hash: string, params = {})
+- getTxHistory(start: number = 0, params = {})
+- getVersion()
 ### 4.2 节点相关
 #### 4.2.1 Remote.rpcServerInfo() 获取节点信息
+
 ::: tip 参数
 无
+
+等价
+```typescript
+public getServerInfo() {
+  return this.rpcServerInfo()
+}
+```
 :::
 ::: details 代码示例
 ```javascript
@@ -126,6 +200,13 @@ Promise { <pending> }
 #### 4.2.2 Remote.rpcServerState() 获取节点状态
 ::: tip 参数
 无
+
+等价
+```typescript
+public getServerState() {
+  return this.rpcServerState()
+}
+```
 :::
 ::: details 代码示例
 ```javascript
@@ -164,6 +245,13 @@ Promise { <pending> }
 #### 4.3.1 Remote.rpcLedgerClosed() 获取已关闭帐本信息
 ::: tip 参数
 无
+
+等价
+```typescript
+public getLedgerClosed() {
+  return this.rpcLedgerClosed()
+}
+```
 :::
 ::: details 代码示例
 ```javascript
@@ -181,6 +269,13 @@ Promise { <pending> }
 #### 4.3.2 Remote.rpcLedgerCurrent() 获取已关闭帐本信息
 ::: tip 参数
 无
+
+等价
+```typescript
+public getLedgerCurrent() {
+  return this.rpcLedgerCurrent()
+}
+```
 :::
 ::: details 代码示例
 ```javascript
@@ -191,7 +286,7 @@ Promise { <pending> }
 > { ledger_current_index: 17854969, status: 'success' }
 ```
 :::
-#### 4.3.3 Remote.rpcLedger(params: IRpcLedgerOptions) 获取帐本信息
+#### 4.3.3 Remote.rpcLedger(params: IRpcLedgerOptions) 获取帐本列表
 ::: tip 参数
 ```typescript
 interface IRpcLedgerOptions {
@@ -203,6 +298,13 @@ interface IRpcLedgerOptions {
   full?: boolean
   binary?: boolean
 }
+
+等价
+```typescript
+public getLedger(params: IRpcLedgerOptions = {}) {
+  return this.rpcLedger(params)
+}
+```
 ```
 :::
 ::: details 参数说明
@@ -275,6 +377,13 @@ interface IRpcLedgerDataOptions {
   marker?: IMarker
 }
 ```
+
+等价
+```typescript
+public getLedgerData(params: IRpcLedgerDataOptions = {}) {
+  return this.rpcLedgerData(params)
+}
+```
 :::
 ::: details 参数说明
 | 参数          | 类型        | 解析
@@ -322,6 +431,13 @@ interface IRpcLedgerEntryOptions {
   [key: string]: any
 }
 ```
+
+等价
+```typescript
+public getLedgerEntry(params: IRpcLedgerEntryOptions = {}) {
+  return this.rpcLedgerEntry(params)
+}
+```
 :::
 ::: details 参数说明
 | 参数          | 类型        | 解析
@@ -362,11 +478,18 @@ Promise { <pending> }
 ::: danger
 不安全操作，不予提供
 :::
-#### 4.4.1 Remote.rpcTxHistory(params: IRpcTxHistoryOptions) 获取最近事务
+#### 4.4.1 Remote.rpcTxHistory(params: IRpcTxHistoryOptions) 获取最近事务列表
 ::: tip 参数
 ```typescript
 export interface IRpcTxHistoryOptions {
   start?: number
+}
+```
+
+等价
+```typescript
+public getTxHistory(params: IRpcTxHistoryOptions = {}) {
+  return this.rpcTxHistory({start: 0, ...params})
 }
 ```
 :::
@@ -429,6 +552,13 @@ export interface IRpcTxOptions {
   max_ledger?: number
 }
 ```
+
+等价
+```typescript
+public getTx(transaction: string, params: IRpcTxOptions = {transaction: ""}) {
+  return this.rpcTx({ ...params, transaction })
+}
+```
 :::
 ::: details 参数说明
 | 参数          | 类型        | 解析
@@ -479,6 +609,13 @@ export interface IRpcTxEntryOptions {
   ledger_index?: "validated" | "closed" | "current" | number
   ledger_hash?: string
   tx_hash: string
+}
+```
+
+等价
+```typescript
+public getTxEntry(tx_hash: string, params: IRpcTxEntryOptions = {tx_hash: ""}) {
+  return this.rpcTxEntry({ ...params, tx_hash })
 }
 ```
 :::
@@ -539,6 +676,13 @@ export interface IRpcSubmitOptions {
   fail_hard?: boolean
 }
 ```
+
+等价
+```typescript
+public submit(tx_blob: string, params: IRpcSubmitOptions = {tx_blob: ""}) {
+  return this.rpcSubmit({ ...params, tx_blob })
+}
+```
 :::
 ::: details 参数说明
 | 参数          | 类型        | 解析
@@ -583,6 +727,13 @@ To be successful, the weights of the signatures must be equal or higher than the
 export interface IRpcSubmitMultisignedOptions {
   tx_json: object
   fail_hard?: boolean
+}
+```
+
+等价
+```typescript
+public submitMultisigned(tx_json: object, params: IRpcSubmitMultisignedOptions = {tx_json: {}}) {
+  return this.rpcSubmitMultisigned({ ...params, tx_json })
 }
 ```
 :::
@@ -668,6 +819,13 @@ export interface IRpcBookOffersOptions {
   limit?: number
 }
 ```
+
+等价
+```typescript
+public getBookOffers(taker_gets: ICurrency, taker_pays: ICurrency, params: IRpcBookOffersOptions = {taker_gets: {}, taker_pays: {}}) {
+  return this.rpcBookOffers({...params, taker_gets, taker_pays})
+}
+```
 :::
 ::: details 参数说明
 | 参数          | 类型        | 解析
@@ -736,6 +894,13 @@ export interface IRpcBookOffersOptions {
   limit?: number
 }
 ```
+
+等价
+```typescript
+public getSkywellPathFind(params: IRpcSkywellPathFindOptions) {
+  return this.rpcSkywellPathFind(params)
+}
+```
 :::
 ::: details 参数说明
 | 参数          | 类型        | 解析
@@ -787,6 +952,57 @@ export interface IRpcBookOffersOptions {
 ```
 :::
 ### 4.6 账户相关
+#### 4.6.0 Remote.rpcBlacklistInfo(params: IRpcBlacklistInfoOptions = {}) 获取账户基本信息
+::: tip 参数
+```typescript
+interface IRpcBlacklistInfoOptions {
+  account?: string
+  marker?: IMarker
+}
+```
+
+等价
+```typescript
+public getBlacklistInfo(params: IRpcBlacklistInfoOptions = {}) {
+  return this.rpcBlacklistInfo(params)
+}
+```
+:::
+::: details 参数说明
+| 参数          | 类型        | 解析
+|--------------|-------------|-----| 
+| account      | string      | 指定账户, 地址 |
+| marker       | IMarker     | 可选参数, 分页相关 |
+:::
+::: details 代码示例
+```javascript
+> const Remote = require("@swtc/rpc").Remote
+> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> remote.rpcBlacklistInfo().then(console.log)
+Promise { <pending> }
+> {
+  ledger_hash: '3CBF6F0B72CA68AC7F00CB640587BDA83487EA84ED84057FC11DFF241287DB87',
+  ledger_index: '17890257',
+  marker: '007926FCDB6FC3626F3A6C79F5640D148AC35998FE9838FE950613C9E0852CC8',
+  state: [
+    {
+      BlackListAccountID: 'jBV2vaet8BZx1zvtKAhxe9AZhnchGvwYvo',
+      Flags: 0,
+      LedgerEntryType: 'BlackList',
+      index: '00009FCA9BBBFD274D7478332830786A817BA4D3729A8FBD4ED871A484C70A37'
+    },
+    {
+      BlackListAccountID: 'jnZVj3TfY553kKChqxyLbYCtgxZ4iouEZx',
+      Flags: 0,
+      LedgerEntryType: 'BlackList',
+      index: '0001111F9D4BC1B4A07403850C72B82B5F554821888738B951327D15346D3FA8'
+    },
+    ... 156 more items
+  ],
+  status: 'success'
+}
+```
+:::
 #### 4.6.1 Remote.rpcAccountInfo(params: IRpcAccountInfoOptions) 获取账户基本信息
 ::: tip 参数
 ```typescript
@@ -794,6 +1010,13 @@ export interface IRpcAccountInfoOptions {
   account: string
   ledger_index?: "validated" | "closed" | "current" | number
   ledger_hash?: string
+}
+```
+
+等价
+```typescript
+public getAccountInfo(address: string, params: IRpcAccountInfoOptions = {account: ""}): Promise<any> {
+  return this.rpcAccountInfo({ ...params, account: address })
 }
 ```
 :::
@@ -838,6 +1061,13 @@ export interface IRpcAccountObjectsOptions {
   type?: "offer" | "ticket" | "state" | "deposit_preauth" | "SignerList"
   limit?: number
   marker?: IMarker
+}
+```
+
+等价
+```typescript
+public getAccountObjects(address: string, params: IRpcAccountObjectsOptions = {account: ""}) {
+  return this.rpcAccountObjects({...params, account: address)
 }
 ```
 :::
@@ -959,6 +1189,13 @@ export interface IRpcAccountCurrenciesOptions {
   strict?: boolean
 }
 ```
+
+等价
+```typescript
+public getAccountCurrencies(address: string, params: IRpcAccountCurrenciesOptions = {account: ""}) {
+  return this.rpcAccountCurrencies({...params, account: address})
+}
+```
 :::
 ::: details 参数说明
 | 参数          | 类型        | 解析
@@ -993,6 +1230,13 @@ export interface IRpcAccountLinesOptions {
   strict?: boolean
   peer?: string
   marker?: IMarker
+}
+```
+
+等价
+```typescript
+public getAccountTrusts(address: string, params: IRpcAccountLinesOptions = {account: ""}) {
+  return this.rpcAccountLines({...params, account: address})
 }
 ```
 :::
@@ -1054,6 +1298,13 @@ export interface IRpcAccountOffersOptions {
   marker?: IMarker
 }
 ```
+
+等价
+```typescript
+public getAccountOffers(address: string, params: IRpcAccountOffersOptions = {account: ""}): Promise<any> {
+  return this.rpcAccountOffers({ ...params, account: address })
+}
+```
 :::
 ::: details 参数说明
 | 参数          | 类型        | 解析
@@ -1102,6 +1353,13 @@ export interface IRpcAccountTxOptions {
   marker?: IMarker
 }
 ```
+
+等价
+```typescript
+public getAccountTx(address: string, params: IRpcAccountTxOptions = {account: ""}) {
+  return this.rpcAccountTx({...params, account: address})
+}
+```
 :::
 ::: details 参数说明
 | 参数          | 类型        | 解析
@@ -1135,6 +1393,7 @@ Promise { <pending> }
   ]
 }
 ```
+:::
 #### 4.6.7 Remote.rpcAccountRelation(params: IRpcAccountRelationOptions) 获取账户关系
 ::: tip 参数
 ```typescript
@@ -1145,6 +1404,13 @@ export interface IRpcAccountRelationOptions {
   strict?: boolean
   peer?: string
   marker?: IMarker
+}
+```
+
+等价
+```typescript
+public getAccountRelation(address: string, params: IRpcAccountRelationOptions = {account: ""}) {
+  return this.rpcAccountRelation({...params, account: address})
 }
 ```
 :::
@@ -1188,18 +1454,16 @@ Promise { <pending> }
 }
 ```
 :::
-:::
 ## 5 错误处理
 所有rpc交互都是通过axios进行的，返回`Promise`, 不成功时抛出`Exception`
 
 ### 5.1 RpcError对象
-[具体错误信息](../swtclib/#_7-底层常见错误附录)
 ::: tip
 当Remote与节点rpc交互时，如果出现错误就会抛出RpcError
 
-包括axios的各种错误
-
-包括rpc应答中`status`不是`success`时
+- 包含axios请求的各种错误
+- 包括axios应答的各种错误
+- 包括rpc应答中`status`不是`success`时
 ```typescript
 export class RpcError {
   public error
@@ -1215,7 +1479,25 @@ export class RpcError {
 }
 ```
 :::
-### 5.2 axios错误 生成 RpcError对象
+### 5.2 axios 请求错误 生成 RpcError对象
+::: tip
+包括 请求方法，参数(钱包地址)校验
+:::
+::: details 实例化 RpcError
+```javascript
+> const Remote = require("@swtc/rpc").Remote
+> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> remote.getAccountInfo("jGxW97eCqxfAWvmqSgNkwc2apCejiM89bGwrongaddress").then(console.log).catch(console.error)
+Promise { <pending> }
+> RpcError {
+  status: 'error',
+  error: 'validationError',
+  error_code: -8888,
+  error_message: 'invalid account specified'
+}
+```
+:::
+### 5.3 axios 应答错误 生成 RpcError对象
 ::: details 实例化 RpcError
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
@@ -1230,7 +1512,7 @@ Promise { <pending> }
 }
 ```
 :::
-### 5.3 rpc应答错误 生成 RpcError对象
+### 5.4 rpc应答错误 生成 RpcError对象
 ::: details 实例化 RpcError
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
@@ -1247,23 +1529,46 @@ Promise { <pending> }
 :::
 ## 6 派生调用
 派生调用是运用rpc交互实现一些方便的功能，或者尝试使用其它库相似/一致的方式来实现
-### 6.0 连接@swtc/transaction
-#### 6.0.1 Remote.rpcAccountInfo()
-#### 6.0.2 Remote.rpcSubmit()
-#### 6.0.3 Remote.rpcSubmitMultisigned()
 ### 6.1 方便调用
 #### 6.1.1 Remote.getAccountBalance(address: string) 账户余额
 ::: tip 调用
-```javacript
+```javascript
 await Remote.rpcAccountInfo({account: address})
-await Remote.rpcAccountCurrencies({account: address})
-await Remote.rpcAccountObjects({account: address})
+await Remote.rpcAccountLines({account: address})
+await Remote.rpcAccountRelation({account: address})
+await Remote.rpcAccountOffers({account: address})
 ```
+::: details 代码示例
+```javascript
+> const Remote = require("@swtc/rpc").Remote
+> const remote = new Remote()
+> remote.getAccountBalances("jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz").then(console.log).catch(console.error)
+Promise { <pending> }
+> {
+  balances: [
+    { value: 62.07996, currency: 'SWT', issuer: '', freezed: 30 },
+    {
+      value: '60.798',
+      currency: 'JSLASH',
+      issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
+      freezed: 1
+    },
+    {
+      value: '6',
+      currency: 'JCALL',
+      issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
+      freezed: 0
+    }
+  ],
+  sequence: 121
+}
+```
+:::
 :::
 :::
 #### 6.1.2 Remote.getAccountSequence(address: string) 账户序号
 ::: tip 调用
-```javacript
+```javascript
 return (await Remote.rpcAccountInfo({account: address})).account_data.Sequence
 ```
 :::
@@ -1280,51 +1585,46 @@ return Remote.rpcSubmitMultisigned({tx_json})
 ```
 :::
 ### 6.2 其它查询相关
-#### 6.2.1 Remote.getAccountInfo(address: string) 账户基本信息
-::: tip 调用
-```javascript
-return Remote.rpcAccountInfo({account: address})
-```
-#### 6.2.2 Remote.getAccountOffers(address: string) 账户挂单
-::: tip 调用
-```javascript
-return Remote.rpcAccountOffers({account: address})
-```
-:::
+#### 6.2.1 Remote.getAccountInfo(address: string, params: IRpcAccountInfoOptions = {account: ""}) 账户基本信息
+等价 `Remote.rpcAccountInfo(params)`
+#### 6.2.2 Remote.getAccountOffers(address: string, params: IRpcAccountOffersOptions = {account: ""}) 账户挂单
+等价 `Remote.rpcAccountOffers(params)`
 #### 6.2.3 Remote.getAccountTrusts(address: string) 账户信任
 ::: tip 调用
 ```javascript
 return Remote.rpcAccountLines({account: address})
 ```
-#### 6.2.4 Remote.getAccountRelation(address: string) 账户关系
+#### 6.2.4 Remote.getAccountRelation(address: string, params: IRpcAccountRelationOptions = {account: ""}) 账户关系
+等价 `Remote.rpcAccountReltion(params)`
+#### 6.2.5 Remote.getAccountTx(address: string, params: IRpcAccountTxOptions = {account: ""}) 账户事务
+等价 `Remote.rpcAccountTx(params)`
+#### 6.2.6 Remote.getBrokerage(address: string, params: IRpcFeeInfoOptions = { account: ""}) 挂单佣金
 ::: tip 调用
 ```javascript
-return Remote.rpcAccountRelation({account: address})
+return Remote.rpcFeeInfo({...params, account: address})
 ```
-#### 6.2.5 Remote.getAccountTx(address: string) 账户事务
-::: tip 调用
-```javascript
-return Remote.rpcAccountTx({account: address})
-```
-#### 6.2.6 Remote.getBrokerage(address: string) 挂单佣金
-::: tip 调用
-```javascript
-return Remote.rpcFeeInfo({account: address})
-```
-### 6.3 其它写入相关
+## 7 写入事务
+### 7.0 连接@swtc/transaction
+#### 7.0.1 Remote.rpcAccountInfo()
+#### 7.0.2 Remote.rpcSubmit()
+#### 7.0.3 Remote.rpcSubmitMultisigned()
+::: warning
+通过rpc调用已经连通 @swtc/transaction
+
+下面都是 `Transaction` 的简单调用
+:::
+### 7.1 写入相关 - 单签
 ::: tip 事务 (和lib/api Remote 表现一致)
 buildXyzTx(options) 生成 (@swtc/transaction).Transaction实例 tx
 
 使用tx.submitPromise([secret[, memo[, sequence]]])提交
 
-单签可以分步骤:
+单签也可以分步骤:
 - `tx.setSequence(sequence)` 或者 `tx._setSequencePromise()`
 - `tx.addMemo(memo)`
 - `tx.signPromise(secret)`
-
-多签应该本地签好/组装好
 :::
-#### 6.3.1 Remote.buildPaymentTx(options: IPaymentTxOptions) 支付
+#### 7.1.1 Remote.buildPaymentTx(options: IPaymentTxOptions) 支付
 ::: tip 参数
 ```typescript
 interface IPaymentTxOptions {
@@ -1370,7 +1670,7 @@ Promise { <pending> }
 }
 ```
 :::
-#### 6.3.2 Remote.buildOfferCreateTx(options: IOfferCreateTxOptions) 挂单
+#### 7.1.2 Remote.buildOfferCreateTx(options: IOfferCreateTxOptions) 挂单
 ::: tip 参数
 ```typescript
 interface IOfferCreateTxOptions {
@@ -1427,7 +1727,7 @@ Promise { <pending> }
 }
 ```
 :::
-#### 6.3.3 Remote.buildOfferCancelTx(options: IOfferCancelTxOptions) 取消挂单
+#### 7.1.3 Remote.buildOfferCancelTx(options: IOfferCancelTxOptions) 取消挂单
 ::: tip 参数
 ```typescript
 export interface IOfferCancelTxOptions {
@@ -1478,7 +1778,7 @@ Promise { <pending> }
 }
 ```
 :::
-#### 6.3.4 Remote.buildRelationTx(options: IRelationTxOptions) 信任/授权/冻结
+#### 7.1.4 Remote.buildRelationTx(options: IRelationTxOptions) 信任/授权/冻结
 ::: tip 参数
 ```typescript
 interface IRelationTxOptions {
@@ -1564,7 +1864,7 @@ Promise { <pending> }
   }
 }
 ```
-#### 6.3.5 Remote.buildAccountSetTx(options: IAccountSetTxOptions) 帐号属性
+#### 7.1.5 Remote.buildAccountSetTx(options: IAccountSetTxOptions) 帐号属性
 ::: tip 参数
 ```typescript
 interface IAccountSetTxOptions {
@@ -1613,7 +1913,7 @@ Promise { <pending> }
 }
 ```
 :::
-#### 6.3.6 Remote.buildBrokerageTx(options) 挂单佣金
+#### 7.1.6 Remote.buildBrokerageTx(options) 挂单佣金
 ::: tip 参数
 ```typescript
 interface IBrokerageTxOptions {
@@ -1672,13 +1972,432 @@ Promise { <pending> }
 }
 ```
 :::
-#### 6.3.7 Remote.buildSignerListTx(options: ISignerListTxOptions)
-#### 6.3.1 Remote.buildSignFirstTx(options: ISignFirstTxOptions)
-#### 6.3.1 Remote.buildSignOtherTx(options: ISignOtherTxOptions)
-#### 6.3.1 Remote.buildMultisignedTx(tx_json)
-#### 6.3.1 Remote.buildTx(tx_json)
-#### 6.3.1 Remote.buildSignTx(options: ISignTxOptions)
-#### 6.3.1 Remote.buildContractDeployTx(options: IContractDeployTxOptions)
-#### 6.3.1 Remote.buildContractCallTx(options: IContractCallTxOptions)
-#### 6.3.1 Remote.buildContractInitTx(options: IContractInitTxOptions)
-#### 6.3.1 Remote.buildContractInvokeTx(options: IContractInvokeTxOptions)
+### 7.2 写入相关 - 多签
+::: tip 事务 (和lib/api Remote 表现一致)
+buildXyzTx(options) 生成 单签(@swtc/transaction).Transaction实例 tx
+
+但是签名是由预先设置好的多个账户进行签名， 达到预设的阈值可以提交到帐本中
+
+- 账户设置
+- 创建单签事务 tx = Remote.buildXyzTx(options)
+- 设置sequence tx._setSequencePromise()
+- 设置足够的燃料 tx.setFee()
+- 分发并收集签名 tx.multiSigning()
+- 组装 tx.multiSigned()
+
+多签应该本地签好/组装好
+
+使用tx.submitPromise()提交
+
+:::
+#### 7.2.0 Remote.buildTx(tx_json: object) 可以组装事务
+::: tip
+多签过程中需要 传送 `tx_json`, 可配合重新组装
+
+等价 `Transaction.buildTx(tx_json: object, Remote)`
+:::
+#### 7.2.0 Remote.getAccountSignerList(address: string, params: IRpcAccountObjectsOptions = {account: ""}) 查询账户设置
+::: tip 调用
+```typescript
+public getAccountSignerList(address: string, params: IRpcAccountObjectsOptions = {account: ""}) {
+  return this.getAccountObjects(address, {...params, type: "SignerList"})
+}
+```
+:::
+::: details 代码示例
+```javascript
+> const Remote = require("@swtc/rpc").Remote
+> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> remote.getAccountSignerList("jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz").then(console.log).catch(console.error)
+Promise { <pending> }
+> {
+  account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+  account_objects: [
+    {
+      Flags: 0,
+      LedgerEntryType: 'SignerList',
+      OwnerNode: '0000000000000000',
+      PreviousTxnID: '5917B3F760BFC0F5BFE5EF5EAE2642FDEE6908606E37FE76561C7A7F137B76C9',
+      PreviousTxnLgrSeq: 15203720,
+      SignerEntries: [Array],
+      SignerQuorum: 5,
+      index: '4A017344F9068871DC873D548052FFFF7271B86DDEB68AA93A515A5D0228BC21'
+    }
+  ],
+  ledger_current_index: 17881328,
+  status: 'success',
+  validated: false
+}
+> remote.getAccountSignerList("jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz").then(result => console.log(result.account_objects[0].SignerEntries)).catch(console.error)
+Promise { <pending> }
+> [
+  {
+    SignerEntry: { Account: 'jfdqBEDsbk3eMSXX2t7CGeu2RPkEjHs6ie', SignerWeight: 3 }
+  },
+  {
+    SignerEntry: { Account: 'jfqiMxoT228vp3dMrXKnJXo6V9iYEx94pt', SignerWeight: 3 }
+  }
+]
+```
+:::
+#### 7.2.1 Remote.buildSignerListTx(options: ISignerListTxOptions) 更新账户设置
+::: warning 废止主密钥
+通常情况下， 启用多签的账户应该废止主密钥
+
+可以通过 `Remote.buildAccountSetTx({account, type: "property", set_flag: 4}).submitPromise()`
+:::
+::: tip 参数
+```typescript
+interface ISignerListTxOptions {
+  lists: any[]
+  account?: string
+  address?: string
+  threshold: string | number
+}
+```
+:::
+::: details 代码示例
+```javascript
+const sleep = timeout => new Promise(resolve => setTimeout(() => resolve(), timeout || 1))
+const { Remote } = require('@swtc/rpc')
+const Wallet = Remote.Wallet
+
+const remote = new Remote({server: "http://swtcnode:5050"})
+
+const wallet = Wallet.fromSecret('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C')
+const wallet_ec = Wallet.fromSecret("shVCQFSxkF7DLXkrHY8X2PBKCKxS9")
+const wallet_ed = Wallet.fromSecret("sEdTJSpen5J8ZA7H4cVGDF6oSSLLW2Y")
+const wallet_nosign = "jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh"
+const wallet_to = 'jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG'
+
+const tx = remote.buildSignerListTx({
+    account: wallet.address,
+    threshold: 5,
+    lists: [
+        { account: wallet_ec.address, weight: 3 },
+        { account: wallet_ed.address, weight: 3 },
+        { account: wallet_nosign, weight: 3 },
+    ]
+})
+console.log(tx.tx_json)
+
+main()
+
+async function main() {
+  let result = await remote.getAccountSignerList(wallet.address)
+  console.log("===========before===========")
+  console.log(result.account_objects[0].SignerEntries)
+  console.log("===========update===========")
+  console.log(await tx.submitPromise(wallet.secret))
+  console.log("===========sleeping===========")
+  await sleep(15 * 1000)
+  console.log("===========after===========")
+  result = await remote.getAccountSignerList(wallet.address)
+  console.log(result.account_objects[0].SignerEntries)
+}
+
+```
+输出
+```javascript
+{
+  Flags: 0,
+  Fee: 10000,
+  SignerEntries: [
+    { SignerEntry: [Object] },
+    { SignerEntry: [Object] },
+    { SignerEntry: [Object] }
+  ],
+  TransactionType: 'SignerListSet',
+  Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+  SignerQuorum: 5
+}
+===========before===========
+[
+  {
+    SignerEntry: { Account: 'jfdqBEDsbk3eMSXX2t7CGeu2RPkEjHs6ie', SignerWeight: 3 }
+  },
+  {
+    SignerEntry: { Account: 'jfqiMxoT228vp3dMrXKnJXo6V9iYEx94pt', SignerWeight: 3 }
+  }
+]
+===========update===========
+{
+  engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message: 'The transaction was applied. Only final in a validated ledger.',
+  status: 'success',
+  tx_blob: '1200CF220000000024000000752026000000056840000000000027107321029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E157446304402205A2638F015DEA84EA23B609423545BAB51C3B3A3AD87644B55C63A6FFAEE23CD022001E2E0E39F0E3410F07F64088509C0047374C76BFBAE02295E61EF8DF32F181681141359AA928F4D98FDB3D93E8B690C80D37DED11C3FBEC130003811448C7F1F5E9D4D0FC0D3F16F1606ACCCFB8D51463E1EC13000381144B0DECFADE9D4170260CD5BA9EC1CF065CA88946E1EC1300038114B5F762798A53D543A014CAF8B297CFF8F2F937E8E1F1',
+  tx_json: {
+    Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+    Fee: '10000',
+    Flags: 0,
+    Sequence: 117,
+    SignerEntries: [ [Object], [Object], [Object] ],
+    SignerQuorum: 5,
+    SigningPubKey: '029110C3744FB57BD1F4824F5B989AE75EB6402B4365B501F6EDCA9BE44A675E15',
+    TransactionType: 'SignerListSet',
+    TxnSignature: '304402205A2638F015DEA84EA23B609423545BAB51C3B3A3AD87644B55C63A6FFAEE23CD022001E2E0E39F0E3410F07F64088509C0047374C76BFBAE02295E61EF8DF32F1816',
+    hash: '20CC980EDC53BD8D0BB8C10422147A27C3037CBB5A292A0750C8E8ED29325477'
+  }
+}
+===========sleeping===========
+===========after===========
+[
+  {
+    SignerEntry: { Account: 'jfdqBEDsbk3eMSXX2t7CGeu2RPkEjHs6ie', SignerWeight: 3 }
+  },
+  {
+    SignerEntry: { Account: 'jfqiMxoT228vp3dMrXKnJXo6V9iYEx94pt', SignerWeight: 3 }
+  },
+  {
+    SignerEntry: { Account: 'jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh', SignerWeight: 3 }
+  }
+]
+```
+:::
+#### 7.2.2 创建单签 设置序号/费用/memo
+::: tip 创建事务
+`组织者` 创建常规事务，这里以支付为例。 
+
+`tx.tx_json` 用来传送给多签参与者组装/签名/返回
+
+`组织者`(简化情况下也可以最后一个签名者) 完成最后组装 提交
+:::
+
+
+::: details 代码示例
+```javascript
+> const Remote = require('@swtc/rpc').Remote
+> const Wallet = Remote.Wallet
+> const remote = new Remote({server: "http://swtcnode:5050"})
+> const wallet = Wallet.fromSecret("ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C")
+> const tx = remote.buildPaymentTx({
+... from: wallet.address,
+... to: "jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG",
+... amount: remote.makeAmount(0.1, "slash")
+... })
+> tx._setSequencePromise().then(() => {})
+Promise { <pending> }
+> tx.addMemo("多签示例")
+> tx.setFee(30000)
+undefined
+> console.log(JSON.stringify(tx.tx_json,"",2))
+{
+  "Flags": 0,
+  "Fee": 30000,
+  "TransactionType": "Payment",
+  "Account": "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+  "Amount": {
+    "currency": "JSLASH",
+    "issuer": "jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or",
+    "value": 0.1
+  },
+  "Destination": "jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG",
+  "Memos": [
+    {
+      "Memo": {
+        "MemoData": "多签示例"
+      }
+    }
+  ],
+  "Sequence": 120
+}
+```
+:::
+#### 7.2.3 tx.multiSigning(wallet: object) 传递/组装/签名/回传
+::: tip
+简化流程下， `组织者` 可以依次传送 tx.tx_json 给多签参与方， 这样不需要手工更新签名
+1. 传送 `tx_json` 给第一个同意签名者， 完成后收到回传的 `tx_json`, 此时内容已更新并包含第一个签名
+2. 传送 更新后的`tx_json` 给下一个同意签名者， 完成后收到回传的 `tx_json`, 此时内容已更新并包含下一个签名
+3. 依次递推
+:::
+
+::: details 代码示例
+第一个签名，以收到的 `tx_json` 组装 tx_first, 签名后 将 `tx_first.tx_json` 回传 （简化情况下可以直接传递给下一个签名者）
+```javascript
+> //const tx_json = `in whatever way you received`
+> const Remote = require('@swtc/rpc').Remote
+> const Wallet = Remote.Wallet
+> const Transaction = Remote.Transaction
+> const remote = new Remote({server: "http://swtcnode:5050"})
+> const wallet_first = Wallet.fromSecret("shVCQFSxkF7DLXkrHY8X2PBKCKxS9")
+> let tx_first = Transaction.buildTx(tx_json, remote)
+> tx_first.multiSigning(wallet_first)
+> console.log(JSON.stringify(tx_first.tx_json,"",2))
+{
+  "Flags": 0,
+  "Fee": 0.03,
+  "TransactionType": "Payment",
+  "Account": "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+  "Amount": {
+    "currency": "JSLASH",
+    "issuer": "jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or",
+    "value": "0.1"
+  },
+  "Destination": "jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG",
+  "Memos": [
+    {
+      "Memo": {
+        "MemoData": "E5A49AE7ADBEE7A4BAE4BE8B"
+      }
+    }
+  ],
+  "Sequence": 120,
+  "SigningPubKey": "",
+  "Signers": [
+    {
+      "Signer": {
+        "Account": "jfdqBEDsbk3eMSXX2t7CGeu2RPkEjHs6ie",
+        "SigningPubKey": "0261DD84455B92BDFD59C1DB2A5BD9CE1A3AF0FD531A08EEB2EE354C3BB230B878",
+        "TxnSignature": "3045022100FDF8BEE7A22AAFB43B7862F943B3D2A1AF5A6937602401E07F45564F51A33C0902201C0371A4377234AE70F9A16BC5A44ABB863032544E70F48FFE8E790C05502A4C"
+      }
+    }
+  ]
+}
+```
+下一个签名，以收到的 `tx_json` 组装 tx_next, 签名后 将 `tx_next.tx_json` 回传 （简化情况下可以直接传递给下下一个签名者）
+```javascript
+> //const tx_json = `in whatever way you received`
+> const Remote = require('@swtc/rpc').Remote
+> const Wallet = Remote.Wallet
+> const Transaction = Remote.Transaction
+> const remote = new Remote({server: "http://swtcnode:5050"})
+> const wallet_next = Wallet.fromSecret("shVCQFSxkF7DLXkrHY8X2PBKCKxS9")
+> const tx_next = Transaction.buildTx(tx_json, remote)
+> tx_next.multiSigning(wallet_next)
+> console.log(JSON.stringify(tx_next.tx_json,"",2))
+```
+{
+  "Flags": 0,
+  "Fee": 30000,
+  "TransactionType": "Payment",
+  "Account": "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+  "Amount": {
+    "currency": "JSLASH",
+    "issuer": "jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or",
+    "value": "0.1"
+  },
+  "Destination": "jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG",
+  "Memos": [
+    {
+      "Memo": {
+        "MemoData": "E5A49AE7ADBEE7A4BAE4BE8B"
+      }
+    }
+  ],
+  "Sequence": 120,
+  "SigningPubKey": "",
+  "Signers": [
+    {
+      "Signer": {
+        "Account": "jfdqBEDsbk3eMSXX2t7CGeu2RPkEjHs6ie",
+        "SigningPubKey": "0261DD84455B92BDFD59C1DB2A5BD9CE1A3AF0FD531A08EEB2EE354C3BB230B878",
+        "TxnSignature": "3045022100FDF8BEE7A22AAFB43B7862F943B3D2A1AF5A6937602401E07F45564F51A33C0902201C0371A4377234AE70F9A16BC5A44ABB863032544E70F48FFE8E790C05502A4C"
+      }
+    },
+    {
+      "Signer": {
+        "Account": "jfqiMxoT228vp3dMrXKnJXo6V9iYEx94pt",
+        "SigningPubKey": "ED68635043BC70DE82272BF5990642400CF79089B2ABCF8EF9D10FFFB96A658763",
+        "TxnSignature": "40C4612F3BA50FAEEBA1FB30061CD0D77406BD2AFAAEF02AAC70E9FEAB7A8FF7DB207FFAA4A1F974CF86D383DB1112F543B7BA13E980DA2461ABB6F3EEAB170E"
+      }
+    }
+  ]
+}
+:::
+#### 7.2.4 tx.multiSigned() 最后组装/完成
+::: tip
+`组织者` 将收到的回传 `tx_json` 完成最后组装, 正常情况下需要 拷贝/粘贴 签名
+
+简化流程下最后一个收到的 `tx_json` 中已经包含所有已经完成的签名
+:::
+
+::: details 代码示例
+```javascript
+> //const tx_json = `in whatever way you received`
+> const Remote = require('@swtc/rpc').Remote
+> const Transaction = Remote.Transaction
+> const remote = new Remote({server: "http://swtcnode:5050"})
+> const tx_final = Transaction.buildTx(tx_json, remote)
+> tx_final.multiSigned()
+> console.log(JSON.stringify(tx_final.tx_json,"",2))
+{
+  "Flags": 0,
+  "Fee": 30000,
+  "TransactionType": "Payment",
+  "Account": "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz",
+  "Amount": {
+    "currency": "JSLASH",
+    "issuer": "jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or",
+    "value": "0.1"
+  },
+  "Destination": "jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG",
+  "Memos": [
+    {
+      "Memo": {
+        "MemoData": "E5A49AE7ADBEE7A4BAE4BE8B"
+      }
+    }
+  ],
+  "Sequence": 120,
+  "SigningPubKey": "",
+  "Signers": [
+    {
+      "Signer": {
+        "Account": "jfdqBEDsbk3eMSXX2t7CGeu2RPkEjHs6ie",
+        "SigningPubKey": "0261DD84455B92BDFD59C1DB2A5BD9CE1A3AF0FD531A08EEB2EE354C3BB230B878",
+        "TxnSignature": "3045022100FDF8BEE7A22AAFB43B7862F943B3D2A1AF5A6937602401E07F45564F51A33C0902201C0371A4377234AE70F9A16BC5A44ABB863032544E70F48FFE8E790C05502A4C"
+      }
+    },
+    {
+      "Signer": {
+        "Account": "jfqiMxoT228vp3dMrXKnJXo6V9iYEx94pt",
+        "SigningPubKey": "ED68635043BC70DE82272BF5990642400CF79089B2ABCF8EF9D10FFFB96A658763",
+        "TxnSignature": "40C4612F3BA50FAEEBA1FB30061CD0D77406BD2AFAAEF02AAC70E9FEAB7A8FF7DB207FFAA4A1F974CF86D383DB1112F543B7BA13E980DA2461ABB6F3EEAB170E"
+      }
+    }
+  ]
+}
+```
+:::
+#### 7.2.5 tx.submitPromise() 提交
+::: details 代码示例
+```javascript
+> tx_final.submitPromise().then(console.log).catch(console.error)
+Promise { <pending> }
+> {
+  engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message: 'The transaction was applied. Only final in a validated ledger.',
+  status: 'success',
+  tx_blob: '1200002200000000240000007861D4438D7EA4C680000000000000000000004A534C4153480000000000A582E432BFC48EEDEF852C814EC57F3CD2D41596684000000000007530730081141359AA928F4D98FDB3D93E8B690C80D37DED11C38314AF09183A11AA70DA06E115E03B0E5478232740B5F9EA7D0CE5A49AE7ADBEE7A4BAE4BE8BE1F1FCED73210261DD84455B92BDFD59C1DB2A5BD9CE1A3AF0FD531A08EEB2EE354C3BB230B87874473045022100FDF8BEE7A22AAFB43B7862F943B3D2A1AF5A6937602401E07F45564F51A33C0902201C0371A4377234AE70F9A16BC5A44ABB863032544E70F48FFE8E790C05502A4C811448C7F1F5E9D4D0FC0D3F16F1606ACCCFB8D51463E1ED7321ED68635043BC70DE82272BF5990642400CF79089B2ABCF8EF9D10FFFB96A658763744040C4612F3BA50FAEEBA1FB30061CD0D77406BD2AFAAEF02AAC70E9FEAB7A8FF7DB207FFAA4A1F974CF86D383DB1112F543B7BA13E980DA2461ABB6F3EEAB170E81144B0DECFADE9D4170260CD5BA9EC1CF065CA88946E1F1',
+  tx_json: {
+    Account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
+    Amount: {
+      currency: 'JSLASH',
+      issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
+      value: '0.1'
+    },
+    Destination: 'jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG',
+    Fee: '30000',
+    Flags: 0,
+    Memos: [ [Object] ],
+    Sequence: 120,
+    Signers: [ [Object], [Object] ],
+    SigningPubKey: '',
+    TransactionType: 'Payment',
+    hash: '58E8649815D892817168F4B0A30E0BFFC629F76C84FFF7576DDC3CCC5A8537E3'
+  }
+}
+```
+:::
+### 7.3 写入相关 - 合约
+::: tip 事务 (和lib/api Remote 表现一致)
+合约需要节点支持
+
+目前公链上不支持
+:::
+#### 7.3.1 Remote.buildContractDeployTx(options: IContractDeployTxOptions) LUA部署
+#### 7.3.2 Remote.buildContractCallTx(options: IContractCallTxOptions) LUA调用
+#### 7.3.3 Remote.buildContractInitTx(options: IContractInitTxOptions) SOLIDITY部署
+#### 7.3.4 Remote.buildContractInvokeTx(options: IContractInvokeTxOptions) SOLIDITY调用
