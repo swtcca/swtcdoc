@@ -149,6 +149,21 @@ remote.config()
 - getTxEntry(tx_hash: string, params = {})
 - getTxHistory(start: number = 0, params = {})
 - getVersion()
+
+#### 4.1.3 事务创建列表
+- buildPaymentTx(options: IPaymentTxOptions)
+- buildOfferCreateTx(options: IOfferCreateTxOptions)
+- buildOfferCancelTx(options: IOfferCancelTxOptions)
+- buildRelationTx(options: IRelationTxOptions)
+- buildAccountSetTx(options: IAccountSetTxOptions)
+- buildSignTx(options: ISignTxOptions)
+- buildContractDeployTx(options: IContractDeployTxOptions)
+- buildContractCallTx(options: IContractCallTxOptions)
+- buildContractInitTx(options: IContractInitTxOptions)
+- buildContractInvokeTx(options: IContractInvokeTxOptions)
+- buildBrokerageTx(options: IBrokerageTxOptions)
+- buildSignerListTx(options: ISignerListTxOptions)
+- buildTx(tx_json: object)
 ### 4.2 节点相关
 #### 4.2.1 Remote.rpcServerInfo() 获取节点信息
 
@@ -298,6 +313,7 @@ interface IRpcLedgerOptions {
   full?: boolean
   binary?: boolean
 }
+```
 
 等价
 ```typescript
@@ -1538,6 +1554,8 @@ await Remote.rpcAccountLines({account: address})
 await Remote.rpcAccountRelation({account: address})
 await Remote.rpcAccountOffers({account: address})
 ```
+:::
+
 ::: details 代码示例
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
@@ -1564,8 +1582,6 @@ Promise { <pending> }
 }
 ```
 :::
-:::
-:::
 #### 6.1.2 Remote.getAccountSequence(address: string) 账户序号
 ::: tip 调用
 ```javascript
@@ -1587,22 +1603,28 @@ return Remote.rpcSubmitMultisigned({tx_json})
 ### 6.2 其它查询相关
 #### 6.2.1 Remote.getAccountInfo(address: string, params: IRpcAccountInfoOptions = {account: ""}) 账户基本信息
 等价 `Remote.rpcAccountInfo(params)`
+
 #### 6.2.2 Remote.getAccountOffers(address: string, params: IRpcAccountOffersOptions = {account: ""}) 账户挂单
 等价 `Remote.rpcAccountOffers(params)`
+
 #### 6.2.3 Remote.getAccountTrusts(address: string) 账户信任
 ::: tip 调用
 ```javascript
 return Remote.rpcAccountLines({account: address})
 ```
+:::
 #### 6.2.4 Remote.getAccountRelation(address: string, params: IRpcAccountRelationOptions = {account: ""}) 账户关系
 等价 `Remote.rpcAccountReltion(params)`
+
 #### 6.2.5 Remote.getAccountTx(address: string, params: IRpcAccountTxOptions = {account: ""}) 账户事务
 等价 `Remote.rpcAccountTx(params)`
+
 #### 6.2.6 Remote.getBrokerage(address: string, params: IRpcFeeInfoOptions = { account: ""}) 挂单佣金
 ::: tip 调用
 ```javascript
 return Remote.rpcFeeInfo({...params, account: address})
 ```
+:::
 ## 7 写入事务
 ### 7.0 连接@swtc/transaction
 #### 7.0.1 Remote.rpcAccountInfo()
