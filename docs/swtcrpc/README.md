@@ -1614,7 +1614,7 @@ return Remote.rpcAccountLines({account: address})
 ```
 :::
 #### 6.2.4 Remote.getAccountRelation(address: string, params: IRpcAccountRelationOptions = {account: ""}) 账户关系
-等价 `Remote.rpcAccountReltion(params)`
+等价 `Remote.rpcAccountRelation(params)`
 
 #### 6.2.5 Remote.getAccountTx(address: string, params: IRpcAccountTxOptions = {account: ""}) 账户事务
 等价 `Remote.rpcAccountTx(params)`
@@ -2288,8 +2288,7 @@ undefined
 > const tx_next = Transaction.buildTx(tx_json, remote)
 > tx_next.multiSigning(wallet_next)
 > console.log(JSON.stringify(tx_next.tx_json,"",2))
-```
-{
+> {
   "Flags": 0,
   "Fee": 30000,
   "TransactionType": "Payment",
@@ -2326,6 +2325,7 @@ undefined
     }
   ]
 }
+```
 :::
 #### 7.2.4 tx.multiSigned() 最后组装/完成
 ::: tip
