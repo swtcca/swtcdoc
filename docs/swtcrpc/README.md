@@ -281,7 +281,7 @@ Promise { <pending> }
 }
 ```
 :::
-#### 4.3.2 Remote.rpcLedgerCurrent() 获取已关闭帐本信息
+#### 4.3.2 Remote.rpcLedgerCurrent() 获取当前帐本信息
 ::: tip 参数
 无
 
@@ -968,7 +968,7 @@ public getSkywellPathFind(params: IRpcSkywellPathFindOptions) {
 ```
 :::
 ### 4.6 账户相关
-#### 4.6.0 Remote.rpcBlacklistInfo(params: IRpcBlacklistInfoOptions = {}) 获取账户基本信息
+#### 4.6.0 Remote.rpcBlacklistInfo(params: IRpcBlacklistInfoOptions = {}) 获取已关闭账户列表
 ::: tip 参数
 ```typescript
 interface IRpcBlacklistInfoOptions {
