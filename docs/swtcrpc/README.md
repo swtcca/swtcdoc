@@ -4,6 +4,7 @@
 
 ## 0. 接口说明
 ::: tip
+- 默认端口为5050
 - 使用rpc接口，不依赖于websocket
 - 对于返回的内容不作进一步处理, 原生通证的单位通常是 `1e-6 swtc`, 
 - 所有rpc调用基于Promise
@@ -80,13 +81,13 @@ Remote是与节点rpc交互的抽象类
 ::: details 实例化 Remote
 ```javascript
 const Remote = require("@swtc/rpc").Remote
-const remote = new Remote({server: "http://swtclib.ca:5050"})
+const remote = new Remote({server: "http://swtclib.ca5077"})
 remote.config()
 ```
 输出
 ```javascript
 {
-  server: 'http://swtclib.ca:5050',
+  server: 'http://swtclib.ca5077',
   token: 'SWT',
   solidity: false,
   issuer: 'jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or',
@@ -180,7 +181,7 @@ public getServerInfo() {
 ::: details 代码示例
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const remote = new Remote({server: "http://swtclib.ca5077"})
 > remote.rpcServerInfo().then(console.log)
 Promise { <pending> }
 > {
@@ -226,7 +227,7 @@ public getServerState() {
 ::: details 代码示例
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const remote = new Remote({server: "http://swtclib.ca5077"})
 > remote.rpcServerState().then(console.log)
 Promise { <pending> }
 > {
@@ -271,7 +272,7 @@ public getLedgerClosed() {
 ::: details 代码示例
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const remote = new Remote({server: "http://swtclib.ca5077"})
 > remote.rpcLedgerClosed().then(console.log)
 Promise { <pending> }
 > {
@@ -295,7 +296,7 @@ public getLedgerCurrent() {
 ::: details 代码示例
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const remote = new Remote({server: "http://swtclib.ca5077"})
 > remote.rpcLedgerCurrent().then(console.log)
 Promise { <pending> }
 > { ledger_current_index: 17854969, status: 'success' }
@@ -338,7 +339,7 @@ public getLedger(params: IRpcLedgerOptions = {}) {
 ::: details 代码示例
 ```javascript
 const Remote = require("@swtc/rpc").Remote
-const remote = new Remote({server: "http://swtclib.ca:5050"})
+const remote = new Remote({server: "http://swtclib.ca5077"})
 > remote.rpcLedger({ledger_index: "closed"}).then(console.log)
 Promise { <pending> }
 > {
@@ -413,7 +414,7 @@ public getLedgerData(params: IRpcLedgerDataOptions = {}) {
 ::: details 代码示例
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const remote = new Remote({server: "http://swtclib.ca5077"})
 > remote.rpcLedgerData({limit: 2, binary: true}).then(console.log)
 Promise { <pending> }
 > {
@@ -467,7 +468,7 @@ public getLedgerEntry(params: IRpcLedgerEntryOptions = {}) {
 ::: details 代码示例
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const remote = new Remote({server: "http://swtclib.ca5077"})
 > remote.rpcLedgerEntry({type: "account_root", account_root: "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz"}).then(console.log)
 Promise { <pending> }
 > {
@@ -517,7 +518,7 @@ public getTxHistory(params: IRpcTxHistoryOptions = {}) {
 ::: details 代码示例
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const remote = new Remote({server: "http://swtclib.ca5077"})
 > remote.rpcTxHistory().then(console.log)
 Promise { <pending> }
 > {
@@ -585,7 +586,7 @@ public getTx(transaction: string, params: IRpcTxOptions = {transaction: ""}) {
 ::: details 代码示例
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const remote = new Remote({server: "http://swtclib.ca5077"})
 > remote.rpcTx({transaction: '1C955BFC05E5A434DF041C4E4AFA8891DF1AAFBE504707F01A94EBD0F0A76181'}).then(console.log)
 Promise { <pending> }
 > {
@@ -645,7 +646,7 @@ public getTxEntry(tx_hash: string, params: IRpcTxEntryOptions = {tx_hash: ""}) {
 ::: details 代码示例
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const remote = new Remote({server: "http://swtclib.ca5077"})
 > remote.rpcTxEntry({ledger_hash: "433D4046C84DE4E9619FF17F1BCF4C6D908DF08E5AE762D5170097E104405B70", tx_hash: "1C955BFC05E5A434DF041C4E4AFA8891DF1AAFBE504707F01A94EBD0F0A76181"}).then(console.log)
 Promise { <pending> }
 > {
@@ -709,7 +710,7 @@ public submit(tx_blob: string, params: IRpcSubmitOptions = {tx_blob: ""}) {
 ::: details 代码示例
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const remote = new Remote({server: "http://swtclib.ca5077"})
 > remote.rpcSubmit({tx_blob: "12000022000000002400000EA4614000000002160EC068400000000000000A732103E466DB080F3863F354E9C1B1CA0927175B338C41789ACFC0EFAD50301524C23E7446304402200A1F6E65FD9D7076E4589C5BA13E2433B1C2CA9E7C0E42EFC7D57F22C74B1B780220355A2456589B79FD6D6185FD5A74BDE44CFB10E0F6711E4A3BF86FE531C72E6C81141C3D155BB13D3FE79CBF85E5C1DCB6B508079ABE83140ECD295EA24E99608A9B346838EB991BCF143E62F9EA7C06737472696E677D00E1F1"}).then(console.log)
 Promise { <pending> }
 > {
@@ -762,7 +763,7 @@ public submitMultisigned(tx_json: object, params: IRpcSubmitMultisignedOptions =
 ::: details 代码示例
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const remote = new Remote({server: "http://swtclib.ca5077"})
 > tx_json = {
 ...   "Flags": 0,
 ...   "Fee": 20000,
@@ -855,7 +856,7 @@ public getBookOffers(taker_gets: ICurrency, taker_pays: ICurrency, params: IRpcB
 ::: details 代码示例
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const remote = new Remote({server: "http://swtclib.ca5077"})
 > remote.rpcBookOffers({taker_pays: {currency: "SWT", issuer: ""}, taker_gets: {currency: "CNY", issuer: "jGa9J9TkqtBcUoHe2zqhVFFbgUVED6o9or"}, limit: 2}).then(console.log)
 Promise { <pending> }
 > {
@@ -930,7 +931,7 @@ public getSkywellPathFind(params: IRpcSkywellPathFindOptions) {
 ::: details 代码示例
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const remote = new Remote({server: "http://swtclib.ca5077"})
 > remote.rpcSkywellPathFind({
         destination_account: "jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG",
         source_account: "jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG",
@@ -993,7 +994,7 @@ public getBlacklistInfo(params: IRpcBlacklistInfoOptions = {}) {
 ::: details 代码示例
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const remote = new Remote({server: "http://swtclib.ca5077"})
 > remote.rpcBlacklistInfo().then(console.log)
 Promise { <pending> }
 > {
@@ -1046,7 +1047,7 @@ public getAccountInfo(address: string, params: IRpcAccountInfoOptions = {account
 ::: details 代码示例
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const remote = new Remote({server: "http://swtclib.ca5077"})
 > remote.rpcAccountInfo({account: "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz"}).then(console.log)
 Promise { <pending> }
 > {
@@ -1100,7 +1101,7 @@ public getAccountObjects(address: string, params: IRpcAccountObjectsOptions = {a
 ::: details 代码示例
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const remote = new Remote({server: "http://swtclib.ca5077"})
 > remote.rpcAccountObjects({account: "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz"}).then(console.log)
 Promise { <pending> }
 > {
@@ -1224,7 +1225,7 @@ public getAccountCurrencies(address: string, params: IRpcAccountCurrenciesOption
 ::: details 代码示例
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const remote = new Remote({server: "http://swtclib.ca5077"})
 > remote.rpcAccountCurrencies({account: "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz"}).then(console.log)
 Promise { <pending> }
 > {
@@ -1269,7 +1270,7 @@ public getAccountTrusts(address: string, params: IRpcAccountLinesOptions = {acco
 ::: details 代码示例
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const remote = new Remote({server: "http://swtclib.ca5077"})
 > remote.rpcAccountLines({account: "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz"}).then(console.log)
 Promise { <pending> }
 > {
@@ -1335,7 +1336,7 @@ public getAccountOffers(address: string, params: IRpcAccountOffersOptions = {acc
 ::: details 代码示例
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const remote = new Remote({server: "http://swtclib.ca5077"})
 > remote.rpcAccountOffers({account: "jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG"}).then(console.log)
 Promise { <pending> }
 > {
@@ -1392,7 +1393,7 @@ public getAccountTx(address: string, params: IRpcAccountTxOptions = {account: ""
 ::: details 代码示例
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const remote = new Remote({server: "http://swtclib.ca5077"})
 > remote.rpcAccountTx({account: "jGxW97eCqxfAWvmqSgNkwc2apCejiM89bG", limit: 3}).then(console.log)
 Promise { <pending> }
 > {
@@ -1443,7 +1444,7 @@ public getAccountRelation(address: string, params: IRpcAccountRelationOptions = 
 ::: details 代码示例
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const remote = new Remote({server: "http://swtclib.ca5077"})
 > remote.rpcAccountRelation({account: "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz"}).then(console.log)
 Promise { <pending> }
 > {
@@ -1502,7 +1503,7 @@ export class RpcError {
 ::: details 实例化 RpcError
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const remote = new Remote({server: "http://swtclib.ca5077"})
 > remote.getAccountInfo("jGxW97eCqxfAWvmqSgNkwc2apCejiM89bGwrongaddress").then(console.log).catch(console.error)
 Promise { <pending> }
 > RpcError {
@@ -1517,7 +1518,7 @@ Promise { <pending> }
 ::: details 实例化 RpcError
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://aixos.exception.example:5050"})
+> const remote = new Remote({server: "http://aixos.exception.example5077"})
 > remote.rpcVersion().catch(e => console.log(e))
 Promise { <pending> }
 > RpcError {
@@ -1532,7 +1533,7 @@ Promise { <pending> }
 ::: details 实例化 RpcError
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const remote = new Remote({server: "http://swtclib.ca5077"})
 > remote.rpcAccountInfo().then(console.log).catch(console.error)
 Promise { <pending> }
 > RpcError {
@@ -1666,7 +1667,7 @@ interface IPaymentTxOptions {
 ::: details 代码示例
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const remote = new Remote({server: "http://swtclib.ca5077"})
 > const tx = remote.buildPaymentTx({from: "jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz", to: "jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D", amount: remote.makeAmount(0.01)})
 > tx.submitPromise("ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C","payment tx demo").then(console.log).catch(console.error)
 Promise { <pending> }
@@ -1714,7 +1715,7 @@ interface IOfferCreateTxOptions {
 ::: details 代码示例
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const remote = new Remote({server: "http://swtclib.ca5077"})
 > const tx = remote.buildOfferCreateTx({
 ... type: 'Sell',
 ... account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
@@ -1765,7 +1766,7 @@ export interface IOfferCancelTxOptions {
 ::: details 代码示例
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const remote = new Remote({server: "http://swtclib.ca5077"})
 > const tx = remote.buildOfferCancelTx({
 ... account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
 ... sequence: 112
@@ -1822,7 +1823,7 @@ interface IRelationTxOptions {
 ::: details 代码示例
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const remote = new Remote({server: "http://swtclib.ca5077"})
 > remote.buildRelationTx({
 ... account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
 ... target: 'jVnqw7H46sjpgNFzYvYWS4TAp13NKQA1D',
@@ -1909,7 +1910,7 @@ interface IAccountSetTxOptions {
 ::: details 代码示例
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const remote = new Remote({server: "http://swtclib.ca5077"})
 > const tx = remote.buildAccountSetTx({
 ... account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
 ... type:'property'
@@ -1956,7 +1957,7 @@ interface IBrokerageTxOptions {
 ::: details 代码示例
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const remote = new Remote({server: "http://swtclib.ca5077"})
 > const tx = remote.buildBrokerageTx({
 ... account: 'jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz',
 ... mol: 10,
@@ -2029,7 +2030,7 @@ public getAccountSignerList(address: string, params: IRpcAccountObjectsOptions =
 ::: details 代码示例
 ```javascript
 > const Remote = require("@swtc/rpc").Remote
-> const remote = new Remote({server: "http://swtclib.ca:5050"})
+> const remote = new Remote({server: "http://swtclib.ca5077"})
 > remote.getAccountSignerList("jpmKEm2sUevfpFjS7QHdT8Sx7ZGoEXTJAz").then(console.log).catch(console.error)
 Promise { <pending> }
 > {
@@ -2084,7 +2085,7 @@ const sleep = timeout => new Promise(resolve => setTimeout(() => resolve(), time
 const { Remote } = require('@swtc/rpc')
 const Wallet = Remote.Wallet
 
-const remote = new Remote({server: "http://swtcnode:5050"})
+const remote = new Remote({server: "http://swtcnode5077"})
 
 const wallet = Wallet.fromSecret('ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C')
 const wallet_ec = Wallet.fromSecret("shVCQFSxkF7DLXkrHY8X2PBKCKxS9")
@@ -2191,7 +2192,7 @@ async function main() {
 ```javascript
 > const Remote = require('@swtc/rpc').Remote
 > const Wallet = Remote.Wallet
-> const remote = new Remote({server: "http://swtcnode:5050"})
+> const remote = new Remote({server: "http://swtcnode5077"})
 > const wallet = Wallet.fromSecret("ssiUDhUpUZ5JDPWZ9Twt27Ckq6k4C")
 > const tx = remote.buildPaymentTx({
 ... from: wallet.address,
@@ -2241,7 +2242,7 @@ undefined
 > const Remote = require('@swtc/rpc').Remote
 > const Wallet = Remote.Wallet
 > const Transaction = Remote.Transaction
-> const remote = new Remote({server: "http://swtcnode:5050"})
+> const remote = new Remote({server: "http://swtcnode5077"})
 > const wallet_first = Wallet.fromSecret("shVCQFSxkF7DLXkrHY8X2PBKCKxS9")
 > let tx_first = Transaction.buildTx(tx_json, remote)
 > tx_first.multiSigning(wallet_first)
@@ -2283,7 +2284,7 @@ undefined
 > const Remote = require('@swtc/rpc').Remote
 > const Wallet = Remote.Wallet
 > const Transaction = Remote.Transaction
-> const remote = new Remote({server: "http://swtcnode:5050"})
+> const remote = new Remote({server: "http://swtcnode5077"})
 > const wallet_next = Wallet.fromSecret("shVCQFSxkF7DLXkrHY8X2PBKCKxS9")
 > const tx_next = Transaction.buildTx(tx_json, remote)
 > tx_next.multiSigning(wallet_next)
@@ -2339,7 +2340,7 @@ undefined
 > //const tx_json = `in whatever way you received`
 > const Remote = require('@swtc/rpc').Remote
 > const Transaction = Remote.Transaction
-> const remote = new Remote({server: "http://swtcnode:5050"})
+> const remote = new Remote({server: "http://swtcnode5077"})
 > const tx_final = Transaction.buildTx(tx_json, remote)
 > tx_final.multiSigned()
 > console.log(JSON.stringify(tx_final.tx_json,"",2))
