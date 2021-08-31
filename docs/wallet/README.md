@@ -10,9 +10,9 @@
 | **编码/解码**      | encode/decode     |                               信息的形式转换 <br> 进制转换也是一种编码/解码 |
 | **加密/解密**      | encrypt/decrypt   |                                       信息的加密还原 <br> 属于编码/解码范畴 |
 | **签名/验签**      | sign/verify       |                                                              信息的声明确认 |
-| **密码算法**       | crypto-algorithm  |                         井通支持两种算法 <br> ecdsa-secp256k1/eddsa-ed25519 |
-| **熵**             | entropy           |                                                                  128 位整数 |
-| **密钥**           | secret            |                                             base58 字符串 <br> 熵做编码得到 |
+| **密码算法**       | crypto-algorithm  |                         井通支持多种算法 <br>sm2p256v1(国密)/secp256k1/ed25519 |
+| **熵**            | entropy           |                                                                  128 位整数 |
+| **密钥**           | secret            |                                             base58 字符串 <br> 种子做编码得到 |
 | **私钥**           | privateKey        |      256 位整数 <br> 安全由随机性保证 <br> 可以由熵单向哈希生成或者随机生成 |
 | **公钥**           | publicKey         |                              256 位整数 <br> 由私钥通过单向加密算法计算得到 |
 | **密钥对**         | keypairs          |                                                              私钥和公钥集合 |

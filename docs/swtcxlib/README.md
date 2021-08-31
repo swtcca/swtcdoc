@@ -1,126 +1,121 @@
-# swtc-x-lib 无差别联盟链开发库
+# 国密综合 - 国密支持 公链/联盟链/定制链
 
-## 无差别联盟链支持
-- 井通
-- 商链
-- CALL
-- STM
-- ...
-## 应用开发者专用库
-- 统一实例
-- 统一文档
-- 体验
-- 共享
-- 无障碍沟通
+[[toc]]
 
-## [对井通库的改进](../swtc)
-> ### 安全提升
-> ### 强兼容
-> ### 现代性
-> ### class实现
-> ### typescript实现
-> ### 格式化代码
-> ### 模块化
-> ### travis集成
-> ### 完善测试
+## 安装开发库 定义区块链 使用开发库
 
-## 改进内容
-### 安全提升
-  - 强制本地签名
-  - 密钥不出本机
-### 强兼容
-  - 所有包确保零配置webpack和browserify兼容
-  - 可以用于网络应用 桌面应用 终端应用 移动应用
-### 现代性
-  - 原生Promise支持, 支持现代javascript标准特性 promise, async/await
-  - Remote.connectPromise()
-  - Request.submitPromise()
-  - Transaction.signPromise()
-  - Transaction.submitPromise()
-### class实现
-  - x-lib
-  - Server
-  - Remote
-  - Request
-  - Transaction - 独立成包，可以单独使用， 技术上轻松对接交易所
-    - 签名实现
-	- 提交实现
-  - Wallet
-    - 支持swtc bitcoin ripple bwt call stm
-### typescript实现
-  - x-lib
-  - 编辑器帮助提示
-  - Server
-  - Remote
-  - Request
-  - Transaction
-  - Wallet
-### 格式化代码
-  - prettier格式化
-  - eslint / tslint
-### 模块化
-```bash
-$ npm list | grep -i swtc
-└─┬ @swtc/x-lib@1.0.0
-| ├── @swtc/nativescript@1.0.0
-│ └─┬ @swtc/transaction@1.0.0
-│   ├─┬ @swtc/serializer@1.0.0
-│   │ └─┬ @swtc/wallet@1.0.0
-│   │   └─┬ @swtc/keypairs@1.0.0
-│   │     └─┬ @swtc/address-codec@1.0.0
-│   │       ├── @swtc/common@1.0.0
-│   ├─┬ @swtc/utils@1.0.0
-│   │ ├── @swtc/wallet@1.0.0 deduped
-```
-### travis集成
-  - 代码提交自动测试
-## 安装
-```bash
-# npm install @swtc/x-lib
-```
+::: tip 安装
+<vue-typed-js :strings="install" :loop="true">
+  <p>区块链操作使用 <span class="typing"></span></p>
+</vue-typed-js>
+:::
+::: tip 定义区块链
+<vue-typed-js :strings="chainspecs" :loop="true">
+  <p>区块链定义举例 <span class="typing"></span></p>
+</vue-typed-js>
+:::
+::: tip 使用
+<vue-typed-js :strings="startups" :loop="true">
+  <p>区块链操作使用 <span class="typing"></span></p>
+</vue-typed-js>
+<vue-typed-js :strings="simplified" :loop="true">
+  <p>属性静态绑定<span class="typing"></span></p>
+</vue-typed-js>
+:::
 
-## 使用 (web)
-- located at `./node_modules/swtc-x-lib/dist`
-- the global name is `swtc_x_lib`
+## 开发库示意图
 
-## 使用 (nodejs)
-```javascript
-const Factory = require('@swtc/x-lib').Factory  // or import { Factory } from '@swtc/x-lib'
-// 井通库
-const RemoteJ = Factory('jingtum')  // or const RemoteJ = Factory('swt')
-const remoteJ = new RemoteJ({server: 'ws://ts5.jingtum.com:5030', issuer: 'jBciDE8Q3uJjf111VeiUNM775AMKHEbBLS'})
-// 相应组件
-// const WalletJ = RemoteJ.Wallet
-// const TransactionJ = RemoteJ.Transaction
-// const RequestJ = RemoteJ.Request
-// const AccountJ = RemoteJ.Account
-// const OrderBookJ = RemoteJ.OrderBook
-// const utilsJ = RemoteJ.utils
-// 商链库
-const RemoteB = Factory('bizain')   // or const RemoteB = Factory('bwt')
-const remoteB = new RemoteB({server: 'ws://123.207.226.229:5020'})
-// 相应组件
-// const WalletB = RemoteB.Wallet
-// const TransactionB = RemoteB.Transaction
-// const RequestB = RemoteB.Request
-// const AccountB = RemoteB.Account
-// const OrderBookB = RemoteB.OrderBook
-// const utilsB = RemoteB.utils
-```
+<mermaid>
+stateDiagram-v2
+    direction BT
+    LIB --> websocketServiceBLOCKCHAIN : websocket
+    RPC --> rpcServiceBLOCKCHAIN : rpc
+    LIB: Class Remote
+    state LIB {
+        LIBFactory: require("@swtc/lib").Factory(chain_or_wallet)
+    }
+    RPC: Class Remote
+    state RPC {
+        RPCFactory: require("@swtc/rpc").Factory(chain_or_wallet)
+    }
+    Transaction: Class Transaction
+    Serializer: Class Serializer
+    Keypair: Class Keypair
+    Wallet: Class Wallet
+    state Wallet {
+        WalletFactory: require("@swtc/wallet").Factory(chain)
+    }
+    AddressCodec --> Keypair
+    Keypair --> Wallet
+    Wallet --> LIB : 依赖
+    Wallet --> Utils
+    Serializer --> Transaction
+    Wallet --> Transaction : 依赖
+    Utils --> Transaction
+    Wallet --> Serializer
+    Wallet --> RPC : 依赖
+    Transaction --> LIB : 依赖
+    Transaction --> RPC : 依赖
+</mermaid>
 
-## 文档和实例
-### 按照如上方式引用后可以直接使用井通的文档和实例
-#### [实例](../examples/)
-#### [接口](../swtclib/)
+## 公链 vs 国密链
 
-## 改进
-1. swtc-api, jingtum-api 尚未支持联盟链
-2. solidity 尚未支持联盟链
+### secret
 
-## 赞助方
-### 井畅
-![jccdex](../../images/jccdex.png)
-### SWTC基金会
-![swtc](../../images/swtcfdt.png)
-### 商链
-![bizain](../../images/bizain.png)
+### keypairs
+
+### address
+
+### sign/verify
+
+## 国密测试链上验证
+
+### getAccountInfo/getAccountBalances
+
+### send/receive Payment Transaction
+
+### getOrderBook / push Offer
+
+## 遗留
+
+### 多签
+
+### contract
+
+### erc721
+
+<script>
+export default {
+  data () {
+      return {
+          install: [
+            ' websocket接口 npm install @swtc/lib ',
+            '       rpc接口 npm install @swtc/rpc ',
+            ' 不操作   区块链 npm install @swtc/transaction ',
+            ' 只使用     钱包 npm install @swtc/wallet '
+					],
+          simplified: [
+            ' const {Transaction, Wallet, Serializer, utils} = Remote ',
+            ' const {Wallet, Serializer, utils} = Transaction ',
+            ' const {KeyPair, addressCodec, config} = Wallet '
+					],
+          startups: [
+            ' websocket接口 const Remote = require("@swtc/lib").Factory(chain_spec)',
+            '       rpc接口 const Remote = require("@swtc/rpc").Factory(chain_spec)',
+            ' 不操作  区块链 const Transaction = require("@swtc/transaction").Factory(chain_spec)',
+            ' 只使用    钱包 const Wallet = require("@swtc/wallet").Factory(chain_spec)'
+          ],
+					chainspecs: [
+            '缺省为井通公链',
+						'用字串指定预定义的链  "jingtum" 对应 井通公链',
+						'用字串指定预定义的链  "ripple" 对应 瑞波公链',
+						'用字串指定预定义的链  "bizain" 对应 商链',
+						'用对象定制链  {fee: 1000} 定制转账费用的 井通链',
+						'用对象定制链  {guomi: true} 定制符合国密标准的 井通链',
+						'用对象定制链  {fee: 1000000, currency: "BWT", ACCOUNT_ALPHABET: "bpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2jcdeCg65rkm8oFqi1tuvAxyz"} 定制转账费用的 商链',
+						'用对象定制链  还可以定制默认issuer/通证别名/默认节点等'
+					]
+      }
+  },
+}
+</script>

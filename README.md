@@ -1,12 +1,12 @@
 ---
 home: true
-heroText: SWTC公链nodejs库
-tagline: 应用开发者专用
+heroText: SWTC公链/联盟链nodejs库
+tagline: 专为应用开发者打造
 features:
 - title: 安全第一
   details: 本地签名 密钥不出本机
 - title: 完全兼容
-  details: 井通接口
+  details: 井通接口, websocket | rpc | proxy
 - title: 独享便利
   details: 零配置webpack支持 零配置browserify支持
 - title: 多框架支持
@@ -16,7 +16,7 @@ features:
 - title: 现代化
   details: Promise, typescript, rollup, esm
 - title: 扩展性
-  details: 增加api/rpc, 可加代理版remote
+  details: 增加api/rpc/proxy
 - title: 联盟链支持
   details: 等同支持所有井通联盟链
 - title: CDN可用
@@ -26,11 +26,74 @@ features:
 - title: 代理实现
   details: 标准 REST API
 - title: 未来可用
-  details: 多重签名 合约
+  details: 国密 多签 合约 EDDSA
 
 ---
 
-<h2 align="center"><a href="https://swtcdoc.netlify.com">专为应用开发者打造</a></h2>
+::: tip 安装
+<vue-typed-js :strings="install" :loop="true">
+  <p>区块链操作使用 <span class="typing"></span></p>
+</vue-typed-js>
+:::
+::: tip 定义区块链
+<vue-typed-js :strings="chainspecs" :loop="true">
+  <p>区块链定义举例 <span class="typing"></span></p>
+</vue-typed-js>
+:::
+::: tip 使用
+<vue-typed-js :strings="startups" :loop="true">
+  <p>区块链操作使用 <span class="typing"></span></p>
+</vue-typed-js>
+<vue-typed-js :strings="simplified" :loop="true">
+  <p>属性静态绑定<span class="typing"></span></p>
+</vue-typed-js>
+:::
+
+<mermaid>
+stateDiagram-v2
+    direction BT
+    LIB --> BLOCKCHAIN : websocket
+    RPC --> BLOCKCHAIN : rpc
+    BLOCKCHAIN: 区块链网络服务 The Block Chain Network (defined by chain specification) where Nodes Provide Websocket And RPC Services
+    LIB: Class Remote
+    state LIB {
+        WWallet: Wallet
+        --
+        LIBFactory: require("@swtc/lib").Factory(chain)
+        --
+        WTransaction: Transaction
+    }
+    RPC: Class Remote
+    state RPC {
+        RTransaction: Transaction
+        --
+        RPCFactory: require("@swtc/rpc").Factory(chain)
+        --
+        RWallet: Wallet
+    }
+    CTransaction: Class Transaction
+    CSerializer: Class Serializer
+    CKeypair: Class Keypair
+    CWallet: Class Wallet
+    state CWallet {
+        KeyPair
+        --
+        WalletFactory: require("@swtc/wallet").Factory(chain)
+        --
+        addressCodec
+    }
+    AddressCodec --> CKeypair
+    CKeypair --> CWallet
+    CWallet --> LIB : 依赖
+    CWallet --> Utils
+    CSerializer --> CTransaction
+    CWallet --> CTransaction : 依赖
+    Utils --> CTransaction
+    CWallet --> CSerializer
+    CWallet --> RPC : 依赖
+    CTransaction --> LIB : 依赖
+    CTransaction --> RPC : 依赖
+</mermaid>
 
 <p align="center">
 	<a href="https://gitter.im/swtclib/community?utm_source=share-link&utm_medium=link&utm_campaign=share-link"><img alt="Gitter" src="https://img.shields.io/gitter/room/lospringliu/swtclib.svg" /></a>
@@ -40,36 +103,26 @@ features:
 	<img src="https://img.shields.io/badge/ecmascript-6-green.svg" alt="es6" />
 	<img src="https://img.shields.io/badge/browserify-ready-green.svg" alt="browserify" />
 	<img src="https://img.shields.io/badge/webpack-ready-green.svg" alt="webpack" />
-	<br>
-	<a href="https://nodei.co/npm/@swtc/rpc/"><img src="https://nodei.co/npm/@swtc/rpc.png?compact=true" /></a>
-	<br>
-	<a href="https://nodei.co/npm/@swtc/lib/"><img src="https://nodei.co/npm/@swtc/lib.png?compact=true" /></a>
-	<br>
-	<a href="https://nodei.co/npm/@swtc/api/"><img src="https://nodei.co/npm/@swtc/api.png?compact=true" /></a>
-	<br>
-	<a href="https://nodei.co/npm/@swtc/transaction/"><img src="https://nodei.co/npm/@swtc/transaction.png?compact=true" /></a>
-	<br>
-	<a href="https://nodei.co/npm/@swtc/wallet/"><img src="https://nodei.co/npm/@swtc/wallet.png?compact=true" /></a>
 </p>
 
 <h2>文档</h2>
 
-<h3><a href="docs/swtc/">改进提高</a></h3>
+<h3><a href="docs/swtcxlib/">国密综合</a> - 国密 公链 联盟链 定制链</h3>
+<h3><a href="docs/wallet/">钱包</a></h3>
 <h3><a href="docs/swtclib/">编程接口(lib)</a></h3>
 <h3><a href="docs/swtcrpc/">编程接口(rpc)</a></h3>
 <h3><a href="docs/api/">编程接口(api)</a></h3>
+<h3><a href="docs/swtc/">改进提高</a></h3>
 <h3><a href="docs/examples/">应用实例</a></h3>
-<h3><a href="docs/swtcxlib/">联盟链扩展</a></h3>
 <h3><a href="docs/swtcapi/">公链api扩展</a></h3>
 
-<h2>程序包</h2>
+<h2>程序包 (全面支持联盟链)</h2>
 
 |程序包名称|CDN|功能描述|
 |----------|---|--------|
+|[@swtc/rpc](docs/swtcrpc/)|name: swtc_rpc<br>[unpkg](https://unpkg.com/@swtc/rpc)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/@swtc/rpc)|SWTC公链/联盟链库, 基于rpc|
+|[@swtc/lib](docs/swtclib/)|name: swtc_lib<br>[unpkg](https://unpkg.com/@swtc/lib)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/@swtc/lib)|SWTC公链/联盟链库, 基于websocket|
 |[@swtc/proxy](docs/swtcproxy/)||节点代理, 提供标准API接口|
-|[@swtc/x-lib](docs/swtcxlib/)|name: swtc_x_lib<br>[unpkg](https://unpkg.com/@swtc/x-lib)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/@swtc/x-lib)|支持井通联盟链, 基于websocket|
-|[@swtc/lib](docs/swtclib/)|name: swtc_lib<br>[unpkg](https://unpkg.com/@swtc/lib)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/@swtc/lib)|SWTC公链库, 基于websocket|
-|[@swtc/rpc](docs/swtcrpc/)|name: swtc_rpc<br>[unpkg](https://unpkg.com/@swtc/rpc)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/@swtc/rpc)|SWTC公链库, 基于rpc|
 |[@swtc/api](docs/swtcapi/)|name: swtc_api<br>[unpkg](https://unpkg.com/@swtc/api)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/@swtc/api)|SWTC公链库, 基于restapi|
 |[@swtc/transaction](docs/swtctx/)|name: swtc_transaction<br>[unpkg](https://unpkg.com/@swtc/transaction)<br>[jsdelivery](https://cdn.jsdelivr.net/npm/@swtc/transaction)|井通公链交易库, 支付/挂单/关系/合约|
 |@swtc/serializer||井通公链交易序列化库, 基于钱包|
@@ -112,3 +165,38 @@ features:
 	<img align="center" src="./images/jccdex.png" alt="井畅" height="100" />
 </p>
 
+<script>
+export default {
+  data () {
+      return {
+          install: [
+            ' websocket接口 npm install @swtc/lib ',
+            '       rpc接口 npm install @swtc/rpc ',
+            ' 不操作   区块链 npm install @swtc/transaction ',
+            ' 只使用     钱包 npm install @swtc/wallet '
+					],
+          simplified: [
+            ' const {Transaction, Wallet, Serializer, utils} = Remote ',
+            ' const {Wallet, Serializer, utils} = Transaction ',
+            ' const {KeyPair, addressCodec, config} = Wallet '
+					],
+          startups: [
+            ' websocket接口 const Remote = require("@swtc/lib").Factory(chain_spec)',
+            '       rpc接口 const Remote = require("@swtc/rpc").Factory(chain_spec)',
+            ' 不操作  区块链 const Transaction = require("@swtc/transaction").Factory(chain_spec)',
+            ' 只使用    钱包 const Wallet = require("@swtc/wallet").Factory(chain_spec)'
+          ],
+					chainspecs: [
+            '缺省为井通公链',
+						'用字串指定预定义的链  "jingtum" 对应 井通公链',
+						'用字串指定预定义的链  "ripple" 对应 瑞波公链',
+						'用字串指定预定义的链  "bizain" 对应 商链',
+						'用对象定制链  {fee: 1000} 定制转账费用的 井通链',
+						'用对象定制链  {guomi: true} 定制符合国密标准的 井通链',
+						'用对象定制链  {fee: 1000000, currency: "BWT", ACCOUNT_ALPHABET: "bpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2jcdeCg65rkm8oFqi1tuvAxyz"} 定制转账费用的 商链',
+						'用对象定制链  还可以定制默认issuer/通证别名/默认节点等'
+					]
+      }
+  },
+}
+</script>
