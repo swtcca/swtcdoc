@@ -48,7 +48,6 @@ features:
   <p>属性静态绑定<span class="typing"></span></p>
 </vue-typed-js>
 :::
-
 <mermaid>
 stateDiagram-v2
     direction BT
@@ -172,18 +171,15 @@ export default {
           install: [
             ' websocket接口 npm install @swtc/lib ',
             '       rpc接口 npm install @swtc/rpc ',
-            ' 不操作   区块链 npm install @swtc/transaction ',
-            ' 只使用     钱包 npm install @swtc/wallet '
+            ' 只使用    钱包 npm install @swtc/wallet '
 					],
           simplified: [
             ' const {Transaction, Wallet, Serializer, utils} = Remote ',
-            ' const {Wallet, Serializer, utils} = Transaction ',
             ' const {KeyPair, addressCodec, config} = Wallet '
 					],
           startups: [
             ' websocket接口 const Remote = require("@swtc/lib").Factory(chain_spec)',
             '       rpc接口 const Remote = require("@swtc/rpc").Factory(chain_spec)',
-            ' 不操作  区块链 const Transaction = require("@swtc/transaction").Factory(chain_spec)',
             ' 只使用    钱包 const Wallet = require("@swtc/wallet").Factory(chain_spec)'
           ],
 					chainspecs: [
@@ -193,7 +189,7 @@ export default {
 						'用字串指定预定义的链  "bizain" 对应 商链',
 						'用对象定制链  {fee: 1000} 定制转账费用的 井通链',
 						'用对象定制链  {guomi: true} 定制符合国密标准的 井通链',
-						'用对象定制链  {fee: 1000000, currency: "BWT", ACCOUNT_ALPHABET: "bpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2jcdeCg65rkm8oFqi1tuvAxyz"} 定制转账费用的 商链',
+						'用对象定制链  {fee: 1000000, currency: "BWT", ACCOUNT_ALPHABET: "bpsh...Axyz"} 定制转账费用的 商链',
 						'用对象定制链  还可以定制默认issuer/通证别名/默认节点等'
 					]
       }
