@@ -220,7 +220,7 @@ stateDiagram-v2
 
 ## 公链 vs 国密链
 
-### 种子 / 密钥
+### 编码解码 `require("@swtc/address-codec").Factory(chain)`
 #### 相同的种子编码后的密钥不同，解码后对应同一个种子
 #### 都支持ed25519
 ::: details 代码
@@ -279,7 +279,7 @@ console.log(addressCodec_guomi.decodeSeed(secret_ed25519_guomi))
 ```
 :::
 
-### 私钥/公钥
+### 私钥/公钥 `require("@swtc/keypairs").Factory(chain)`
 #### 同一个私钥生成的公钥不同
 #### 同一个种子生成的私钥不同
 #### 都支持ed25519
@@ -366,9 +366,17 @@ console.log(`国密验证: ${Keypair_guomi.verify(message, signed_guomi, keypair
 ```
 :::
 
-### address
+### 钱包
+#### 井通 `require("@swtc/wallet").Factory()`
+#### 国密 `require("@swtc/wallet").Factory({guomi: true})`
 
-### sign/verify
+### 操作区块链
+#### 通过WEBSOCKET `require("@swtc/lib").Factory({guomi: true})`
+#### 通过RPC `require("@swtc/rpc").Factory({guomi: true})`
+::: details 代码
+```javascript
+```
+:::
 
 ## 国密测试链上验证
 
