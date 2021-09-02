@@ -23,7 +23,7 @@
 </vue-typed-js>
 :::
 ### 一些例子
-#### 默认为井通公链
+#### 默认为井通公链 "jingtum" {}
 ::: details 代码
 ```javascript
 > .load chains.js
@@ -63,7 +63,7 @@ console.log(Wallet_default.config)
 }
 ```
 :::
-#### 用字符串标识注册的公链
+#### 用字符串标识注册的公链 "ripple" "call" "bizain"
 ::: details 代码
 ```javascript
 > .load registeredchains.js
@@ -105,7 +105,7 @@ CALL链
 }
 ```
 :::
-#### 用对象来标识 联盟链/测试链/国密链
+#### 用对象来标识 联盟链/测试链/国密链 {guomi: true} {fee: 1000}
 ::: details 代码
 ```javascript
 > .load testchains.js
@@ -366,13 +366,162 @@ console.log(`国密验证: ${Keypair_guomi.verify(message, signed_guomi, keypair
 ```
 :::
 
-### 钱包
-#### 井通 `require("@swtc/wallet").Factory()`
-#### 国密 `require("@swtc/wallet").Factory({guomi: true})`
+### 钱包 `require("@swtc/wallet").Factory()`
+#### 静态方法 Wallet.generate() Wallet.fromSecret(secret) Wallet.fromPhrase(phrase)
+::: details 代码
+```javascript
+> .load wallet2.js
+const Wallet_jingtum = require("@swtc/wallet").Factory("jingtum")
+const Wallet_guomi = require("@swtc/wallet").Factory({guomi: true})
+const addressCodec_jingtum = Wallet_jingtum.KeyPair.addressCodec
+const addressCodec_guomi = Wallet_guomi.KeyPair.addressCodec
+ 
+const seed = Buffer.from(`00000000000000000000000000000000`, "hex")
+const secret_jingtum = addressCodec_jingtum.encodeSeed(seed)
+const secret_guomi = addressCodec_guomi.encodeSeed(seed)
+ 
+console.log(Wallet_jingtum.generate()) 
+console.log(Wallet_guomi.generate()) 
+ 
+console.log(Wallet_jingtum.fromSecret(secret_jingtum))
+console.log(Wallet_guomi.fromSecret(secret_guomi))
+ 
+console.log(Wallet_jingtum.fromPhrase('masterpassphrase'))
+console.log(Wallet_guomi.fromPhrase('masterpassphrase'))
+ 
+{
+  secret: 'ssKhPpenrKvR96RxEkf96TLffwYZv',
+  address: 'jpm59XTLSL6kr8dcg8nxTgk549nJCfdmp9'
+}
+{
+  secret: 'ss2RoG276RxttWVPZh2JKfMTJHRSb',
+  address: 'jDyPSXDXVE46h2LnrJQWHneecvqzJGoQbA'
+}
+{
+  secret: 'sp6JS7f14BuwFY8Mw6bTtLKWauoUs',
+  address: 'jGCkuB7PBj5tNy68tPEABEtcdno4hE6Y7f'
+}
+{
+  secret: 'sp6JS7f14BuwFY8Mw6bTtLKTnTe6w',
+  address: 'jN6pecdxLqs9TbZ1HugLXYQg3qnzseRoiK'
+}
+{
+  secret: 'snoPBjXtMeMyMHUVTgbuqAfg1SUTb',
+  address: 'jHb9CJAWyB4jr91VRWn96DkukG4bwdtyTh'
+}
+{
+  secret: 'shstwqJpVJbsqFA5uYJJw1YniXcDF',
+  address: 'j9syYwWgtmjchcbqhVB18pmFqXUYahZvvg'
+}
+```
+:::
+#### 钱包实例 new Wallet(secret)
+::: details 代码
+```javascript
+> .load wallet3.js
+const Wallet_jingtum = require("@swtc/wallet").Factory("jingtum")
+const Wallet_guomi = require("@swtc/wallet").Factory({guomi: true})
+const Keypair_jingtum = Wallet_jingtum.KeyPair
+const Keypair_guomi = Wallet_guomi.KeyPair
+addressCodec_jingtum = Keypair_jingtum.addressCodec
+addressCodec_guomi = Keypair_guomi.addressCodec
+ 
+const seed = Buffer.from(`00000000000000000000000000000000`, "hex")
+const secret_jingtum = addressCodec_jingtum.encodeSeed(seed)
+const secret_guomi = addressCodec_guomi.encodeSeed(seed)
+ 
+console.log(`井通：`)
+console.log(new Wallet_jingtum(secret_jingtum))
+console.log(`国密：`)
+console.log(new Wallet_guomi(secret_guomi))
+ 
+console.log(`都支持ed25519`)
+const secret_ed25519_jingtum = addressCodec_jingtum.encodeSeed(seed, "ed25519")
+const secret_ed25519_guomi = addressCodec_guomi.encodeSeed(seed, "ed25519")
+console.log(`井通：`)
+console.log(new Wallet_jingtum(secret_ed25519_jingtum))
+console.log(`国密：`)
+console.log(new Wallet_guomi(secret_ed25519_guomi))
+ 
+ 
+ 
+井通：
+Wallet {
+  _keypairs: {
+    privateKey: '002512BBDFDBB77510883B7DCCBEF270B86DEAC8B64AC762873D75A1BEE6298665',
+    publicKey: '0390A196799EE412284A5D80BF78C3E84CBB80E1437A0AECD9ADF94D7FEAAFA284'
+  },
+  _secret: 'sp6JS7f14BuwFY8Mw6bTtLKWauoUs'
+}
+国密：
+Wallet {
+  _keypairs: {
+    privateKey: '00FD10E5E5A9DD4A35DBF27B931A2D3CA8C6CD4743D74CE4E4C03131DC5A34A9B1',
+    publicKey: '024CD9E73D04415C4E0C73C5F7CBF51A6C84871E9746614A345652CDE3F0C09CEB'
+  },
+  _secret: 'sp6JS7f14BuwFY8Mw6bTtLKTnTe6w'
+}
+都支持ed25519
+井通：
+Wallet {
+  _keypairs: {
+    privateKey: 'ED0B6CBAC838DFE7F47EA1BD0DF00EC282FDF45510C92161072CCFB84035390C4D',
+    publicKey: 'ED1A7C082846CFF58FF9A892BA4BA2593151CCF1DBA59F37714CC9ED39824AF85F'
+  },
+  _secret: 'sEdSJHS4oiAdz7w2X2ni1gFiqtbJHqE'
+}
+国密：
+Wallet {
+  _keypairs: {
+    privateKey: 'ED106E34A2B8C7BB13156CFDD0D91379DCC47543DCF9787C68AE5EB582620AE6E8',
+    publicKey: 'ED11A47E4CF71B46981ACD0FF7E363278463C4D777453C1982BEEB4E4592768FA8'
+  },
+  _secret: 'sEdSJHS4oiAdz7w2X2ni1gFiqq1RRce'
+}
+```
+:::
+#### 钱包主要包装上面的 Keypairs 和 addressCodec 
+::: details 代码
+```javascript
+> .load wallet.js
+const Wallet_jingtum = require("@swtc/wallet").Factory("jingtum")
+const Wallet_guomi = require("@swtc/wallet").Factory({guomi: true})
+const Keypair_jingtum = Wallet_jingtum.KeyPair
+const Keypair_guomi = Wallet_guomi.KeyPair
+addressCodec_jingtum = Keypair_jingtum.addressCodec
+addressCodec_guomi = Keypair_guomi.addressCodec
+ 
+const seed = Buffer.from(`00000000000000000000000000000000`, "hex")
+console.log(`同一个种子编码后的地址不同`)
+const secret_jingtum = addressCodec_jingtum.encodeSeed(seed)
+const secret_guomi = addressCodec_guomi.encodeSeed(seed)
+const address_jingtum = Wallet_jingtum.fromSecret(secret_jingtum).address
+const address_guomi = Wallet_guomi.fromSecret(secret_guomi).address
+console.log(`井通： ${address_jingtum}`)
+console.log(`国密： ${address_guomi}`)
+ 
+console.log(`都支持ed25519，同样一个种子编码后的密钥不同`)
+const secret_ed25519_jingtum = addressCodec_jingtum.encodeSeed(seed, "ed25519")
+const secret_ed25519_guomi = addressCodec_guomi.encodeSeed(seed, "ed25519")
+const address_ed25519_jingtum = Wallet_jingtum.fromSecret(secret_ed25519_jingtum).address
+const address_ed25519_guomi = Wallet_guomi.fromSecret(secret_ed25519_guomi).address
+console.log(`井通： ${address_ed25519_jingtum}`)
+console.log(`国密： ${address_ed25519_guomi}`)
+ 
+ 
+ 
+同一个种子编码后的地址不同
+井通： jGCkuB7PBj5tNy68tPEABEtcdno4hE6Y7f
+国密： jN6pecdxLqs9TbZ1HugLXYQg3qnzseRoiK
+都支持ed25519，同样一个种子编码后的密钥不同
+井通： j9zRhGj7b6xPekLvT6wP4qNdWMjyaumZS7
+国密： jnjgyTG6heEC1Exza68mCJQbTyNPC8uTsE
+```
+:::
 
 ### 操作区块链
-#### 通过WEBSOCKET `require("@swtc/lib").Factory({guomi: true})`
-#### 通过RPC `require("@swtc/rpc").Factory({guomi: true})`
+#### 通过WEBSOCKET `require("@swtc/lib").Factory(chain)`
+#### 通过RPC `require("@swtc/rpc").Factory(chain)`
 ::: details 代码
 ```javascript
 ```
