@@ -934,9 +934,218 @@ Promise { <pending> }
 }
 ```
 :::
-## 遗留
-
 ### 多签
+#### 给账户设置签名列表
+::: details 代码 - 设置账户
+```javascript
+> remote.getAccountSignerList(DATA.address).then(console.log)
+Promise { <pending> }
+> {
+  account: 'j3TbonCBTcorBu7TeK57aDGTidqkuRMAsi',
+  account_objects: null,
+  ledger_current_index: 142994,
+  status: 'success',
+  validated: false
+}
+> const tx = remote.buildSignerListTx({
+...   account: DATA.address,
+...   threshold: 5,
+...   lists: [
+...     { account: DATA.addressEd, weight: 3},
+...     { account: 'j9syYwWgtmjchcbqhVB18pmFqXUYahZvvg', weight: 3 }
+...   ]
+... })
+undefined
+> tx.submitPromise(DATA.secret).then(console.log)
+Promise { <pending> }
+> {
+  engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message: 'The transaction was applied. Only final in a validated ledger.',
+  status: 'success',
+  tx_blob: '1200CF2200000000240000004220260000000568400000000000000A7321024638004F4A000F55E188A4D2DA4A9D3D3C88C9E261B5EC996029FFE8C14F90C97448304602210098ABDB3E5861CA54048C5BA7509EF11C89CCAC99F15105B543A5DEDFC37D06F8022100DD083D8D23A25EA201804751E9FE3D299183449A98375FC6E98990F2EEC1B74E811451D0BD8F60934B17D6D015D3D3047C42CAED9EBBFBEC13000381143AF71F0416405F20DBB60F4C64D7AB4D9A02DA94E1EC13000381145851087D6ADD52AA35ED9D9AA1B57D3D96D26EA8E1F1',
+  tx_json: {
+    Account: 'j3TbonCBTcorBu7TeK57aDGTidqkuRMAsi',
+    Fee: '10',
+    Flags: 0,
+    Sequence: 66,
+    SignerEntries: [ [Object], [Object] ],
+    SignerQuorum: 5,
+    SigningPubKey: '024638004F4A000F55E188A4D2DA4A9D3D3C88C9E261B5EC996029FFE8C14F90C9',
+    TransactionType: 'SignerListSet',
+    TxnSignature: '304602210098ABDB3E5861CA54048C5BA7509EF11C89CCAC99F15105B543A5DEDFC37D06F8022100DD083D8D23A25EA201804751E9FE3D299183449A98375FC6E98990F2EEC1B74E',
+    hash: '17D2E01161ACB77A8A755ED8212077D937308474A9EDCEB556884E3848373720'
+  }
+}
+
+> remote.getAccountSignerList(DATA.address).then(console.log)
+Promise { <pending> }
+> {
+  account: 'j3TbonCBTcorBu7TeK57aDGTidqkuRMAsi',
+  account_objects: [
+    {
+      Flags: 0,
+      LedgerEntryType: 'SignerList',
+      OwnerNode: '0000000000000000',
+      PreviousTxnID: '17D2E01161ACB77A8A755ED8212077D937308474A9EDCEB556884E3848373720',
+      PreviousTxnLgrSeq: 143666,
+      SignerEntries: [Array],
+      SignerQuorum: 5,
+      index: '0E636BDE9E30E1650106F1DF41E906A70F95F341FEF1F39480256B4764493F4A'
+    }
+  ],
+  ledger_current_index: 143667,
+  status: 'success',
+  validated: false
+}
+> remote.getAccountSignerList(DATA.address).then(result => console.log(result.account_objects[0]))
+Promise { <pending> }
+> {
+  Flags: 0,
+  LedgerEntryType: 'SignerList',
+  OwnerNode: '0000000000000000',
+  PreviousTxnID: '17D2E01161ACB77A8A755ED8212077D937308474A9EDCEB556884E3848373720',
+  PreviousTxnLgrSeq: 143666,
+  SignerEntries: [ { SignerEntry: [Object] }, { SignerEntry: [Object] } ],
+  SignerQuorum: 5,
+  index: '0E636BDE9E30E1650106F1DF41E906A70F95F341FEF1F39480256B4764493F4A'
+}
+> remote.getAccountSignerList(DATA.address).then(result => console.log(result.account_objects[0].SignerEntries))
+Promise { <pending> }
+> [
+  {
+    SignerEntry: { Account: 'ja48NQV8n4ymru8ZrzG2Gs2G5TjjBSfDPF', SignerWeight: 3 }
+  },
+  {
+    SignerEntry: { Account: 'j9syYwWgtmjchcbqhVB18pmFqXUYahZvvg', SignerWeight: 3 }
+  }
+]
+```
+:::
+#### 多签流程
+1. 创建常规交易
+2. 设置Sequence / memo / fee
+3. 第一个钱包签名
+4. 第二...个钱包签名
+5. 标记签名结束
+6. 提交到链
+::: details 代码
+```javascript
+> const tx_mult = remote.buildPaymentTx({
+... from: DATA.address,
+... to: `jJFMRsG1uRvZRgYsMsRc9ZcArJ4kGNhFis`,
+... amount: remote.makeAmount(2),
+... memo: "multi signed payment"
+... })
+undefined
+> tx_mult._setSequencePromise().then(() => {})
+Promise { <pending> }
+> console.log(tx_mult.tx_json)
+{
+  Flags: 0,
+  Fee: 10,
+  TransactionType: 'Payment',
+  Account: 'j3TbonCBTcorBu7TeK57aDGTidqkuRMAsi',
+  Amount: '2000000',
+  Destination: 'jJFMRsG1uRvZRgYsMsRc9ZcArJ4kGNhFis',
+  Memos: [ { Memo: [Object] } ],
+  Sequence: 67
+}
+undefined
+> tx_mult.setFee(30000)
+undefined
+> console.log(tx_mult.tx_json)
+{
+  Flags: 0,
+  Fee: 30000,
+  TransactionType: 'Payment',
+  Account: 'j3TbonCBTcorBu7TeK57aDGTidqkuRMAsi',
+  Amount: '2000000',
+  Destination: 'jJFMRsG1uRvZRgYsMsRc9ZcArJ4kGNhFis',
+  Memos: [ { Memo: [Object] } ],
+  Sequence: 67
+}
+
+> const wallet_first = Remote.Wallet.fromSecret(DATA.secretEd)
+undefined
+> tx_mult.multiSigning(wallet_first)
+> console.log(tx_mult.tx_json)
+{
+  Flags: 0,
+  Fee: 0.03,
+  TransactionType: 'Payment',
+  Account: 'j3TbonCBTcorBu7TeK57aDGTidqkuRMAsi',
+  Amount: '2',
+  Destination: 'jJFMRsG1uRvZRgYsMsRc9ZcArJ4kGNhFis',
+  Memos: [ { Memo: [Object] } ],
+  Sequence: 67,
+  SigningPubKey: '',
+  Signers: [ { Signer: [Object] } ]
+}
+
+> const wallet_second = Remote.Wallet.fromPhrase('masterpassphrase')
+undefined
+> tx_mult.multiSigning(wallet_second)
+
+> console.log(tx_mult.tx_json)
+{
+  Flags: 0,
+  Fee: 0.03,
+  TransactionType: 'Payment',
+  Account: 'j3TbonCBTcorBu7TeK57aDGTidqkuRMAsi',
+  Amount: '2',
+  Destination: 'jJFMRsG1uRvZRgYsMsRc9ZcArJ4kGNhFis',
+  Memos: [ { Memo: [Object] } ],
+  Sequence: 67,
+  SigningPubKey: '',
+  Signers: [ { Signer: [Object] }, { Signer: [Object] } ]
+}
+undefined
+> console.log(tx_mult.tx_json.Signers)
+[
+  {
+    Signer: {
+      Account: 'ja48NQV8n4ymru8ZrzG2Gs2G5TjjBSfDPF',
+      SigningPubKey: 'ED7F7BAFBA4E123F2B3F43295EDAC06F95CAE8C47132B31CBA8B4BD173F94C1C35',
+      TxnSignature: '7816698D4454ACDE2D6F3D1DF72685880968E790CAC63D53457AF75240B726EE15FC8AC953A5A4810EBD302F50DFEED62F58A7DCA785342474CA56D561895900'
+    }
+  },
+  {
+    Signer: {
+      Account: 'j9syYwWgtmjchcbqhVB18pmFqXUYahZvvg',
+      SigningPubKey: '03CE9FFB99A4125592C43FFCC47959641B4DE59C5B093F1BE5BCDEC49DA9B1C526',
+      TxnSignature: '3046022100E879557D787A285225CAECBEE0BB5650A65055BC435BFC6E1CE0B2808EC90EFF022100D704A67314F8E980DCE518BDCFCC3DD2AE672152BBDE9A8915868D5EDE3CF8D4'
+    }
+  }
+]
+
+> tx_mult.multiSigned()
+
+> tx_mult.submitPromise().then(console.log)
+Promise { <pending> }
+> {
+  engine_result: 'tesSUCCESS',
+  engine_result_code: 0,
+  engine_result_message: 'The transaction was applied. Only final in a validated ledger.',
+  status: 'success',
+  tx_blob: '120000220000000024000000436140000000001E84806840000000000075307300811451D0BD8F60934B17D6D015D3D3047C42CAED9EBB8314C36EBACB941125E759FE6D52084493CDDDE86EB4F9EA7D146D756C7469207369676E6564207061796D656E74E1F1FCED7321ED7F7BAFBA4E123F2B3F43295EDAC06F95CAE8C47132B31CBA8B4BD173F94C1C3574407816698D4454ACDE2D6F3D1DF72685880968E790CAC63D53457AF75240B726EE15FC8AC953A5A4810EBD302F50DFEED62F58A7DCA785342474CA56D56189590081143AF71F0416405F20DBB60F4C64D7AB4D9A02DA94E1ED732103CE9FFB99A4125592C43FFCC47959641B4DE59C5B093F1BE5BCDEC49DA9B1C52674483046022100E879557D787A285225CAECBEE0BB5650A65055BC435BFC6E1CE0B2808EC90EFF022100D704A67314F8E980DCE518BDCFCC3DD2AE672152BBDE9A8915868D5EDE3CF8D481145851087D6ADD52AA35ED9D9AA1B57D3D96D26EA8E1F1',
+  tx_json: {
+    Account: 'j3TbonCBTcorBu7TeK57aDGTidqkuRMAsi',
+    Amount: '2000000',
+    Destination: 'jJFMRsG1uRvZRgYsMsRc9ZcArJ4kGNhFis',
+    Fee: '30000',
+    Flags: 0,
+    Memos: [ [Object] ],
+    Sequence: 67,
+    Signers: [ [Object], [Object] ],
+    SigningPubKey: '',
+    TransactionType: 'Payment',
+    hash: '0296A8F8A2DEC17F37F89CD72D58EEDE8F6B905045E655496D7AF7A929E8D55A'
+  }
+}
+```
+:::
+## 遗留
 
 ### contract
 
