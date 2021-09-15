@@ -1,5 +1,6 @@
 module.exports = {
   // plugins: ['@vuepress/last-updated', '@vuepress/nprogress', '@vuepress/blog', '@vuepress/back-to-top'],
+  plugins: ['vuepress-plugin-mermaidjs'],
   title: "SWTCLIB",
   description: "社区版swtc公链node.js开发库",
   markdown: {

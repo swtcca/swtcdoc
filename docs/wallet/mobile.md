@@ -1,6 +1,7 @@
 ## 移动开发
 
 ::: details 移动开发支持
+
 ```shell
 Documents xcliu$ tns create bipapp --js
 Documents xcliu$ cd bipapp
@@ -49,7 +50,7 @@ index 0903f55..046e416 100755
 +const bip39 = require("bip39")
 +bip39.setDefaultWordlist('chinese_simplified')
 +let b32
- 
+
 -function getMessage(counter) {
 +function getMessage(counter, mnemonic, seed, b32) {
      if (counter <= 0) {
@@ -62,7 +63,7 @@ index 0903f55..046e416 100755
 +               `;
      }
  }
- 
+
  function createViewModel() {
      const viewModel = new Observable();
      viewModel.counter = 42;
@@ -72,7 +73,7 @@ index 0903f55..046e416 100755
 +    b32 = bip32.fromSeed(viewModel.seed)
 +    viewModel.b32 = b32.privateKey
 +    viewModel.message = getMessage(viewModel.counter, viewModel.mnemonic, viewModel.seed.toString("hex"), viewModel.b32.toString("hex"));
- 
+
      viewModel.onTap = () => {
          viewModel.counter--;
 -        viewModel.set("message", getMessage(viewModel.counter));
@@ -82,9 +83,9 @@ index 0903f55..046e416 100755
 +        viewModel.b32 = b32.privateKey
 +        viewModel.set("message", getMessage(viewModel.counter, viewModel.mnemonic, viewModel.seed.toString("hex"), viewModel.b32.toString("hex")));
      };
- 
+
     return viewModel;
 bipapp xcliu$ tns run android
 ```
-:::
 
+:::
