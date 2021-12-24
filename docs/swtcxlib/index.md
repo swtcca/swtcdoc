@@ -376,7 +376,7 @@ console.log(`国密验证: ${Keypair_guomi.verify(message, signed_guomi, keypair
 待签名信息： hello how do you do
 井通签名: 3045022100EBEA129426455020FFDA256084523B8650DF848C2679108C5870F3F9C0B8F13102207122CB117B205D2C7E27EE417999A6C3E60192671AD44C0AF69DA0EF98C4BC3F
 井通验证: true
-国密签名: 3046022100B8D8AB2332CDADF7DEFD4E7E135A5C1F9D2AD01F47D8BF5AAEF600E70399A235022100A5159AFC93D5BE29B36289D97D27136E20E453E63961D69694398DB45C735386
+国密签名: 304402203E41D936829434A534782F647B160404646C1A21034F65180776F7D2510158B802206EEBBA7B2E19A18D857D04A787064070E907F9C8487844C55BE990CE2AF3A845
 国密验证: true
 ```
 
@@ -559,28 +559,28 @@ const FROM = Wallet_guomi.generate()
 
 const tx_json_guomi = {
   TransactionType: "Payment",
-    Sequence: 100,
-      Account: FROM.address,
-        Destination: Wallet_guomi.generate().address,
-          Amount: Wallet_guomi.makeAmount()
-          }
+  Sequence: 100,
+  Account: FROM.address,
+  Destination: Wallet_guomi.generate().address,
+  Amount: Wallet_guomi.makeAmount()
+}
 
-          console.log(`签名/验证 交易是对 交易的哈希操作`)
+console.log(`签名/验证 交易是对 交易的哈希操作`)
 
-          const hash_guomi = Serializer_guomi.from_json(tx_json_guomi).hash(0x1234)
-          console.log(`哈希 国密 ${hash_guomi}`)
+const hash_guomi = Serializer_guomi.from_json(tx_json_guomi).hash(0x1234)
+console.log(`哈希 国密 ${hash_guomi}`)
 
-          console.log(`签名`)
-          const wallet = new Wallet_guomi(FROM.secret)
-          const signature = wallet.signTx(hash_guomi)
-          console.log(signature)
+console.log(`签名`)
+const wallet = new Wallet_guomi(FROM.secret)
+const signature = wallet.signTx(hash_guomi)
+console.log(signature)
 
-          console.log(`验证 ${wallet.verifyTx(hash_guomi, signature)}`)
+console.log(`验证 ${wallet.verifyTx(hash_guomi, signature)}`)
 
 签名/验证 交易是对 交易的哈希操作
-哈希 国密 A2BB1966425E21986A23E50CBE892A550A4382C1700EA4159AB5EA5C143803BF
+哈希 国密 601369D3FC4A6799F289FA3972F84EC79294002D4C97FF9BEA92C5D4E43F693E
 签名
-3045022100A0B1105D82B56DBD7C923143EDEF1964DBB326AF9E7A6F517F2F1B1787B4D27F02203974B9B1120EC9FCC11986FEAE12A3894174710E221AC8F2DB9A9CAD4A92587B
+30440220243D8A3E8CC077DF4EF7AC83914110DDC93CE5ED981B7749D8C4D8ABE692A1FB0220306DC7963A28F85B09CC53ED1BE4636DC4B980FEA3C1BFCA7741BCC6E4F82E27
 验证 true
 ```
 
@@ -721,7 +721,7 @@ Promise { <pending> }
 // 这里以rpc操作为例，使用如下配置
 const Remote = require("@swtc/rpc").Factory({ guomi: true })
 const DATA = {
-  rpc_server: "http://139.198.19.157:4950", // 节点服务
+  rpc_server: "http://39.99.226.235:4055", // 节点服务
   address: "j3TbonCBTcorBu7TeK57aDGTidqkuRMAsi", // 测试账户 sm2p256v1
   secret: "sndZWd9nbsHR34om4eS3B6zM7CeHe",
   addressEd: "ja48NQV8n4ymru8ZrzG2Gs2G5TjjBSfDPF", // 测试账户 ed25519
@@ -743,24 +743,24 @@ Promise { <pending> }
 > {
   account_data: {
     Account: 'j3TbonCBTcorBu7TeK57aDGTidqkuRMAsi',
-    Balance: '9990249870',
+    Balance: '103999960',
     Flags: 0,
     LedgerEntryType: 'AccountRoot',
     OwnerCount: 0,
-    PreviousTxnID: '33D0D3E857229B93B3E63D0B99FD08173E179A9D39D006186024E887B8EE5465',
-    PreviousTxnLgrSeq: 100913,
-    Sequence: 60,
+    PreviousTxnID: 'E3685C8DFA10B03C21406406B7464E69D1759213B418F49397BE56FF0781E15D',
+    PreviousTxnLgrSeq: 3709,
+    Sequence: 5,
     index: '9C1F8044F79AA657C8FC53D647D192C8166EE662E15FB3419DFB4689A1A055DA'
   },
-  ledger_current_index: 132132,
+  ledger_current_index: 3709,
   status: 'success',
   validated: false
 }
 > remote.getAccountBalances(DATA.addressEd).then(console.log)
 Promise { <pending> }
 > {
-  balances: [ { value: 4008.18998, currency: 'SWT', issuer: '', freezed: 20 } ],
-  sequence: 4
+  balances: [ { value: 95.99996, currency: 'SWT', issuer: '', freezed: 20 } ],
+  sequence: 5
 }
 ```
 
@@ -771,27 +771,27 @@ Promise { <pending> }
 ::: details 代码
 
 ```javascript
-> let tx = remote.buildPaymentTx({from: DATA.address, to: DATA.addressEd, amount: remote.makeAmount()})
+> let tx = remote.buildPaymentTx({from: DATA.addressEd, to: DATA.address, amount: remote.makeAmount()})
 undefined
-> tx.submitPromise(DATA.secret).then(console.log)
+> tx.submitPromise(DATA.secretEd).then(console.log)
 Promise { <pending> }
 > {
   engine_result: 'tesSUCCESS',
   engine_result_code: 0,
   engine_result_message: 'The transaction was applied. Only final in a validated ledger.',
   status: 'success',
-  tx_blob: '1200002200000000240000003C6140000000000F424068400000000000000A7321024638004F4A000F55E188A4D2DA4A9D3D3C88C9E261B5EC996029FFE8C14F90C974473045022100FBA58857A966AE37B78F4260D7DB45C449923C5D490FE3ED38FA94AB28BB5CE4022064DF22808A1F8EB8B4902A963ED0CC5D2B3B239BC060CD6C159520B734E665BD811451D0BD8F60934B17D6D015D3D3047C42CAED9EBB83143AF71F0416405F20DBB60F4C64D7AB4D9A02DA94',
+  tx_blob: '120000220000000024000000056140000000000F424068400000000000000A7321ED7F7BAFBA4E123F2B3F43295EDAC06F95CAE8C47132B31CBA8B4BD173F94C1C35744075B22CDFA32BBFAC7AE32D4C6914DEB873C39B3E1C3C425AC214D38A5F6885D90EFBC815637FFF6617DE6C81864E58A0618A689DB4495E464A9556D132743F0E81143AF71F0416405F20DBB60F4C64D7AB4D9A02DA94831451D0BD8F60934B17D6D015D3D3047C42CAED9EBB',
   tx_json: {
-    Account: 'j3TbonCBTcorBu7TeK57aDGTidqkuRMAsi',
+    Account: 'ja48NQV8n4ymru8ZrzG2Gs2G5TjjBSfDPF',
     Amount: '1000000',
-    Destination: 'ja48NQV8n4ymru8ZrzG2Gs2G5TjjBSfDPF',
+    Destination: 'j3TbonCBTcorBu7TeK57aDGTidqkuRMAsi',
     Fee: '10',
     Flags: 0,
-    Sequence: 60,
-    SigningPubKey: '024638004F4A000F55E188A4D2DA4A9D3D3C88C9E261B5EC996029FFE8C14F90C9',
+    Sequence: 5,
+    SigningPubKey: 'ED7F7BAFBA4E123F2B3F43295EDAC06F95CAE8C47132B31CBA8B4BD173F94C1C35',
     TransactionType: 'Payment',
-    TxnSignature: '3045022100FBA58857A966AE37B78F4260D7DB45C449923C5D490FE3ED38FA94AB28BB5CE4022064DF22808A1F8EB8B4902A963ED0CC5D2B3B239BC060CD6C159520B734E665BD',
-    hash: '29270578A9F0087B5735FF279D78EBB815C2B451B8D56EE61BFA5699CF266C59'
+    TxnSignature: '75B22CDFA32BBFAC7AE32D4C6914DEB873C39B3E1C3C425AC214D38A5F6885D90EFBC815637FFF6617DE6C81864E58A0618A689DB4495E464A9556D132743F0E',
+    hash: '839C9113EF5C6D6A2C1E00A3C56AA1EAFACC2036B93938F022EF606A75835890'
   }
 }
 > remote.getAccountBalances(DATA.addressEd).then(console.log)
